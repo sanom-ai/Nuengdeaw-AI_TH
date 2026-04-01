@@ -1,11 +1,12 @@
 ﻿{
-    "name":  "nuengdeaw-phase1",
-    "private":  true,
-    "type":  "commonjs",
-    "scripts":  {
-                    "test":  "node --test --test-concurrency=1 --experimental-test-isolation=none",
-                    "lint:ui-keys":  "node scripts/lint-ui-text-keys.js",
-                    "lint:ui-keys:strict":  "node scripts/lint-ui-text-keys.js --strict-unused",
-                    "foundation:readable":  "node scripts/build-foundation-readable.js"
-                }
+  "name": "nuengdeaw-ai-th",
+  "private": true,
+  "description": "Nuengdeaw AI source-visible repository with landing, hub, Gen1-Gen4 product experiences, and protected Phasa Tawan assets.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 --experimental-test-isolation=none",
+    "lint:ui-keys": "node scripts/lint-ui-text-keys.js",
+    "lint:ui-keys:strict": "node scripts/lint-ui-text-keys.js --strict-unused",
+    "foundation:readable": "node scripts/build-foundation-readable.js"
+  }
 }
