@@ -1,6 +1,16 @@
 ﻿# Nuengdeaw AI
 
-Nuengdeaw AI is an emotional intelligence product ecosystem that includes a premium landing layer, a source-visible hub experience, and the real source code for Gen1-Gen4 product experiences.
+Nuengdeaw AI is an emotional intelligence product ecosystem that combines a premium landing experience, a source-visible hub, and the real source code for Gen1-Gen4 product experiences.
+
+## Overview
+
+Nuengdeaw AI is structured as a family of product experiences:
+
+- Gen 1: BioSignal sensing and physiological awareness
+- Gen 2: NeuroSignal interpretation and cognitive-state reading
+- Gen 3: Wellness guidance and human-centered communication
+- Gen 4: LLM Hub orchestration and advanced assistance
+- Gen 999: Future-facing concept and narrative horizon
 
 ## Rights and Usage
 
@@ -40,6 +50,15 @@ This repository now includes:
 - foundation JSON files used by the products
 - architecture documentation and legal reference documents
 - package metadata and utility scripts
+
+## Experience Direction
+
+This project is designed to present Nuengdeaw AI as:
+
+- a coherent multi-product ecosystem
+- a premium brand with a distinct visual language
+- an executive-facing showcase plus source-review repository
+- a flexible foundation for future storytelling, product expansion, and licensing discussion
 
 ## Notes
 
