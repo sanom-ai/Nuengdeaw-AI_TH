@@ -1,0 +1,39 @@
+﻿# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime / temp
+.tmp/
+.temp/
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# Dependencies
+node_modules/
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Local env
+.env
+.env.*
+!.env.example

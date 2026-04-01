@@ -7,6 +7,7 @@
     "test": "node --test --test-concurrency=1 --experimental-test-isolation=none",
     "lint:ui-keys": "node scripts/lint-ui-text-keys.js",
     "lint:ui-keys:strict": "node scripts/lint-ui-text-keys.js --strict-unused",
-    "foundation:readable": "node scripts/build-foundation-readable.js"
+    "foundation:readable": "node scripts/build-foundation-readable.js",
+    "audit:repo": "node scripts/repo-audit.js"
   }
 }
