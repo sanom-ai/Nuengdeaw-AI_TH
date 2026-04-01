@@ -1,0 +1,1427 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuengdeaw Gen 3 - Wellness Product</title>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Noto+Sans+Thai:wght@300;400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f3f8;--bg2:#e8ecf4;--panel:#ffffff;--panel2:#f7f9fc;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.11);
+  --text:#0d1526;--text2:#3d4f6e;--text3:#8a9bba;
+  --cyan:#00c8b4;--cyan2:#00f5d4;--gold:#c8960a;--gold2:#ffd878;
+  --violet:#7c3aed;--violet2:#c084fc;--blue:#0066ff;
+  --sh0:0 1px 3px rgba(13,21,38,0.06);
+  --sh1:0 4px 16px rgba(13,21,38,0.09),0 1px 4px rgba(13,21,38,0.05);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans Thai','DM Mono',sans-serif;font-weight:500;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,150,130,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,150,130,.04) 1px,transparent 1px),linear-gradient(rgba(0,150,130,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,150,130,.015) 1px,transparent 1px);
+  background-size:96px 96px,96px 96px,24px 24px,24px 24px;}
+
+.shell{position:relative;z-index:10;height:100vh;display:grid;grid-template-rows:68px 1fr 38px;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--border2);box-shadow:var(--sh0);position:relative;z-index:30;}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.tb-logo{position:relative;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.tb-logo svg{animation:tb-float 4s ease-in-out infinite;filter:drop-shadow(0 4px 10px rgba(0,200,180,.55));}
+@keyframes tb-float{0%,100%{transform:translateY(0);}40%{transform:translateY(-3px);}70%{transform:translateY(-2px);}}
+.tb-orbit{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(0,200,180,.18);animation:spin-cw 12s linear infinite;}
+.tb-orbit::after{content:'';position:absolute;top:3px;left:50%;width:5px;height:5px;border-radius:50%;background:var(--cyan2);transform:translateX(-50%);box-shadow:0 0 10px var(--cyan2);}
+@keyframes spin-cw{to{transform:rotate(360deg);}}
+@keyframes spin-ccw{to{transform:rotate(-360deg);}}
+.brand{display:flex;flex-direction:column;gap:2px;}
+.brand-name{font-family:'Michroma',monospace;font-size:.84rem;letter-spacing:.18em;color:var(--text);}
+.brand-name .acc{color:var(--cyan);}
+.brand-sub{font-family:'Share Tech Mono',monospace;font-size:.48rem;letter-spacing:.22em;color:var(--text3);text-transform:uppercase;}
+.tb-sep{width:1px;height:26px;background:var(--border2);margin:0 4px;}
+.tb-sys{font-family:'Share Tech Mono',monospace;font-size:.52rem;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
+
+/* session timer */
+.session-timer{font-family:'Share Tech Mono',monospace;font-size:.60rem;letter-spacing:.12em;color:var(--text3);padding:4px 12px;border:1px solid var(--border2);border-radius:6px;background:var(--panel2);}
+.session-timer span{color:var(--cyan);font-weight:600;}
+
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.state-pill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:100px;font-family:'Share Tech Mono',monospace;font-size:.60rem;letter-spacing:.10em;border:1.5px solid var(--border2);background:var(--panel2);color:var(--text2);transition:all .5s ease;min-width:136px;}
+.state-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:all .5s;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.scan-btn{display:flex;align-items:center;gap:8px;padding:9px 22px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--cyan) 0%,#007a8a 100%);color:#fff;cursor:pointer;font-family:'Michroma',monospace;font-size:.64rem;letter-spacing:.12em;box-shadow:0 4px 14px rgba(0,200,180,.40);transition:all .22s ease;position:relative;overflow:hidden;}
+.scan-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.22) 0%,transparent 55%);}
+.scan-btn:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(0,200,180,.55);}
+.scan-btn:disabled{opacity:.4;cursor:default;transform:none;}
+.ecg-icon{width:26px;height:16px;flex-shrink:0;}
+
+/* export btn */
+.export-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--panel2);color:var(--text2);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.10em;transition:all .18s;}
+.export-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,200,180,.05);}
+.export-btn:disabled{opacity:.3;cursor:default;}
+
+/* CENTER */
+.center{display:grid;grid-template-columns:274px 1fr;overflow:hidden;}
+
+/* LEFT PANEL */
+.left-panel{background:var(--panel);border-right:1px solid var(--border2);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;display:flex;flex-direction:column;}
+.pblock{padding:16px 16px 14px;border-bottom:1px solid var(--border);}
+.pblock:last-child{border-bottom:none;flex:1;}
+.bhead{display:flex;align-items:center;gap:7px;margin-bottom:12px;}
+.bpip{width:2.5px;height:13px;border-radius:2px;background:var(--cyan);flex-shrink:0;}
+.btitle{font-family:'Share Tech Mono',monospace;font-size:.53rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);}
+
+/* Gauges */
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.gauge{position:relative;overflow:hidden;background:var(--panel2);border:1px solid var(--border2);border-radius:9px;padding:10px 11px 9px;display:flex;flex-direction:column;gap:6px;}
+.gauge::after{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--gc,var(--cyan));border-radius:9px 9px 0 0;opacity:.7;}
+.gl{font-family:'Share Tech Mono',monospace;font-size:.49rem;letter-spacing:.18em;color:var(--text3);}
+.gv{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;color:var(--gc,var(--cyan));line-height:1;}
+.gbar{height:3px;border-radius:2px;background:rgba(0,0,0,.06);overflow:hidden;}
+.gfill{height:100%;border-radius:2px;background:var(--gc,var(--cyan));transition:width 1s ease;width:0%;opacity:.75;}
+
+/* EEG */
+.eeg-rows{display:flex;flex-direction:column;gap:7px;}
+.br{display:flex;align-items:center;gap:7px;}
+.bl{font-family:'Share Tech Mono',monospace;font-size:.54rem;color:var(--text3);width:50px;flex-shrink:0;}
+.btrack{flex:1;height:5px;background:var(--bg2);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;transition:width 1s ease;width:0%;}
+.bnum{font-family:'DM Mono',monospace;font-size:.53rem;color:var(--text3);width:34px;text-align:right;}
+.bsep{height:1px;background:var(--border);margin:1px 0;}
+
+/* scan count badge */
+.scan-count-wrap{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.scan-count-lbl{font-family:'Share Tech Mono',monospace;font-size:.50rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);}
+.scan-count-val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--cyan);}
+
+/* Log */
+.log-list{display:flex;flex-direction:column;gap:5px;padding:0 16px 14px;}
+.log-row{display:flex;align-items:stretch;background:var(--panel2);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.log-bar{width:3px;flex-shrink:0;}
+.log-body{flex:1;padding:6px 9px;}
+.log-state{font-family:'Share Tech Mono',monospace;font-size:.56rem;font-weight:500;color:var(--text2);display:block;letter-spacing:.06em;}
+.log-lbl{font-size:.64rem;color:var(--text2);font-weight:600;display:block;}
+.log-ts{font-family:'DM Mono',monospace;font-size:.49rem;color:var(--text3);padding:6px 8px 6px 0;display:flex;align-items:center;}
+.log-empty{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--text3);text-align:center;padding:10px 0;}
+
+/* RIGHT */
+.right-area{background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+
+/* TAB BAR */
+.tab-bar{display:flex;align-items:center;gap:0;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--border2);flex-shrink:0;}
+.tab{padding:10px 18px;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;}
+.tab:hover{color:var(--text2);}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+
+.right-scroll{flex:1;overflow-y:auto;padding:30px 34px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
+
+/* IDLE */
+.idle-wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;animation:fade-in .9s ease both;}
+@keyframes fade-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes slide-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.logo-stage{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;}
+.orb{position:absolute;border-radius:50%;border:1px solid;}
+.orb1{inset:-22px;border-color:rgba(0,200,180,.16);animation:spin-cw 14s linear infinite;}
+.orb1::after{content:'';position:absolute;top:6px;left:50%;width:8px;height:8px;border-radius:50%;background:var(--cyan2);transform:translateX(-50%);box-shadow:0 0 14px var(--cyan2);}
+.orb2{inset:-44px;border-color:rgba(212,160,0,.12);border-style:dashed;animation:spin-ccw 24s linear infinite;}
+.orb2::after{content:'';position:absolute;bottom:10px;right:10px;width:5px;height:5px;border-radius:50%;background:var(--gold2);box-shadow:0 0 10px var(--gold2);}
+.orb3{inset:-68px;border-color:rgba(124,58,237,.07);animation:spin-cw 38s linear infinite;}
+.hero-logo{animation:hero-float 4s ease-in-out infinite,hero-glow 5s ease-in-out infinite alternate;}
+@keyframes hero-float{0%,100%{transform:translateY(0) rotateY(0deg);}30%{transform:translateY(-11px) rotateY(14deg);}65%{transform:translateY(-6px) rotateY(-9deg);}}
+@keyframes hero-glow{0%{filter:drop-shadow(0 0 22px rgba(0,245,212,.72));}50%{filter:drop-shadow(0 0 34px rgba(0,245,212,.95));}100%{filter:drop-shadow(0 0 26px rgba(212,160,0,.55));}}
+.logo-shadow{position:absolute;bottom:-18px;left:50%;width:110px;height:14px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,200,180,.25) 0%,transparent 70%);transform:translateX(-50%);animation:sh-pulse 4s ease-in-out infinite;}
+@keyframes sh-pulse{0%,100%{opacity:1;width:110px;}30%{opacity:.45;width:72px;}}
+.idle-info{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;}
+.idle-h1{font-family:'Michroma',monospace;font-size:1.05rem;letter-spacing:.14em;color:var(--text);}
+.idle-h1 span{color:var(--cyan);}
+.idle-thai{font-family:'Noto Sans Thai',sans-serif;font-weight:900;font-size:.80rem;color:var(--gold);letter-spacing:.3em;}
+.idle-sub{font-size:.78rem;color:var(--text2);font-weight:600;line-height:1.85;max-width:310px;}
+.idle-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 16px;border-radius:100px;background:rgba(0,200,180,.07);border:1px solid rgba(0,200,180,.22);font-family:'Share Tech Mono',monospace;font-size:.53rem;letter-spacing:.2em;color:var(--cyan);}
+.ibdot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:blink 2s ease-in-out infinite;}
+
+/* SCANNING */
+.scan-wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+.scan-stage{position:relative;width:160px;height:160px;display:flex;align-items:center;justify-content:center;}
+.sring{position:absolute;border-radius:50%;border:1.5px solid;animation:sring-out 2.4s ease-out infinite;}
+.sring:nth-child(1){width:48px;height:48px;border-color:rgba(0,200,180,.85);animation-delay:0s;}
+.sring:nth-child(2){width:82px;height:82px;border-color:rgba(0,200,180,.55);animation-delay:.55s;}
+.sring:nth-child(3){width:116px;height:116px;border-color:rgba(0,200,180,.30);animation-delay:1.1s;}
+.sring:nth-child(4){width:150px;height:150px;border-color:rgba(0,200,180,.12);animation-delay:1.65s;}
+@keyframes sring-out{0%{transform:scale(.88);opacity:1;}100%{transform:scale(1.14);opacity:0;}}
+.score{position:relative;z-index:2;width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--cyan) 0%,#006e80 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(0,200,180,.65);animation:core-throb 1.8s ease-in-out infinite;}
+@keyframes core-throb{0%,100%{box-shadow:0 0 22px rgba(0,200,180,.55);}50%{box-shadow:0 0 46px rgba(0,200,180,.92);}}
+.scan-info{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.slbl{font-family:'Share Tech Mono',monospace;font-size:.70rem;letter-spacing:.14em;color:var(--cyan);}
+.ssub{font-size:.73rem;color:var(--text3);}
+.sbar-w{width:200px;height:3px;background:var(--bg2);border:1px solid var(--border);border-radius:2px;overflow:hidden;}
+.sbar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan) 0%,var(--gold2) 100%);width:0%;animation:barfill 3.6s ease-in-out forwards;}
+@keyframes barfill{0%{width:0%}85%{width:92%}100%{width:96%}}
+
+/* Diag */
+#diag-out{max-width:760px;margin:0 auto;animation:slide-up .5s ease both;}
+#diag-out .nd-card{background:transparent !important;border:none !important;padding:0 !important;max-width:100% !important;}
+
+/* DASHBOARD */
+#dashboard-out{animation:slide-up .4s ease both;}
+.dash-title{font-family:'Michroma',monospace;font-size:.80rem;letter-spacing:.14em;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.dash-title .dt-count{font-family:'DM Mono',monospace;font-size:.70rem;color:var(--text3);border:1px solid var(--border2);border-radius:4px;padding:2px 8px;}
+
+/* chart card */
+.chart-card{background:var(--panel);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--sh0);}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.chart-label{font-family:'Share Tech Mono',monospace;font-size:.52rem;letter-spacing:.20em;text-transform:uppercase;color:var(--text3);}
+.chart-latest{font-family:'DM Mono',monospace;font-size:.80rem;color:var(--text2);}
+canvas.line-chart{width:100% !important;height:90px !important;}
+
+/* stat grid */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;box-shadow:var(--sh0);}
+.stat-lbl{font-family:'Share Tech Mono',monospace;font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--text);}
+.stat-unit{font-size:.65rem;color:var(--text3);margin-left:3px;}
+
+/* state distribution */
+.dist-wrap{background:var(--panel);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--sh0);}
+.dist-bars{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+.dist-row{display:flex;align-items:center;gap:10px;}
+.dist-lbl{font-family:'Share Tech Mono',monospace;font-size:.50rem;width:90px;flex-shrink:0;color:var(--text2);}
+.dist-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;}
+.dist-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.dist-pct{font-family:'DM Mono',monospace;font-size:.52rem;color:var(--text3);width:34px;text-align:right;}
+
+/* no data */
+.no-data{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 0;color:var(--text3);}
+.no-data-icon{font-size:2.5rem;opacity:.4;}
+.no-data-txt{font-family:'Share Tech Mono',monospace;font-size:.60rem;letter-spacing:.14em;}
+
+/* BOTTOM */
+.botbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--panel);border-top:1px solid var(--border2);}
+.bot-l,.bot-r{font-family:'Share Tech Mono',monospace;font-size:.50rem;letter-spacing:.14em;color:var(--text3);}
+.bot-r{display:flex;align-items:center;gap:6px;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;box-shadow:0 0 7px rgba(34,197,94,.7);animation:blink 2.2s ease-in-out infinite;}
+
+/* --- */
+#err-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(13,21,38,.72);backdrop-filter:blur(5px);align-items:center;justify-content:center;}
+#err-modal{background:#fff;border-radius:14px;padding:28px 26px 24px;max-width:380px;width:calc(100% - 40px);box-shadow:0 20px 50px rgba(220,38,38,.18),0 4px 14px rgba(13,21,38,.12);border:1px solid rgba(220,38,38,.18);font-family:'Noto Sans Thai','DM Mono',sans-serif;}
+.err-icon{width:42px;height:42px;border-radius:50%;background:rgba(220,38,38,.10);border:1.5px solid rgba(220,38,38,.30);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.err-title{font-family:'Michroma',monospace;font-size:.78rem;letter-spacing:.10em;color:#b91c1c;margin-bottom:8px;}
+.err-msg{font-size:.80rem;color:#3d4f6e;line-height:1.7;margin-bottom:18px;}
+.err-retry-info{font-family:'Share Tech Mono',monospace;font-size:.50rem;letter-spacing:.12em;color:#8a9bba;margin-bottom:16px;}
+.err-btns{display:flex;gap:9px;}
+.err-btn-retry{flex:1;padding:10px 0;border:none;border-radius:8px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;cursor:pointer;font-family:'Michroma',monospace;font-size:.60rem;letter-spacing:.10em;transition:all .2s;}
+.err-btn-retry:hover{opacity:.88;}
+.err-btn-skip{padding:10px 16px;border:1.5px solid rgba(0,0,0,.10);border-radius:8px;background:#f7f9fc;color:#8a9bba;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.52rem;letter-spacing:.08em;transition:all .2s;}
+
+/* --- */
+/* Tablet <= 900px - shrink left panel */
+@media (max-width:900px){
+  .center{grid-template-columns:220px 1fr;}
+  .right-scroll{padding:20px 18px;}
+}
+
+/* Mobile <= 680px - stack layout */
+@media (max-width:680px){
+  html,body{overflow:auto;}
+  .shell{height:auto;min-height:100vh;display:flex;flex-direction:column;grid-template-rows:unset;}
+  .topbar{padding:0 14px;flex-wrap:wrap;gap:8px;height:auto;min-height:58px;padding-top:8px;padding-bottom:8px;}
+  .topbar-left{flex:1;min-width:0;}
+  .topbar-right{width:100%;justify-content:flex-end;padding-bottom:6px;}
+  .brand-sub{display:none;}
+  .session-timer{font-size:.50rem;padding:3px 8px;}
+  .state-pill{min-width:unset;}
+  /* stack center */
+  .center{display:flex;flex-direction:column;overflow:visible;height:auto;}
+  .left-panel{
+    border-right:none;border-bottom:1px solid var(--border2);
+    overflow:visible;height:auto;
+    /* collapse to horizontal scroll row */
+    flex-direction:row;flex-wrap:nowrap;overflow-x:auto;
+    scrollbar-width:none;
+    gap:0;
+  }
+  .left-panel::-webkit-scrollbar{display:none;}
+  .pblock{
+    flex:0 0 auto;min-width:200px;
+    border-bottom:none;border-right:1px solid var(--border);
+    padding:12px 14px;
+  }
+  .pblock:last-child{border-right:none;}
+  /* gauges in single column on mobile */
+  .gg{grid-template-columns:1fr 1fr;gap:5px;}
+  .gv{font-size:.88rem;}
+  /* right area full height */
+  .right-area{flex:1;overflow:visible;}
+  .right-scroll{padding:16px 14px;overflow:visible;flex:unset;}
+  #diag-out{max-width:100%;}
+  /* bot bar */
+  .botbar{padding:0 14px;flex-direction:column;align-items:flex-start;gap:2px;min-height:42px;padding-top:6px;padding-bottom:6px;}
+  .bot-r{display:none;}
+  /* scan button smaller */
+  .scan-btn{padding:8px 14px;font-size:.58rem;}
+  /* calibration modal full width */
+  #cal-modal{padding:22px 18px 18px;border-radius:12px;}
+  /* error modal full width */
+  #err-modal{padding:22px 18px 18px;}
+  /* logo stage smaller on mobile */
+  .logo-stage{width:160px;height:160px;}
+  .orb1{inset:-14px;}
+  .orb2{inset:-28px;}
+  .orb3{inset:-44px;}
+}
+
+/* Very small ≤ 380px */
+@media (max-width:380px){
+  .brand-name{font-size:.72rem;letter-spacing:.12em;}
+  .scan-btn{padding:7px 12px;font-size:.54rem;}
+  .left-panel{flex-direction:column;overflow-y:auto;overflow-x:hidden;}
+  .pblock{min-width:unset;border-right:none;border-bottom:1px solid var(--border);}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="tb-logo">
+      <div class="tb-orbit"></div>
+      <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="s-bg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00f5d4" stop-opacity=".90"/>
+            <stop offset="58%" stop-color="#0066ff" stop-opacity=".36"/>
+            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="s-gl" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="s-ng" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="50" cy="50" r="44" fill="url(#s-bg)" filter="url(#s-gl)"/>
+        <line x1="50" y1="50" x2="50" y2="12" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <line x1="50" y1="50" x2="82" y2="28" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <line x1="50" y1="50" x2="82" y2="72" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <line x1="50" y1="50" x2="50" y2="88" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <line x1="50" y1="50" x2="18" y2="72" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <line x1="50" y1="50" x2="18" y2="28" stroke="#00f5d4" stroke-width="1.2" opacity=".72"/>
+        <circle cx="50" cy="12" r="3.2" fill="#00f5d4" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="2.8s" repeatCount="indefinite"/></circle>
+        <circle cx="82" cy="28" r="3.2" fill="#0066ff" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="3.2s" begin=".4s" repeatCount="indefinite"/></circle>
+        <circle cx="82" cy="72" r="3.2" fill="#00f5d4" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="2.6s" begin=".8s" repeatCount="indefinite"/></circle>
+        <circle cx="50" cy="88" r="3.2" fill="#c084fc" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="3.5s" begin="1.2s" repeatCount="indefinite"/></circle>
+        <circle cx="18" cy="72" r="3.2" fill="#0066ff" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="2.9s" begin=".6s" repeatCount="indefinite"/></circle>
+        <circle cx="18" cy="28" r="3.2" fill="#00f5d4" filter="url(#s-ng)"><animate attributeName="r" values="2.5;4;2.5" dur="3.1s" begin="1.6s" repeatCount="indefinite"/></circle>
+        <circle cx="50" cy="50" r="10" fill="#00f5d4" opacity=".88"/>
+        <circle cx="50" cy="50" r="5" fill="white" opacity=".96"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <div class="brand-name">NUENG<span class="acc">DEAW</span></div>
+      <div class="brand-sub">Psychophysiological Wellness Monitor · TAWAN Research</div>
+    </div>
+    <div class="tb-sep"></div>
+    <div class="session-timer">SESSION <span id="session-clock">00:00</span></div>
+  </div>
+  <div class="topbar-right">
+    <button class="export-btn" id="export-btn" onclick="doExport()" disabled title="Export CSV">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M8 2v8M5 7l3 3 3-3M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2"/>
+      </svg>
+      CSV
+    </button>
+    <div class="state-pill" id="state-pill">
+      <div class="state-dot" id="state-dot"></div>
+      <span id="state-label" style="font-family:'Share Tech Mono',monospace;font-size:.60rem;letter-spacing:.08em;">STANDBY</span>
+    </div>
+    <button class="scan-btn" id="scan-btn" onclick="startScan()">
+      <svg class="ecg-icon" viewBox="0 0 44 28" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,14 10,14 14,4 18,24 22,10 26,18 30,14 42,14"/>
+      </svg>
+      SCAN USER
+    </button>
+  </div>
+</header>
+
+<!-- CENTER -->
+<div class="center">
+  <!-- LEFT -->
+  <aside class="left-panel">
+    <div class="pblock">
+      <div class="bhead"><div class="bpip" style="background:var(--cyan)"></div><div class="btitle">Biosignal Monitor</div></div>
+      <div class="gg">
+        <div class="gauge" style="--gc:#dc2626"><div class="gl">HEART RATE</div><div class="gv" id="g-hr">—</div><div class="gbar"><div class="gfill" id="gb-hr"></div></div></div>
+        <div class="gauge" style="--gc:#047857"><div class="gl">HRV RMSSD</div><div class="gv" id="g-hrv">—</div><div class="gbar"><div class="gfill" id="gb-hrv"></div></div></div>
+        <div class="gauge" style="--gc:#1a5fff"><div class="gl">GSR / EDA</div><div class="gv" id="g-gsr">—</div><div class="gbar"><div class="gfill" id="gb-gsr"></div></div></div>
+        <div class="gauge" style="--gc:#0097a7"><div class="gl">RESP RATE</div><div class="gv" id="g-rr">—</div><div class="gbar"><div class="gfill" id="gb-rr"></div></div></div>
+      </div>
+    </div>
+    <div class="pblock">
+      <div class="bhead"><div class="bpip" style="background:#7c3aed"></div><div class="btitle">EEG Neural Bands</div></div>
+      <div class="eeg-rows">
+        <div class="br"><span class="bl">θ Theta</span><div class="btrack"><div class="bfill" id="b-theta" style="background:#3b82f6"></div></div><span class="bnum" id="bv-theta">—</span></div>
+        <div class="br"><span class="bl">α Alpha</span><div class="btrack"><div class="bfill" id="b-alpha" style="background:#00c8b4"></div></div><span class="bnum" id="bv-alpha">—</span></div>
+        <div class="br"><span class="bl">β Beta</span><div class="btrack"><div class="bfill" id="b-beta" style="background:#d97706"></div></div><span class="bnum" id="bv-beta">—</span></div>
+        <div class="br"><span class="bl">γ Gamma</span><div class="btrack"><div class="bfill" id="b-gamma" style="background:#7c3aed"></div></div><span class="bnum" id="bv-gamma">—</span></div>
+        <div class="bsep"></div>
+        <div class="br"><span class="bl" style="font-size:.48rem">θ/α Ratio</span><div class="btrack"><div class="bfill" id="b-tar" style="background:#dc2626"></div></div><span class="bnum" id="bv-tar">—</span></div>
+      </div>
+    </div>
+
+    <!-- scan count -->
+    <div class="pblock" style="padding:10px 16px;">
+      <div class="scan-count-wrap" style="padding:0;">
+        <div>
+          <div class="scan-count-lbl">Total Scans</div>
+          <div class="scan-count-val" id="scan-count">0</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="scan-count-lbl">Last State</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--text2);margin-top:2px;" id="last-state-mini">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pblock" style="padding-bottom:8px">
+      <div class="bhead"><div class="bpip" style="background:#c8960a"></div><div class="btitle">State History</div></div>
+    </div>
+    <div class="log-list" id="state-log"><div class="log-empty">— NO DATA —</div></div>
+  </aside>
+
+  <!-- RIGHT -->
+  <div class="right-area">
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+      <div class="tab active" id="tab-diag" onclick="switchTab('diag')">Assessment</div>
+      <div class="tab" id="tab-dash" onclick="switchTab('dash')">Dashboard</div>
+    </div>
+
+    <div class="right-scroll" id="right-scroll">
+
+      <!-- IDLE (diag tab) -->
+      <div class="idle-wrap" id="idle-wrap">
+        <div class="logo-stage">
+          <div class="orb orb1"></div>
+          <div class="orb orb2"></div>
+          <div class="orb orb3"></div>
+          <svg class="hero-logo" width="160" height="160" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="h-bg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00f5d4" stop-opacity=".95"/>
+                <stop offset="60%" stop-color="#0066ff" stop-opacity=".40"/>
+                <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="h-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="h-ng" x="-120%" y="-120%" width="340%" height="340%">
+                <feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="50" cy="50" r="44" fill="url(#h-bg)" filter="url(#h-glow)"/>
+            <line x1="50" y1="50" x2="50" y2="12" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <line x1="50" y1="50" x2="82" y2="28" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <line x1="50" y1="50" x2="82" y2="72" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <line x1="50" y1="50" x2="50" y2="88" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <line x1="50" y1="50" x2="18" y2="72" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <line x1="50" y1="50" x2="18" y2="28" stroke="#00f5d4" stroke-width="1.3" opacity=".82"/>
+            <circle cx="50" cy="12" r="3.5" fill="#00f5d4" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="2.8s" repeatCount="indefinite"/></circle>
+            <circle cx="82" cy="28" r="3.5" fill="#0066ff" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="3.2s" begin=".4s" repeatCount="indefinite"/></circle>
+            <circle cx="82" cy="72" r="3.5" fill="#00f5d4" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="2.6s" begin=".8s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="88" r="3.5" fill="#c084fc" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="3.5s" begin="1.2s" repeatCount="indefinite"/></circle>
+            <circle cx="18" cy="72" r="3.5" fill="#0066ff" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="2.9s" begin=".6s" repeatCount="indefinite"/></circle>
+            <circle cx="18" cy="28" r="3.5" fill="#00f5d4" filter="url(#h-ng)"><animate attributeName="r" values="3;5;3" dur="3.1s" begin="1.6s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="50" r="11" fill="#00f5d4" opacity=".90" filter="url(#h-glow)"/>
+            <circle cx="50" cy="50" r="5.5" fill="white" opacity=".97"/>
+          </svg>
+          <div class="logo-shadow"></div>
+        </div>
+        <div class="idle-info">
+          <div class="idle-h1">NUENG<span>DEAW</span> · DIAGNOSTIC LAB</div>
+          <div class="idle-thai">Nuengdeaw · Ready for Wellness Assessment</div>
+          <div class="idle-sub">Press <strong style="color:var(--cyan)">SCAN USER</strong> on the top bar.<br>The system reads biosignals from the HumanSim engine.<br>Then it generates a wellness-focused physiological assessment.</div>
+          <div class="idle-badge"><div class="ibdot"></div>TAWAN Research Team &nbsp;·&nbsp; 2569</div>
+        </div>
+      </div>
+
+      <!-- SCANNING -->
+      <div class="scan-wrap" id="scan-wrap" style="display:none">
+        <div class="scan-stage">
+          <div class="sring"></div><div class="sring"></div>
+          <div class="sring"></div><div class="sring"></div>
+          <div class="score">
+            <svg width="22" height="16" viewBox="0 0 44 28" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2,14 10,14 14,4 18,24 22,10 26,18 30,14 42,14"/>
+            </svg>
+          </div>
+        </div>
+        <div class="scan-info">
+          <div class="slbl" id="scan-lbl">INITIALIZING BIOSIGNAL READ...</div>
+          <div class="ssub" id="scan-sub">Reading HRV and Heart Rate</div>
+          <div class="sbar-w"><div class="sbar-f" id="scan-bar"></div></div>
+        </div>
+      </div>
+
+      <!-- DIAGNOSIS -->
+      <div id="diag-out" style="display:none"></div>
+
+      <!-- DASHBOARD -->
+      <div id="dashboard-out" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- --- -->
+     CALIBRATION MODAL
+    <!-- ====================================================== -->
+<div id="cal-overlay" style="
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(13,21,38,0.78);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+">
+  <div id="cal-modal" style="
+    background:#fff;border-radius:16px;padding:32px 28px 28px;
+    max-width:420px;width:calc(100% - 40px);
+    box-shadow:0 24px 60px rgba(13,21,38,0.28),0 4px 16px rgba(0,200,180,0.14);
+    border:1px solid rgba(0,200,180,0.18);
+    font-family:'Noto Sans Thai','DM Mono',sans-serif;
+    position:relative;
+  ">
+    <!-- header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#00c8b4,#007a8a);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(0,200,180,.40);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Michroma',monospace;font-size:.82rem;letter-spacing:.12em;color:#0d1526;">PERSONAL BASELINE</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.50rem;letter-spacing:.18em;color:#8a9bba;text-transform:uppercase;">Calibration Required</div>
+      </div>
+    </div>
+
+    <!-- body text -->
+    <p style="font-size:.84rem;color:#3d4f6e;line-height:1.7;margin:0 0 20px;">
+      Before first use, stay still for <strong style="color:#0d1526;">about 2 minutes</strong> so the system can collect your personal baseline
+      (<em>HR, HRV, GSR, RR</em>).
+    </p>
+    <p style="font-size:.78rem;color:#8a9bba;line-height:1.6;margin:0 0 22px;">
+      This baseline is used to personalize thresholds for your body, improving assessment quality beyond fixed generic thresholds.
+    </p>
+
+    <!-- progress bar -->
+    <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+      <span id="cal-status-txt" style="font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.14em;color:#8a9bba;text-transform:uppercase;">Press START to begin</span>
+      <span id="cal-count-txt" style="font-family:'DM Mono',monospace;font-size:.60rem;color:#00c8b4;font-weight:600;"></span>
+    </div>
+    <div style="height:6px;border-radius:4px;background:rgba(0,200,180,.12);overflow:hidden;margin-bottom:20px;">
+      <div id="cal-progress-fill" style="height:100%;border-radius:4px;background:linear-gradient(90deg,#00c8b4,#00f5d4);width:0%;transition:width .5s ease;"></div>
+    </div>
+
+    <!-- signal preview -->
+    <div id="cal-signal-row" style="display:flex;gap:8px;margin-bottom:22px;">
+      <div class="cal-sig-box" id="cs-hr"  style="flex:1;background:#f7f9fc;border:1px solid rgba(0,0,0,.07);border-radius:9px;padding:9px 10px;text-align:center;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.46rem;letter-spacing:.15em;color:#8a9bba;margin-bottom:4px;">HR</div>
+        <div id="csv-hr"  style="font-family:'DM Mono',monospace;font-size:.90rem;font-weight:500;color:#374151;">—</div>
+      </div>
+      <div class="cal-sig-box" id="cs-hrv" style="flex:1;background:#f7f9fc;border:1px solid rgba(0,0,0,.07);border-radius:9px;padding:9px 10px;text-align:center;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.46rem;letter-spacing:.15em;color:#8a9bba;margin-bottom:4px;">HRV</div>
+        <div id="csv-hrv" style="font-family:'DM Mono',monospace;font-size:.90rem;font-weight:500;color:#374151;">—</div>
+      </div>
+      <div class="cal-sig-box" id="cs-gsr" style="flex:1;background:#f7f9fc;border:1px solid rgba(0,0,0,.07);border-radius:9px;padding:9px 10px;text-align:center;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.46rem;letter-spacing:.15em;color:#8a9bba;margin-bottom:4px;">GSR</div>
+        <div id="csv-gsr" style="font-family:'DM Mono',monospace;font-size:.90rem;font-weight:500;color:#374151;">—</div>
+      </div>
+      <div class="cal-sig-box" id="cs-rr"  style="flex:1;background:#f7f9fc;border:1px solid rgba(0,0,0,.07);border-radius:9px;padding:9px 10px;text-align:center;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.46rem;letter-spacing:.15em;color:#8a9bba;margin-bottom:4px;">RR</div>
+        <div id="csv-rr"  style="font-family:'DM Mono',monospace;font-size:.90rem;font-weight:500;color:#374151;">—</div>
+      </div>
+    </div>
+
+    <!-- result row (shown after done) -->
+    <div id="cal-result-row" style="display:none;background:rgba(0,200,180,.06);border:1px solid rgba(0,200,180,.22);border-radius:10px;padding:12px 14px;margin-bottom:20px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.50rem;letter-spacing:.16em;color:#00c8b4;text-transform:uppercase;margin-bottom:8px;">Your Baseline</div>
+      <div id="cal-result-body" style="font-family:'DM Mono',monospace;font-size:.72rem;color:#3d4f6e;line-height:1.9;"></div>
+    </div>
+
+    <!-- buttons -->
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button id="cal-start-btn" onclick="calStart()" style="
+        flex:1;padding:11px 0;border:none;border-radius:8px;
+        background:linear-gradient(135deg,#00c8b4,#007a8a);
+        color:#fff;cursor:pointer;font-family:'Michroma',monospace;
+        font-size:.64rem;letter-spacing:.12em;
+        box-shadow:0 4px 14px rgba(0,200,180,.40);transition:all .2s;
+      ">START</button>
+      <button id="cal-skip-btn" onclick="calSkip()" style="
+        padding:11px 18px;border:1.5px solid rgba(0,0,0,.10);border-radius:8px;
+        background:#f7f9fc;color:#8a9bba;cursor:pointer;
+        font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.10em;
+        transition:all .2s;
+      ">Skip</button>
+      <button id="cal-done-btn" onclick="calDone()" style="
+        display:none;flex:1;padding:11px 0;border:none;border-radius:8px;
+        background:linear-gradient(135deg,#047857,#065f46);
+        color:#fff;cursor:pointer;font-family:'Michroma',monospace;
+        font-size:.64rem;letter-spacing:.12em;
+        box-shadow:0 4px 14px rgba(4,120,87,.35);transition:all .2s;
+      ">Use This Baseline</button>
+    </div>
+
+    <!-- recalibrate note (shown if already calibrated) -->
+    <div id="cal-recal-note" style="display:none;margin-top:14px;text-align:center;">
+      <button onclick="calReset()" style="background:none;border:none;color:#dc2626;font-size:.62rem;cursor:pointer;font-family:'Share Tech Mono',monospace;letter-spacing:.08em;text-decoration:underline;">Recalibrate - reset and measure again</button>
+    </div>
+  </div>
+</div>
+
+<!-- --- -->
+<div id="err-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(13,21,38,.72);backdrop-filter:blur(5px);align-items:center;justify-content:center;">
+  <div id="err-modal">
+    <div class="err-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".8" fill="#dc2626"/></svg>
+    </div>
+    <div class="err-title" id="err-title">SENSOR ERROR</div>
+    <div class="err-msg"  id="err-msg">Unable to read input data</div>
+    <div class="err-retry-info" id="err-retry-info"></div>
+    <div class="err-btns">
+      <button class="err-btn-retry" id="err-retry-btn" onclick="errRetry()">RETRY</button>
+      <button class="err-btn-skip"  onclick="errDismiss()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div style="position:fixed;bottom:38px;left:0;right:0;z-index:20;pointer-events:none;display:flex;justify-content:center;">
+  <div id="wellness-disclaimer" style="background:rgba(255,248,230,0.92);border:1px solid rgba(200,150,10,0.30);border-radius:6px;padding:4px 16px;font-family:'Share Tech Mono',monospace;font-size:.46rem;letter-spacing:.08em;color:#92700a;backdrop-filter:blur(4px);">
+    Warning: For Wellness &amp; Research Purposes Only - NOT a medical device. Not for clinical diagnosis. Consult a licensed healthcare professional.
+  </div>
+</div>
+<footer class="botbar">
+  <div class="bot-l">Nuengdeaw Gen 3 Wellness · TAWAN Research Team · Mar 19, 2026</div>
+  <div class="bot-r"><div class="live-dot"></div>HUMANSIM ENGINE ACTIVE · BIOSIGNAL SIMULATED · © 2026 TAWAN</div>
+</footer>
+</div>
+
+<script src="../shared/Nuengdeaw_UI_Config_DB.js"></script>
+<script src="../shared/NuengdeawDB.js"></script>
+<script src="../shared/Nuengdeaw_Foundation_Standard_Bridge.js"></script>
+<script src="../shared/HumanSimSystem.js"></script>
+<script src="../shared/NuengdeawCore.js"></script>
+<script src="../shared/SignalAnalysis.js"></script>
+<script src="../shared/ABTestManager.js"></script>
+<script src="../shared/Nuengdeaw_Wellness_Runtime.js?v=20260327d"></script>
+<script src="../shared/Nuengdeaw_AI_Gen_3_for_Wellness.js?v=20260327d"></script>
+<script>
+// ---
+//  STATE COLORS
+// ---
+const _uiCfg = (typeof NuengdeawUIConfigDB !== 'undefined' && NuengdeawUIConfigDB.get)
+  ? NuengdeawUIConfigDB.get()
+  : { statePalette:{}, severityPalette:{}, disclaimers:{} };
+const _defaultStateColor = { dot:'#374151', border:'rgba(55,65,81,.20)', bg:'rgba(55,65,81,.05)' };
+const SC = new Proxy(_uiCfg.statePalette || {}, {
+  get(target, prop) {
+    if (prop in target) return target[prop];
+    return _defaultStateColor;
+  },
+});
+const SB = {
+  critical:'#dc2626',
+  warning:'#d97706',
+  mild:'#7c3aed',
+  neutral:'#0891b2',
+  normal:'#64748b',
+  positive:'#047857',
+  ...(_uiCfg.severityPalette || {}),
+};
+const WellnessUIState = window.__NuengdeawGen3UIState || (window.__NuengdeawGen3UIState = {
+  sessionStart: Date.now(),
+  hist: [],
+  intervalIds: [],
+});
+const _registerInterval = (fn, ms) => {
+  const id = setInterval(fn, ms);
+  WellnessUIState.intervalIds.push(id);
+  return id;
+};
+const _clearRuntimeIntervals = () => {
+  while (WellnessUIState.intervalIds.length > 0) {
+    clearInterval(WellnessUIState.intervalIds.pop());
+  }
+};
+const _cleanupOnUnload = () => {
+  if (_calTimer) { clearInterval(_calTimer); _calTimer = null; _calRunning = false; }
+  _clearRuntimeIntervals();
+};
+window.addEventListener('beforeunload', _cleanupOnUnload, { once: true });
+window.addEventListener('pagehide', _cleanupOnUnload, { once: true });
+
+// ---
+//  CALIBRATION — Personal Baseline
+// ---
+let _calTimer    = null;
+let _calRunning  = false;
+const CAL_INTERVAL_MS  = 500;   // เก็บ sample ทุก 500ms
+const CAL_DURATION_MS  = 120000; // 2 นาที (120,000ms)
+
+function calShowModal() {
+  const overlay = document.getElementById('cal-overlay');
+  overlay.style.display = 'flex';
+  // ---
+  if (NuengdeawBaseline.isCalibrated()) {
+    const s = NuengdeawBaseline.getStatus();
+    document.getElementById('cal-status-txt').textContent  = 'Baseline already available';
+    document.getElementById('cal-count-txt').textContent   = '';
+    document.getElementById('cal-progress-fill').style.width = '100%';
+    document.getElementById('cal-recal-note').style.display  = 'block';
+    document.getElementById('cal-start-btn').style.display   = 'none';
+    document.getElementById('cal-skip-btn').textContent      = 'Close';
+    _calShowResult(s.mean);
+  }
+}
+
+function calStart() {
+  if (_calRunning) return;
+  _calRunning = true;
+  NuengdeawBaseline.clearPending();
+  document.getElementById('cal-start-btn').disabled = true;
+  document.getElementById('cal-skip-btn').disabled  = true;
+  document.getElementById('cal-status-txt').textContent = 'Collecting baseline - stay still...';
+  document.getElementById('cal-result-row').style.display = 'none';
+  document.getElementById('cal-done-btn').style.display   = 'none';
+
+  const totalTicks = CAL_DURATION_MS / CAL_INTERVAL_MS;
+  let ticksDone = 0;
+  let calTickBusy = false;
+
+  _calTimer = setInterval(async () => {
+    if (calTickBusy) return;
+    calTickBusy = true;
+    try {
+      // ใช้ HumanSim (mode=sim) หรือ WearableDriver ตาม mode
+      let bio;
+      if (NuengdeawInput.mode === 'sim') {
+        const simInput = await NuengdeawInput.get();
+        bio = simInput?.bio || { hr:72, hrv:38, gsr:4.5, rr:15 };
+      } else {
+        // ---
+        bio = window._lastCalBio || { hr:72, hrv:38, gsr:4.5, rr:15 };
+      }
+      bio = (bio && typeof bio === 'object') ? bio : { hr:72, hrv:38, gsr:4.5, rr:15 };
+      const _fmtNum = (v, d, fixed) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n.toFixed(fixed) : d;
+      };
+
+      const count = NuengdeawBaseline.addCalibrationSample(bio);
+      ticksDone++;
+      const pct = Math.min(100, (ticksDone / totalTicks) * 100);
+
+      // อัปเดต UI
+      document.getElementById('cal-progress-fill').style.width = pct.toFixed(1) + '%';
+      document.getElementById('cal-count-txt').textContent     = count + ' / ' + NuengdeawBaseline.MAX_SAMPLES;
+      document.getElementById('csv-hr').textContent  = _fmtNum(bio.hr, '—', 0);
+      document.getElementById('csv-hrv').textContent = _fmtNum(bio.hrv, '—', 1);
+      document.getElementById('csv-gsr').textContent = _fmtNum(bio.gsr, '—', 1);
+      document.getElementById('csv-rr').textContent  = _fmtNum(bio.rr, '—', 0);
+
+      // เวลาเหลือ
+      const secLeft = Math.ceil(((totalTicks - ticksDone) * CAL_INTERVAL_MS) / 1000);
+      document.getElementById('cal-status-txt').textContent =
+        secLeft > 0 ? `Collecting baseline - ${secLeft}s left` : 'Processing...';
+
+      // ครบ duration หรือ samples เต็ม
+      if (ticksDone >= totalTicks || count >= NuengdeawBaseline.MAX_SAMPLES) {
+        _calFinish();
+      }
+    } catch(e) { console.warn('Cal tick error:', e); }
+    finally { calTickBusy = false; }
+  }, CAL_INTERVAL_MS);
+}
+
+function _calFinish() {
+  clearInterval(_calTimer); _calTimer = null; _calRunning = false;
+  const res = NuengdeawBaseline.finalizeCalibration();
+  if (res.ok) {
+    document.getElementById('cal-status-txt').textContent = `Completed (${res.sampleCount} samples)`;
+    document.getElementById('cal-progress-fill').style.width = '100%';
+    _calShowResult(res.mean);
+    document.getElementById('cal-done-btn').style.display   = 'flex';
+    document.getElementById('cal-skip-btn').disabled        = false;
+    document.getElementById('cal-skip-btn').textContent     = 'Close';
+    document.getElementById('cal-recal-note').style.display = 'block';
+  } else {
+    document.getElementById('cal-status-txt').textContent = 'Warning: ' + res.reason;
+    document.getElementById('cal-start-btn').disabled     = false;
+    document.getElementById('cal-skip-btn').disabled      = false;
+  }
+}
+
+function _calShowResult(mean) {
+  if (!mean) return;
+  document.getElementById('cal-result-row').style.display  = 'block';
+  document.getElementById('cal-result-body').innerHTML =
+    `HR baseline: <strong>${mean.hr} bpm</strong><br>` +
+    `HRV baseline: <strong>${mean.hrv} ms</strong><br>` +
+    `GSR baseline: <strong>${mean.gsr} µS</strong><br>` +
+    `RR baseline: <strong>${mean.rr} /min</strong>`;
+}
+
+function calDone() {
+  document.getElementById('cal-overlay').style.display = 'none';
+  _calUpdateTopbarBadge();
+}
+
+function calSkip() {
+  if (_calTimer) { clearInterval(_calTimer); _calTimer = null; _calRunning = false; }
+  NuengdeawBaseline.clearPending();
+  document.getElementById('cal-overlay').style.display = 'none';
+}
+
+function calReset() {
+  if (_calTimer) { clearInterval(_calTimer); _calTimer = null; _calRunning = false; }
+  NuengdeawBaseline.reset();
+  // reset UI
+  document.getElementById('cal-progress-fill').style.width  = '0%';
+  document.getElementById('cal-status-txt').textContent     = 'Press START to begin';
+  document.getElementById('cal-count-txt').textContent      = '';
+  document.getElementById('cal-result-row').style.display   = 'none';
+  document.getElementById('cal-done-btn').style.display     = 'none';
+  document.getElementById('cal-recal-note').style.display   = 'none';
+  document.getElementById('cal-start-btn').style.display    = '';
+  document.getElementById('cal-start-btn').disabled         = false;
+  document.getElementById('cal-skip-btn').disabled          = false;
+  document.getElementById('cal-skip-btn').textContent       = 'Skip';
+  ['csv-hr','csv-hrv','csv-gsr','csv-rr'].forEach(id => { document.getElementById(id).textContent = '—'; });
+}
+
+function _calUpdateTopbarBadge() {
+  // ---
+  const existing = document.getElementById('cal-badge');
+  if (existing) existing.remove();
+  if (!NuengdeawBaseline.isCalibrated()) return;
+  const badge = document.createElement('div');
+  badge.id = 'cal-badge';
+  badge.title = 'Personal Baseline calibrated - click to view or recalibrate';
+  badge.style.cssText =
+    'display:flex;align-items:center;gap:5px;padding:4px 10px;' +
+    'border:1.5px solid rgba(0,200,180,.35);border-radius:6px;' +
+    'background:rgba(0,200,180,.08);cursor:pointer;' +
+    'font-family:\'Share Tech Mono\',monospace;font-size:.50rem;' +
+    'letter-spacing:.12em;color:#00a896;';
+  badge.innerHTML = '✓ BASELINE';
+  badge.onclick = () => {
+    // ---
+    document.getElementById('cal-start-btn').style.display   = 'none';
+    document.getElementById('cal-skip-btn').textContent      = 'Close';
+    document.getElementById('cal-recal-note').style.display  = 'block';
+    const s = NuengdeawBaseline.getStatus();
+    document.getElementById('cal-status-txt').textContent    = 'Baseline already available';
+    document.getElementById('cal-progress-fill').style.width = '100%';
+    _calShowResult(s.mean);
+    document.getElementById('cal-overlay').style.display = 'flex';
+  };
+  // ---
+  const scanBtn = document.getElementById('scan-btn');
+  if (scanBtn && scanBtn.parentNode) {
+    scanBtn.parentNode.insertBefore(badge, scanBtn);
+  }
+}
+
+// ── Auto-show modal on first visit ────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof NuengdeawDB !== 'undefined' && NuengdeawDB.ready) {
+    NuengdeawDB.ready().catch((e) => console.warn('NuengdeawDB.ready() failed:', e?.message || e));
+  }
+  const disclaimerEl = document.getElementById('wellness-disclaimer');
+  if (disclaimerEl && _uiCfg.disclaimers?.wellness) {
+    disclaimerEl.textContent = _uiCfg.disclaimers.wellness;
+  }
+  if (!NuengdeawBaseline.isCalibrated()) {
+    setTimeout(() => calShowModal(), 800);
+  } else {
+    _calUpdateTopbarBadge();
+  }
+  const tryInjectDevToolsPanel = () => {
+    if (typeof NuengdeawDevTools === 'undefined') return false;
+    const logSection = document.getElementById('state-log');
+    if (logSection && logSection.parentNode) {
+      NuengdeawDevTools.injectPanel(logSection.parentNode);
+      return true;
+    }
+    return false;
+  };
+  if (!tryInjectDevToolsPanel()) {
+    let attempts = 0;
+    const panelTimer = _registerInterval(() => {
+      attempts++;
+      if (tryInjectDevToolsPanel() || attempts >= 20) clearInterval(panelTimer);
+    }, 300);
+  }
+});
+
+// ---
+// ---
+// ---
+const _fmtClock = (ms) => {
+  const s = Math.floor(ms/1000);
+  const m = Math.floor(s/60);
+  const h = Math.floor(m/60);
+  return h > 0
+    ? `${String(h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+};
+_registerInterval(() => {
+  document.getElementById('session-clock').textContent = _fmtClock(Date.now() - WellnessUIState.sessionStart);
+}, 1000);
+
+// ---
+//  TABS
+// ---
+let _activeTab = 'diag';
+function switchTab(tab) {
+  _activeTab = tab;
+  document.getElementById('tab-diag').classList.toggle('active', tab==='diag');
+  document.getElementById('tab-dash').classList.toggle('active', tab==='dash');
+
+  if (tab === 'diag') {
+    // ---
+    const hasDiag = document.getElementById('diag-out').style.display !== 'none';
+    document.getElementById('idle-wrap').style.display   = hasDiag ? 'none' : 'flex';
+    document.getElementById('diag-out').style.display    = hasDiag ? 'block' : 'none';
+    document.getElementById('dashboard-out').style.display = 'none';
+  } else {
+    document.getElementById('idle-wrap').style.display   = 'none';
+    document.getElementById('scan-wrap').style.display   = 'none';
+    document.getElementById('diag-out').style.display    = 'none';
+    document.getElementById('dashboard-out').style.display = 'block';
+    renderDashboard();
+  }
+}
+
+// ---
+//  BADGE / LOG
+// ---
+function updateBadge(state) {
+  const c=SC[state]||SC.NEUTRAL;
+  const p=document.getElementById('state-pill');
+  p.style.background=c.bg; p.style.borderColor=c.border;
+  const d=document.getElementById('state-dot');
+  d.style.background=c.dot; d.style.boxShadow=`0 0 8px ${c.dot}80`;
+  const l=document.getElementById('state-label');
+  l.textContent=state; l.style.color=c.dot;
+  document.getElementById('last-state-mini').textContent=state;
+}
+
+function addLog(state,labelTH,sev) {
+  const ts=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  WellnessUIState.hist.unshift({state,labelTH,ts,sev});
+  if(WellnessUIState.hist.length>8)WellnessUIState.hist.pop();
+  const el=document.getElementById('state-log');
+  el.replaceChildren();
+  WellnessUIState.hist.forEach((s) => {
+    const row = document.createElement('div');
+    row.className = 'log-row';
+
+    const bar = document.createElement('div');
+    bar.className = 'log-bar';
+    bar.style.background = SB[s.sev] || '#64748b';
+
+    const body = document.createElement('div');
+    body.className = 'log-body';
+
+    const stateEl = document.createElement('span');
+    stateEl.className = 'log-state';
+    stateEl.textContent = String(s.state || '');
+
+    const lblEl = document.createElement('span');
+    lblEl.className = 'log-lbl';
+    lblEl.textContent = String(s.labelTH || '');
+
+    const tsEl = document.createElement('div');
+    tsEl.className = 'log-ts';
+    tsEl.textContent = String(s.ts || '');
+
+    body.appendChild(stateEl);
+    body.appendChild(lblEl);
+    row.appendChild(bar);
+    row.appendChild(body);
+    row.appendChild(tsEl);
+    el.appendChild(row);
+  });
+}
+
+function updateScanCount() {
+  document.getElementById('scan-count').textContent = NuengdeawStore.count();
+  document.getElementById('export-btn').disabled = NuengdeawStore.count() === 0;
+}
+
+// ---
+//  GAUGES
+// ---
+function animateGauges(bio = {},bands = null) {
+  bio = (bio && typeof bio === 'object') ? bio : {};
+  bands = (bands && typeof bands === 'object') ? bands : null;
+  document.getElementById('g-hr').textContent=bio.hr!==undefined?(+bio.hr).toFixed(0)+' bpm':'—';
+  document.getElementById('g-hrv').textContent=bio.hrv!==undefined?(+bio.hrv).toFixed(1)+' ms':'—';
+  document.getElementById('g-gsr').textContent=bio.gsr!==undefined?(+bio.gsr).toFixed(1)+' µS':'—';
+  document.getElementById('g-rr').textContent=bio.rr!==undefined?(+bio.rr).toFixed(0)+' /min':'—';
+  document.getElementById('gb-hr').style.width=Math.min(100,Math.max(0,(+bio.hr-40)/100*100))+'%';
+  document.getElementById('gb-hrv').style.width=Math.min(100,(+bio.hrv/80*100))+'%';
+  document.getElementById('gb-gsr').style.width=Math.min(100,(+bio.gsr/20*100))+'%';
+  document.getElementById('gb-rr').style.width=Math.min(100,(+bio.rr/35*100))+'%';
+  if(bands){
+    const t=+(bands.theta||0),a=+(bands.alpha||0),b=+(bands.beta||0),g=+(bands.gamma||0),tot=t+a+b+g||1;
+    document.getElementById('b-theta').style.width=(t/tot*100).toFixed(0)+'%';
+    document.getElementById('b-alpha').style.width=(a/tot*100).toFixed(0)+'%';
+    document.getElementById('b-beta').style.width=(b/tot*100).toFixed(0)+'%';
+    document.getElementById('b-gamma').style.width=(g/tot*100).toFixed(0)+'%';
+    document.getElementById('bv-theta').textContent=t.toFixed(2);
+    document.getElementById('bv-alpha').textContent=a.toFixed(2);
+    document.getElementById('bv-beta').textContent=b.toFixed(2);
+    document.getElementById('bv-gamma').textContent=g.toFixed(2);
+    const tar=bands.thetaAlphaRatio||(a>0?t/a:0);
+    document.getElementById('b-tar').style.width=Math.min(100,(tar/4*100))+'%';
+    document.getElementById('bv-tar').textContent=tar.toFixed(2);
+    document.getElementById('b-tar').style.background=tar>2.5?'#dc2626':'#d97706';
+  }
+}
+
+// ---
+//  LIBRA PATCH
+// ---
+function patchLibra() {
+  if(document.getElementById('lp'))return;
+  const s=document.createElement('style');s.id='lp';
+  s.textContent=`.nd-card{background:#fff !important;border:1px solid rgba(0,0,0,.09) !important;border-radius:12px !important;box-shadow:0 4px 18px rgba(13,21,38,.09) !important;}.nd-state-label{font-family:'Michroma',monospace !important;}.nd-state-labelTH{font-family:'Noto Sans Thai',sans-serif !important;color:#3d4f6e !important;}.nd-state-desc{color:#3d4f6e !important;font-size:.81rem !important;}.nd-critical-banner{background:#fef2f2 !important;border:1px solid #fca5a5 !important;border-left:4px solid #dc2626 !important;}.nd-critical-banner .nd-title{color:#b91c1c !important;}.nd-critical-banner .nd-msg{color:#7f1d1d !important;}.nd-critical-banner .nd-act{color:#b91c1c !important;}`;
+  document.head.appendChild(s);
+}
+
+// ---
+//  ERROR MODAL
+// ---
+const SCAN_MAX_RETRIES = 3;
+let _errPendingRetry = null;
+
+function errShow(title, msg, retryCount) {
+  document.getElementById('err-title').textContent = title;
+  document.getElementById('err-msg').textContent   = msg;
+  const retryBtn = document.getElementById('err-retry-btn');
+  if (retryCount >= SCAN_MAX_RETRIES) {
+    document.getElementById('err-retry-info').textContent = `Retry limit reached (${SCAN_MAX_RETRIES} attempts) - check sensor connection and try again`;
+    retryBtn.disabled = true; retryBtn.style.opacity = '.4';
+  } else {
+    document.getElementById('err-retry-info').textContent = `Retry remaining: ${SCAN_MAX_RETRIES - retryCount}`;
+    retryBtn.disabled = false; retryBtn.style.opacity = '1';
+  }
+  const ov = document.getElementById('err-overlay');
+  ov.style.display = 'flex';
+}
+function errDismiss() {
+  document.getElementById('err-overlay').style.display = 'none';
+  _errPendingRetry = null;
+  // ---
+  if (scanning) {
+    document.getElementById('scan-wrap').style.display = 'none';
+    document.getElementById('idle-wrap').style.display = 'flex';
+    document.getElementById('scan-btn').disabled = false;
+    scanning = false;
+  }
+}
+function errRetry() {
+  document.getElementById('err-overlay').style.display = 'none';
+  if (typeof _errPendingRetry === 'function') _errPendingRetry();
+}
+
+// ---
+//  SCAN
+// ---
+const STEPS=[
+  ['READING BIOSIGNAL...','Reading HRV and Heart Rate'],
+  ['ANALYZING EEG BANDS...','Classifying Alpha / Beta / Theta Bands'],
+  ['PATTERN MATCHING PS_DB...','Comparing with PS_DB patterns'],
+  ['CHECKING CRITICAL ALERTS...','Checking AT.HRV.LOW · AT.RESP.APNEA'],
+  ['GENERATING WELLNESS REPORT...','NuengdeawWellnessCore is preparing the result'],
+];
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+let scanning=false;
+let _scanRetryCount=0;
+
+async function startScan(retryAttempt=0) {
+  if(scanning && retryAttempt===0) return;
+  scanning=true;
+  _scanRetryCount=retryAttempt;
+
+  switchTab('diag');
+  document.getElementById('scan-btn').disabled=true;
+  document.getElementById('idle-wrap').style.display='none';
+  document.getElementById('diag-out').style.display='none';
+  const sw=document.getElementById('scan-wrap'); sw.style.display='flex';
+  // reset scan bar animation
+  const ob=document.getElementById('scan-bar'),nb=ob.cloneNode(true);ob.parentNode.replaceChild(nb,ob);
+
+  // ── ขั้น 1: อ่าน input ────────────────────────────────────────────────────
+  let input;
+  try {
+    if (typeof NuengdeawInput === 'undefined' || typeof NuengdeawInput.get !== 'function') {
+      throw new Error('NuengdeawInput not ready');
+    }
+    // ---
+    if (NuengdeawInput.mode === 'wearable') {
+      const connStatus = WearableDriver.checkConnection();
+      if (connStatus.status !== 'connected') {
+        document.getElementById('scan-lbl').textContent = 'CONNECTING WEARABLE...';
+        document.getElementById('scan-sub').textContent = `Connecting to ${WearableDriver.DEVICE_TYPE}`;
+        await WearableDriver.connect();
+      }
+      if (connStatus.isStale) {
+        document.getElementById('scan-lbl').textContent = 'WAITING FOR SIGNAL...';
+        document.getElementById('scan-sub').textContent = 'Waiting for wearable signal';
+        await delay(1200);
+      }
+    }
+
+    const ALL=['FLOW','READY','STRESS','CONFUSION','BOREDOM','EXCITEMENT','FATIGUE','NEUTRAL','FRUSTRATION','ANXIETY','CURIOSITY','DISGUST','SURPRISE','CALM'];
+    const chosen=ALL[Math.floor(Math.random()*ALL.length)];
+    const opts=NuengdeawInput.mode==='sim'?{forceState:chosen}:{};
+    input=await NuengdeawInput.get(opts);
+  } catch(err) {
+    console.error('NuengdeawInput.get() failed (attempt '+(retryAttempt+1)+'):', err);
+    sw.style.display='none';
+    const isWearable = NuengdeawInput.mode === 'wearable';
+    const title  = isWearable ? 'WEARABLE ERROR' : 'SENSOR ERROR';
+    const detail = isWearable
+      ? `Unable to read data from wearable device\n${err.message}`
+      : `HumanSim error: ${err.message}`;
+    _errPendingRetry = () => startScan(retryAttempt + 1);
+    errShow(title, detail, retryAttempt + 1);
+    if (retryAttempt + 1 < SCAN_MAX_RETRIES) {
+      // Wearable: ลอง reconnect อัตโนมัติ
+      if (isWearable) {
+        try { await WearableDriver.reconnect(); } catch(_){}
+      }
+    }
+    return;
+  }
+
+  // ── ขั้น 2: DevTools processing (Artifact / Deception) ───────────────────
+  let { bio, bands, state, history: h } = input;
+  bio = (bio && typeof bio === 'object') ? bio : {};
+  bands = (bands && typeof bands === 'object') ? bands : null;
+  h = Array.isArray(h) ? h : [];
+  state = (typeof state === 'string' && state) ? state : 'NEUTRAL';
+  let artifactReport = null, deceptionReport = null;
+
+  if (typeof NuengdeawDevTools !== 'undefined') {
+    try {
+      const dt = NuengdeawDevTools.process(bio, bands, state);
+      bio             = dt.bio;
+      bands           = dt.bands;
+      artifactReport  = dt.artifactReport;
+      deceptionReport = dt.deceptionReport;
+      bio = (bio && typeof bio === 'object') ? bio : {};
+      bands = (bands && typeof bands === 'object') ? bands : null;
+    } catch (devErr) {
+      console.warn('NuengdeawDevTools.process failed - continue without dev tools:', devErr?.message || devErr);
+    }
+  }
+
+  // ---
+  for(let i=0;i<STEPS.length;i++){
+    document.getElementById('scan-lbl').textContent=STEPS[i][0];
+    document.getElementById('scan-sub').textContent=STEPS[i][1];
+    if(i===1)animateGauges(bio,bands);
+    await delay(600+Math.random()*350);
+  }
+
+  // ── ขั้น 4: assess + store (error boundary) ─────────────────────────────
+  let result;
+  try {
+    if (typeof NuengdeawWellnessCore === 'undefined' || typeof NuengdeawWellnessCore.assess !== 'function') {
+      throw new Error('NuengdeawWellnessCore not ready');
+    }
+    const sessionSec=Math.round((Date.now()-WellnessUIState.sessionStart)/1000);
+    const adaptiveAT=NuengdeawBaseline.isCalibrated()?NuengdeawBaseline.getAdaptiveAT():null;
+    result=NuengdeawWellnessCore.assess({bio,bands,state,history:h,sessionSec,adaptiveAT});
+    if (!result || !result.state) {
+      throw new Error('Wellness result invalid');
+    }
+
+    // ── เพิ่มข้อมูล Artifact / Deception ในผลลัพธ์ (optional display) ──────
+    if (artifactReport  && artifactReport.artifacts.length > 0)  result._artifactWarning  = artifactReport;
+    if (deceptionReport && deceptionReport.deceptionFlag)         result._deceptionWarning = deceptionReport;
+
+    // ── ขั้น 5: Store + UI ─────────────────────────────────────────────────
+    const safeBio = (bio && typeof bio === 'object') ? bio : {};
+    const safeBands = (bands && typeof bands === 'object') ? bands : null;
+    try {
+      NuengdeawStore.push(result, safeBio, safeBands);
+    } catch (storeErr) {
+      console.warn('NuengdeawStore.push failed:', storeErr?.message || storeErr);
+    }
+
+    if (typeof NuengdeawWellnessCore?.toUnifiedPacket === 'function') {
+      const unifiedPacket = NuengdeawWellnessCore.toUnifiedPacket({
+        result,
+        bio: safeBio,
+        bands: safeBands,
+        state,
+        sourceMode: NuengdeawInput.mode,
+        tick: (typeof HumanSim !== 'undefined' && HumanSim.getTick) ? HumanSim.getTick() : Date.now(),
+      });
+      result._unifiedPacket = unifiedPacket;
+      if (typeof NuengdeawWellnessCore.persistUnifiedPacket === 'function') {
+        try {
+          const persistRes = await NuengdeawWellnessCore.persistUnifiedPacket(unifiedPacket, {
+            result,
+            sourceMode: NuengdeawInput.mode,
+          });
+          if (!persistRes?.ok) console.warn('persistUnifiedPacket failed:', persistRes?.error || persistRes);
+        } catch (persistErr) {
+          console.warn('persistUnifiedPacket error:', persistErr?.message || persistErr);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Wellness assess/store failed (attempt '+(retryAttempt+1)+'):', err);
+    sw.style.display='none';
+    _errPendingRetry = () => startScan(retryAttempt + 1);
+    errShow('ANALYSIS ERROR', `ไม่สามารถประมวลผลผลลัพธ์ได้\n${err.message}`, retryAttempt + 1);
+    scanning=false;
+    document.getElementById('scan-btn').disabled=false;
+    return;
+  }
+
+  updateScanCount();
+  _scanRetryCount=0;
+
+  patchLibra();
+  updateBadge(state);
+  addLog(state,result.state.labelTH,result.state.severity);
+  animateGauges(bio,bands);
+
+  sw.style.display='none';
+  const out=document.getElementById('diag-out');
+  out.style.display='block'; out.innerHTML='';
+  NuengdeawAura.render(result,out);
+
+  // ---
+  if (artifactReport && !artifactReport.isClean) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-family:\'Share Tech Mono\',monospace;font-size:.54rem;letter-spacing:.08em;color:#92400e;';
+    banner.textContent = 'Warning: ' + artifactReport.artifacts.map(a=>a.msg).join('  |  ');
+    out.prepend(banner);
+  }
+
+  document.getElementById('right-scroll').scrollTop=0;
+
+  scanning=false;
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=false;
+  btn.innerHTML=`<svg width="26" height="16" viewBox="0 0 44 28" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,14 10,14 14,4 18,24 22,10 26,18 30,14 42,14"/></svg>SCAN AGAIN`;
+}
+
+// ---
+//  CSV EXPORT
+// ---
+function doExport() { NuengdeawStore.exportCSV(); }
+
+// ---
+//  DASHBOARD
+// ---
+function renderDashboard() {
+  const container = document.getElementById('dashboard-out');
+  const rows = NuengdeawStore.getAll();
+
+  if (rows.length === 0) {
+    container.innerHTML = `<div class="no-data"><div class="no-data-icon">[DATA]</div><div class="no-data-txt">No data yet - run at least 1 scan</div></div>`;
+    return;
+  }
+
+  const n = rows.length;
+  const last = rows[n-1];
+
+  // ── averages ──
+  const avg = key => {
+    const vals = rows.map(r=>r[key]).filter(v=>v!==''&&v!=null);
+    return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
+  };
+
+  // ── state distribution ──
+  const stateCounts = {};
+  rows.forEach(r=>{ stateCounts[r.state]=(stateCounts[r.state]||0)+1; });
+  const stateEntries = Object.entries(stateCounts).sort((a,b)=>b[1]-a[1]);
+
+  // ── severity counts ──
+  const sevCounts={critical:0,warning:0,mild:0,neutral:0,normal:0,positive:0};
+  rows.forEach(r=>{ if(sevCounts[r.severity]!==undefined) sevCounts[r.severity]++; });
+
+  container.innerHTML = `
+    <div class="dash-title">
+      Dashboard <span class="dt-count">${n} scan${n>1?'s':''}</span>
+    </div>
+
+    <!-- stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-lbl">Avg HR</div>
+        <div class="stat-val">${avg('hr_bpm')}<span class="stat-unit">bpm</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Avg HRV</div>
+        <div class="stat-val">${avg('hrv_ms')}<span class="stat-unit">ms</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Avg GSR</div>
+        <div class="stat-val">${avg('gsr_us')}<span class="stat-unit">µS</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Avg RR</div>
+        <div class="stat-val">${avg('rr_bpm')}<span class="stat-unit">br/min</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Critical Alerts</div>
+        <div class="stat-val" style="color:${sevCounts.critical>0?'#dc2626':'var(--text)'}">${sevCounts.critical}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Warning Scans</div>
+        <div class="stat-val" style="color:${sevCounts.warning>0?'#d97706':'var(--text)'}">${sevCounts.warning+sevCounts.mild}</div>
+      </div>
+    </div>
+
+    <!-- HR chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-label">Heart Rate (HR)</span>
+        <span class="chart-latest">${last.hr_bpm} bpm</span>
+      </div>
+      <canvas id="chart-hr" class="line-chart"></canvas>
+    </div>
+
+    <!-- HRV chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-label">HRV RMSSD</span>
+        <span class="chart-latest">${last.hrv_ms} ms</span>
+      </div>
+      <canvas id="chart-hrv" class="line-chart"></canvas>
+    </div>
+
+    <!-- GSR chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-label">GSR / EDA</span>
+        <span class="chart-latest">${last.gsr_us} µS</span>
+      </div>
+      <canvas id="chart-gsr" class="line-chart"></canvas>
+    </div>
+
+    <!-- state distribution -->
+    <div class="dist-wrap">
+      <div class="chart-head"><span class="chart-label">State Distribution</span></div>
+      <div class="dist-bars">
+        ${stateEntries.map(([st,cnt])=>{
+          const pct=(cnt/n*100).toFixed(0);
+          const col=(SC[st]||SC.NEUTRAL).dot;
+          return `<div class="dist-row">
+            <span class="dist-lbl">${st}</span>
+            <div class="dist-track"><div class="dist-fill" style="width:${pct}%;background:${col}"></div></div>
+            <span class="dist-pct">${pct}%</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  // ── draw mini charts (vanilla canvas, no lib) ──
+  drawLineChart('chart-hr',  rows.map(r=>r.hr_bpm),  '#dc2626', [40, 150]);
+  drawLineChart('chart-hrv', rows.map(r=>r.hrv_ms),  '#047857', [0, 100]);
+  drawLineChart('chart-gsr', rows.map(r=>r.gsr_us),  '#1a5fff', [0, 25]);
+}
+
+function drawLineChart(id, rawData, color, [yMin, yMax]) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const data = rawData.filter(v => v !== '' && v != null).map(Number);
+  if (data.length < 2) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = 90 * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    ctx.fillStyle = '#8a9bba';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('Need >= 2 scans', 12, 50);
+    return;
+  }
+
+  const dpr = devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = 90 * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = canvas.offsetWidth, H = 90;
+  const PAD = { t:8, r:8, b:20, l:36 };
+  const cW = W - PAD.l - PAD.r;
+  const cH = H - PAD.t - PAD.b;
+
+  const toX = i => PAD.l + (i / (data.length-1)) * cW;
+  const toY = v => PAD.t + (1 - (v - yMin) / (yMax - yMin)) * cH;
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(138,155,186,0.15)';
+  ctx.lineWidth = 1;
+  [0, 0.5, 1].forEach(f => {
+    const y = PAD.t + f * cH;
+    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(W-PAD.r, y); ctx.stroke();
+    ctx.fillStyle = '#8a9bba';
+    ctx.font = `9px DM Mono`;
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(yMax - f*(yMax-yMin)), PAD.l-4, y+3);
+  });
+
+  // area fill
+  const grad = ctx.createLinearGradient(0, PAD.t, 0, PAD.t+cH);
+  grad.addColorStop(0, color + '33');
+  grad.addColorStop(1, color + '00');
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0]));
+  data.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.lineTo(toX(data.length-1), PAD.t+cH);
+  ctx.lineTo(toX(0), PAD.t+cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // line
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0]));
+  data.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // dots
+  data.forEach((v,i) => {
+    ctx.beginPath();
+    ctx.arc(toX(i), toY(v), i===data.length-1?3.5:2, 0, Math.PI*2);
+    ctx.fillStyle = i===data.length-1 ? color : color+'aa';
+    ctx.fill();
+  });
+
+  // x labels (scan numbers)
+  ctx.fillStyle = '#8a9bba';
+  ctx.font = '9px DM Mono';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(data.length/6));
+  data.forEach((_, i) => {
+    if (i % step === 0 || i === data.length-1)
+      ctx.fillText('#'+(i+1), toX(i), H-4);
+  });
+}
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nuengdeaw.ai/schemas/book-session.schema.json",
+  "title": "Nuengdeaw Book Session Packet",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "packet_type",
+    "ts_iso",
+    "gen",
+    "tick",
+    "state",
+    "confidence",
+    "risk",
+    "wellbeing",
+    "signals",
+    "behavior",
+    "actions"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "packet_type": { "type": "string", "const": "book_session_tick" },
+    "ts_iso": { "type": "string", "format": "date-time" },
+    "gen": { "type": "integer", "enum": [1, 2] },
+    "tick": { "type": "integer", "minimum": 0 },
+    "state": { "type": "string", "minLength": 1 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "risk": { "type": "number", "minimum": 0, "maximum": 1 },
+    "wellbeing": { "type": "number", "minimum": 0, "maximum": 1 },
+    "signals": {
+      "type": "object",
+      "required": ["hrv", "hr", "gsr", "rr", "eeg"],
+      "properties": {
+        "hrv": { "type": "number" },
+        "hr": { "type": "number" },
+        "gsr": { "type": "number" },
+        "rr": { "type": "number" },
+        "eeg": { "type": "number" },
+        "bands": {
+          "type": ["object", "null"],
+          "additionalProperties": true,
+          "properties": {
+            "theta": { "type": "number" },
+            "alpha": { "type": "number" },
+            "beta": { "type": "number" },
+            "gamma": { "type": "number" },
+            "thetaAlphaRatio": { "type": "number" }
+          }
+        }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "required": ["dwellScore", "scrollScore", "backScore"],
+      "properties": {
+        "dwellScore": { "type": "number" },
+        "scrollScore": { "type": "number" },
+        "backScore": { "type": "number" }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": ["recommended_action", "adaptation"],
+      "properties": {
+        "recommended_action": { "type": "string" },
+        "adaptation": {
+          "type": "object",
+          "required": ["pacing", "hint_level", "summarize", "break_prompt"],
+          "properties": {
+            "pacing": { "type": "string", "enum": ["slow", "normal", "fast"] },
+            "hint_level": { "type": "string", "enum": ["high", "medium", "low"] },
+            "summarize": { "type": "boolean" },
+            "break_prompt": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}
