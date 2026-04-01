@@ -1,4 +1,4 @@
-/* น้องหนึ่งเดียวAIโดย2026ตะวัน */
+﻿/* น้องหนึ่งเดียวAIโดย2026ตะวัน */
 /* Nuengdeaw Dashboard — style.css v2 */
 
 @import url('https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
@@ -210,10 +210,72 @@ body::after{
   border-color:var(--source-sim);color:var(--source-sim);
   box-shadow:0 0 14px rgba(0,245,212,0.15);
 }
-.source-badge.wear{
-  background:rgba(249,168,37,0.12);
-  border-color:var(--source-wear);color:var(--source-wear);
-  box-shadow:0 0 14px rgba(249,168,37,0.15);
+.copyright-strip{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+  padding:14px 18px;
+  border-radius:18px;
+  border:1px solid rgba(255,217,102,0.20);
+  background:linear-gradient(135deg, rgba(255,217,102,0.12), rgba(192,132,252,0.06)),rgba(8,12,22,0.92);
+  box-shadow:0 18px 36px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.copyright-mark{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Michroma',monospace;
+  font-size:0.8rem;
+  letter-spacing:1px;
+  color:var(--gold);
+  border:1px solid rgba(255,217,102,0.28);
+  background:rgba(255,217,102,0.09);
+  box-shadow:0 0 20px rgba(255,217,102,0.08);
+}
+.copyright-copy strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:0.84rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--text-primary);
+}
+.copyright-copy p{
+  font-size:0.76rem;
+  line-height:1.65;
+  color:var(--text-secondary);
+}
+.copyright-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+.copyright-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,217,102,0.18);
+  background:rgba(255,255,255,0.03);
+  color:var(--text-primary);
+  text-decoration:none;
+  font-size:0.68rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  transition:border-color 0.25s, transform 0.25s, background 0.25s;
+}
+.copyright-link:hover{
+  transform:translateY(-1px);
+  border-color:rgba(255,217,102,0.34);
+  background:rgba(255,217,102,0.07);
 }
 
 /* ── 4-CARD GRID ── */
@@ -777,6 +839,8 @@ input[type="range"]{width:68px;accent-color:var(--cyan-core);cursor:pointer;}
 }
 @media(max-width:1100px){
   :root{--gap:8px;--pad:8px;}
+  .copyright-strip{grid-template-columns:1fr;}
+  .copyright-actions{justify-content:flex-start;}
   .grid{grid-template-columns:repeat(2,1fr);}
   .personality-sliders{display:none;}
   .dashboard{min-height:calc(100vh - var(--pad) * 2);}
@@ -792,6 +856,10 @@ input[type="range"]{width:68px;accent-color:var(--cyan-core);cursor:pointer;}
   .recommend-card,.insights-card,.ops-card{min-height:unset;}
 }
 @media(max-width:680px){
+  .copyright-strip{padding:14px;}
+  .copyright-mark{width:40px;height:40px;border-radius:12px;}
+  .copyright-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .copyright-link{min-height:36px;padding:0 10px;font-size:0.64rem;}
   .module-grid-five{grid-template-columns:1fr;}
   .module-grid-five > .panel{min-height:170px;}
   .module-grid-six{grid-template-columns:1fr;}
@@ -841,3 +909,5 @@ input[type="range"]{width:68px;accent-color:var(--cyan-core);cursor:pointer;}
 @media (max-height:760px){
   .chart-wrapper{height:170px;min-height:160px;}
 }
+
+
