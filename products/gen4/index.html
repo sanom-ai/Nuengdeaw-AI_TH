@@ -1,0 +1,516 @@
+﻿<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuengdeaw Gen 4 - LLM Orchestration Hub</title>
+<style>
+:root{
+  --bg:#060b1a;--panel:#0c1830;--panel2:#122449;--line:rgba(0,255,224,.2);
+  --text:#d6f4ff;--muted:#89a8c2;--cyan:#00f5d4;--gold:#f8c26b;--rose:#ff7f96;--green:#86efac;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;padding:24px;font-family:Segoe UI,Arial,sans-serif;color:var(--text);
+  background:radial-gradient(circle at 20% 0%, #112246 0%, #060b1a 55%);
+}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hero{
+  margin-top:16px;padding:22px;border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(140deg,rgba(18,36,73,.92),rgba(12,24,48,.92));
+}
+.hero h1{margin:0 0 10px;font-size:26px;color:#e7fbff}
+.hero p{margin:0;color:var(--muted);line-height:1.65}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:14px}
+.metric{padding:12px;border-radius:12px;background:rgba(1,11,30,.66);border:1px solid rgba(0,245,212,.16)}
+.metric .k{font-size:12px;color:var(--muted)}
+.metric .v{margin-top:6px;font-size:22px;font-weight:700}
+.grid{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.provider{
+  padding:14px;border-radius:14px;background:rgba(3,13,34,.78);border:1px solid rgba(0,245,212,.14);
+  transition:transform .15s ease,border-color .15s ease,background .15s ease;
+}
+.provider.clickable{cursor:pointer}
+.provider.clickable:hover{transform:translateY(-2px);border-color:rgba(0,245,212,.36);background:rgba(6,23,52,.92)}
+.provider.active{border-color:rgba(0,245,212,.5);box-shadow:0 0 0 1px rgba(0,245,212,.15) inset}
+.status{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;margin-bottom:8px}
+.status.ready{background:rgba(34,197,94,.15);color:var(--green)}
+.status.plan{background:rgba(250,204,21,.14);color:#fde68a}
+.provider h3{margin:0 0 8px;font-size:18px}
+.provider p{margin:0;color:var(--muted);line-height:1.6}
+.notice{
+  margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(248,194,107,.08);
+  border:1px solid rgba(248,194,107,.18);color:#f7dfbf;line-height:1.6
+}
+.notice.ready{background:rgba(0,245,212,.08);border-color:rgba(0,245,212,.18);color:#ccfbf1}
+.workspace{margin-top:16px;display:none;grid-template-columns:1.1fr .9fr;gap:12px}
+.workspace.open{display:grid}
+.composer,.preview,.lane,.chat-shell{padding:14px;border-radius:14px;background:rgba(3,13,34,.78);border:1px solid rgba(0,245,212,.14)}
+.composer h3,.preview h3,.lane h3,.chat-shell h3{margin:0 0 8px}
+.lanes{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.lane ul{margin:0;padding-left:20px;color:var(--muted);line-height:1.7}
+.label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
+textarea,input,select{
+  width:100%;border:1px solid rgba(137,168,194,.25);background:#071327;color:var(--text);
+  border-radius:10px;padding:10px 12px;font:inherit
+}
+textarea{min-height:220px;resize:vertical}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{
+  border:1px solid rgba(0,245,212,.24);background:rgba(0,245,212,.1);color:var(--text);
+  border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:600
+}
+.btn.alt{border-color:rgba(248,194,107,.24);background:rgba(248,194,107,.1)}
+.codebox{
+  background:#071327;border:1px solid rgba(137,168,194,.18);border-radius:12px;padding:12px;
+  font-family:Consolas,'Courier New',monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;
+  max-height:260px;overflow:auto
+}
+.result{
+  margin-top:12px;padding:12px;border-radius:12px;background:rgba(0,245,212,.06);border:1px solid rgba(0,245,212,.14)
+}
+.result h4{margin:0 0 8px}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px}
+.status-card{padding:10px;border-radius:12px;background:#071327;border:1px solid rgba(137,168,194,.18)}
+.status-card .k{font-size:11px;color:var(--muted)}
+.status-card .v{margin-top:6px;font-size:16px;font-weight:700}
+.chipbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{font-size:12px;border-radius:999px;padding:5px 10px;border:1px solid rgba(137,168,194,.28);color:var(--muted)}
+.chip.warn{border-color:rgba(255,127,150,.35);color:#ffc3ce}
+.muted{color:var(--muted);line-height:1.6}
+.chat-shell{margin-top:12px;display:none}
+.chat-shell.open{display:block}
+.chat-log{
+  min-height:220px;max-height:360px;overflow:auto;background:#071327;border:1px solid rgba(137,168,194,.18);
+  border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px
+}
+.bubble{
+  max-width:86%;padding:10px 12px;border-radius:14px;line-height:1.6;border:1px solid rgba(137,168,194,.16)
+}
+.bubble.user{align-self:flex-end;background:rgba(248,194,107,.1);border-color:rgba(248,194,107,.2);color:#f7dfbf}
+.bubble.assistant{align-self:flex-start;background:rgba(0,245,212,.08);border-color:rgba(0,245,212,.16);color:#d8fff7}
+.chat-row{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px}
+.tiny{font-size:12px;color:var(--muted)}
+.footer-note{
+  margin-top:18px;padding:14px;border-radius:14px;background:rgba(248,194,107,.08);
+  border:1px solid rgba(248,194,107,.2);color:#f7dfbf;line-height:1.7
+}
+@media (max-width: 920px){ .workspace.open{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2 style="margin:0">Gen 4 - LLM Orchestration Hub</h2>
+  </div>
+
+  <section class="hero">
+    <h1>9 Provider Families Connected to One Orchestration Layer</h1>
+    <p>หน้า Gen4 คง hub เดิมไว้ และตอนนี้จัด OpenAI lane ให้พร้อมเชื่อมต่อจริง โดยยึด Unified State Packet จาก Core เป็นอินพุตหลักของทุกคำตอบ</p>
+    <div class="metrics">
+      <div class="metric"><div class="k">Connected Families</div><div class="v">9</div></div>
+      <div class="metric"><div class="k">Open Lane Today</div><div class="v">OpenAI</div></div>
+      <div class="metric"><div class="k">Secret Mode</div><div class="v">No API Keys</div></div>
+    </div>
+  </section>
+
+  <section class="grid" id="provider-grid">
+    <article class="provider clickable" data-provider="openai"><div class="status ready">Ready</div><h3>OpenAI</h3><p>Reasoning, coding, tool-use orchestration, and multi-model routing. กดเพื่อเปิด GPT lane</p></article>
+    <article class="provider" data-provider="anthropic"><div class="status plan">Plan</div><h3>Anthropic</h3><p>Long-context reasoning lane and policy-aware assistant handoff.</p></article>
+    <article class="provider" data-provider="google"><div class="status plan">Plan</div><h3>Google</h3><p>Gemini family adapter for multimodal and enterprise workflow tasks.</p></article>
+    <article class="provider" data-provider="meta"><div class="status plan">Plan</div><h3>Meta</h3><p>Llama ecosystem lane for private deployment and custom stacks.</p></article>
+    <article class="provider" data-provider="xai"><div class="status plan">Plan</div><h3>xAI</h3><p>Alternative conversational lane for response diversity and fallback.</p></article>
+    <article class="provider" data-provider="mistral"><div class="status plan">Plan</div><h3>Mistral</h3><p>Efficient open-weight lane for lower-latency or lower-cost tasks.</p></article>
+    <article class="provider" data-provider="cohere"><div class="status plan">Plan</div><h3>Cohere</h3><p>Enterprise text lane for business-safe summarization and retrieval.</p></article>
+    <article class="provider" data-provider="ai21"><div class="status plan">Plan</div><h3>AI21</h3><p>Writing and structured language generation lane for documents.</p></article>
+    <article class="provider" data-provider="deepseek"><div class="status plan">Plan</div><h3>DeepSeek</h3><p>Reasoning-efficient routing, cost-aware fallback, and open-deployment-friendly lane.</p></article>
+  </section>
+
+  <div class="notice" id="provider-notice">เลือก provider ก่อน ตอนนี้เปิดให้ใช้งานเฉพาะ <strong>OpenAI</strong> lane ครับ</div>
+
+  <section class="workspace" id="workspace">
+    <div class="composer">
+      <h3>OpenAI Workspace</h3>
+      <div class="muted">พื้นที่นี้จะเปิดเมื่อกดการ์ด OpenAI เท่านั้น โดยจะรับ packet กลางจาก Core, สร้าง request payload มาตรฐาน, และคง output schema ให้พร้อมเชื่อมต่อ provider จริง</div>
+
+      <label class="label" for="lane">Lane</label>
+      <select id="lane">
+        <option value="conversation">Conversation</option>
+        <option value="reasoning">Reasoning</option>
+        <option value="research">Research</option>
+        <option value="coding">Coding</option>
+      </select>
+
+      <label class="label" for="user-input">User Input</label>
+      <input id="user-input" type="text" value="ช่วยสรุปสิ่งที่ควรทำต่อจากสภาวะตอนนี้แบบสั้น ๆ">
+
+      <label class="label" for="packet-input">Packet JSON</label>
+      <textarea id="packet-input" spellcheck="false" readonly></textarea>
+      <div class="tiny">Gen4 อ่าน packet กลางจาก Core เท่านั้น กล่องนี้แสดงผลเพื่อการตรวจสอบ ไม่ใช่จุดป้อนข้อมูลโดยตรง</div>
+
+      <div class="actions">
+        <button class="btn" id="refresh-core" type="button">Refresh From Core</button>
+        <button class="btn" id="tick-human-sim" type="button">Tick HumanSim Test</button>
+        <button class="btn alt" id="run-mock" type="button">Run GPT</button>
+        <button class="btn" id="open-chat" type="button">Open GPT Chat</button>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card"><div class="k">Provider</div><div class="v" id="provider-mode">-</div></div>
+        <div class="status-card"><div class="k">Source Mode</div><div class="v" id="core-source-mode">-</div></div>
+        <div class="status-card"><div class="k">Tick Mode</div><div class="v" id="core-tick-mode">-</div></div>
+        <div class="status-card"><div class="k">State</div><div class="v" id="core-state">-</div></div>
+        <div class="status-card"><div class="k">Risk</div><div class="v" id="core-risk">-</div></div>
+        <div class="status-card"><div class="k">Confidence</div><div class="v" id="core-confidence">-</div></div>
+        <div class="status-card"><div class="k">Wellbeing</div><div class="v" id="core-wellbeing">-</div></div>
+        <div class="status-card"><div class="k">Model</div><div class="v" id="provider-model">-</div></div>
+      </div>
+
+      <div class="chat-shell" id="chat-shell">
+        <h3>GPT Chat</h3>
+        <div class="tiny">ทุกข้อความจะ refresh packet จาก Core ก่อน และสร้าง request payload ในรูปแบบพร้อมส่งต่อไปยัง provider จริง</div>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-row">
+          <input id="chat-input" type="text" value="ตอนนี้ฉันควรทำอะไรก่อนดี" aria-label="Chat input">
+          <button class="btn alt" id="send-chat" type="button">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <h3>Prompt And Output</h3>
+      <div class="chipbar" id="flag-bar"></div>
+      <div class="result">
+        <h4>Message</h4>
+        <div id="result-message" class="muted">ยังไม่ได้รัน</div>
+      </div>
+      <label class="label">Provider Request</label>
+      <div class="codebox" id="request-json">(empty)</div>
+      <label class="label">Prompt Preview</label>
+      <div class="codebox" id="prompt-preview">(empty)</div>
+      <label class="label">Structured Output</label>
+      <div class="codebox" id="result-json">(empty)</div>
+    </div>
+  </section>
+
+  <section class="lanes">
+    <div class="lane">
+      <h3>Routing Lanes</h3>
+      <ul>
+        <li>Reasoning lane</li>
+        <li>Coding lane</li>
+        <li>Research lane</li>
+        <li>Conversation lane</li>
+      </ul>
+    </div>
+    <div class="lane">
+      <h3>Base Integration</h3>
+      <ul>
+        <li>Read state from the Original base</li>
+        <li>Receive context from Gen 1, Gen 2, and Gen 3</li>
+        <li>Keep one shared policy layer across the system</li>
+        <li>Store routing audit history later</li>
+      </ul>
+    </div>
+    <div class="lane">
+      <h3>Next Build</h3>
+      <ul>
+        <li>Provider-level connector settings</li>
+        <li>API key vault strategy</li>
+        <li>Fallback and retry rules</li>
+        <li>Task-to-model recommendation engine</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="footer-note">
+    Gen4 is delivered as an orchestration scaffold for safe integration. No production secrets, API keys, or live external provider calls are embedded in this build.
+    <br>© 2026 TAWAN
+  </div>
+</div>
+<script src="../shared/HumanSimSystem.js"></script>
+<script src="../shared/NuengdeawDB.js"></script>
+<script src="../shared/NuengdeawCore.js"></script>
+<script src="../shared/Nuengdeaw_AI_Gen_4_Config.js"></script>
+<script src="../shared/Nuengdeaw_AI_Gen_4_OpenAI_Transport.js"></script>
+<script src="../shared/Nuengdeaw_AI_Gen_4_Mock_Orchestrator.js"></script>
+<script>
+(() => {
+  const packetEl = document.getElementById('packet-input');
+  const userInputEl = document.getElementById('user-input');
+  const laneEl = document.getElementById('lane');
+  const promptEl = document.getElementById('prompt-preview');
+  const requestEl = document.getElementById('request-json');
+  const resultEl = document.getElementById('result-json');
+  const messageEl = document.getElementById('result-message');
+  const flagBarEl = document.getElementById('flag-bar');
+  const workspaceEl = document.getElementById('workspace');
+  const noticeEl = document.getElementById('provider-notice');
+  const providerCards = Array.from(document.querySelectorAll('#provider-grid .provider'));
+  const chatShellEl = document.getElementById('chat-shell');
+  const chatLogEl = document.getElementById('chat-log');
+  const chatInputEl = document.getElementById('chat-input');
+  const sourceModeEl = document.getElementById('core-source-mode');
+  const providerModeEl = document.getElementById('provider-mode');
+  const providerModelEl = document.getElementById('provider-model');
+  const tickModeEl = document.getElementById('core-tick-mode');
+  const stateEl = document.getElementById('core-state');
+  const riskEl = document.getElementById('core-risk');
+  const confidenceEl = document.getElementById('core-confidence');
+  const wellbeingEl = document.getElementById('core-wellbeing');
+  let activeProvider = null;
+  let chatHistory = [];
+  const mkStrong = (text) => {
+    const el = document.createElement('strong');
+    el.textContent = String(text || '');
+    return el;
+  };
+  const setNotice = (ready, parts = []) => {
+    noticeEl.className = ready ? 'notice ready' : 'notice';
+    noticeEl.replaceChildren(...parts);
+  };
+  if (window.NuengdeawGen4 && typeof window.NuengdeawGen4.bootstrap === 'function') {
+    window.NuengdeawGen4.bootstrap();
+  }
+
+  const setStatusCards = (packet = {}, coreStatus = {}, providerStatus = null) => {
+    providerModeEl.textContent = providerStatus?.provider ? `${providerStatus.provider}:${providerStatus.transport || 'ready'}` : '-';
+    providerModelEl.textContent = providerStatus?.model || '-';
+    sourceModeEl.textContent = coreStatus.sourceMode || packet.core_meta?.source_mode || '-';
+    tickModeEl.textContent = coreStatus.tickMode || packet.core_meta?.tick_mode || '-';
+    stateEl.textContent = packet.state || '-';
+    riskEl.textContent = typeof packet.risk === 'number' ? packet.risk.toFixed(2) : '-';
+    confidenceEl.textContent = typeof packet.confidence === 'number' ? packet.confidence.toFixed(2) : '-';
+    wellbeingEl.textContent = typeof packet.wellbeing === 'number' ? packet.wellbeing.toFixed(2) : '-';
+  };
+
+  const pullPacketFromCore = () => {
+    const res = window.NuengdeawGen4.packetFromCore(window.NuengdeawCore);
+    const providerStatus = window.NuengdeawGen4.getProviderStatus('openai');
+    if (!res.success) {
+      setNotice(false, [
+        document.createTextNode('ยังดึง '),
+        mkStrong('Unified State Packet'),
+        document.createTextNode(` จาก Core ไม่ได้: ${String(res.error || 'unknown_error')}`),
+      ]);
+      packetEl.value = '';
+      setStatusCards({}, {}, providerStatus);
+      return false;
+    }
+    packetEl.value = JSON.stringify(res.packet, null, 2);
+    setStatusCards(res.packet, res.core_status || {}, providerStatus);
+    setNotice(true, [
+      document.createTextNode('OpenAI lane พร้อมแล้ว ตอนนี้ '),
+      mkStrong('Gen4 รับ Unified State Packet จาก NuengdeawCore'),
+      document.createTextNode(' และสร้าง request payload ในรูปแบบพร้อมเชื่อมต่อจริง'),
+    ]);
+    return true;
+  };
+
+  const renderFlags = (flags = [], tags = []) => {
+    flagBarEl.replaceChildren();
+    const values = [
+      ...flags.map((v) => ({ value: v, cls: 'warn' })),
+      ...tags.map((v) => ({ value: v, cls: '' })),
+    ];
+    if (!values.length) {
+      const span = document.createElement('span');
+      span.className = 'chip';
+      span.textContent = 'no flags';
+      flagBarEl.appendChild(span);
+      return;
+    }
+    values.forEach((item) => {
+      const span = document.createElement('span');
+      span.className = `chip ${item.cls}`.trim();
+      span.textContent = item.value;
+      flagBarEl.appendChild(span);
+    });
+  };
+
+  const resetOutput = () => {
+    messageEl.textContent = 'พร้อมรัน OpenAI lane';
+    requestEl.textContent = '(empty)';
+    promptEl.textContent = '(empty)';
+    resultEl.textContent = '(empty)';
+    renderFlags();
+  };
+
+  const refreshFromCore = () => {
+    resetOutput();
+    pullPacketFromCore();
+  };
+
+  const tickHumanSim = () => {
+    const sim = window.HumanSim;
+    if (sim && typeof sim.tick === 'function') sim.tick();
+    refreshFromCore();
+  };
+
+  const renderChat = () => {
+    chatLogEl.replaceChildren();
+    if (!chatHistory.length) {
+      const empty = document.createElement('div');
+      empty.className = 'tiny';
+      empty.textContent = 'ยังไม่มีข้อความ ลองถามพี่ GPT จาก packet ปัจจุบันได้เลย';
+      chatLogEl.appendChild(empty);
+      return;
+    }
+    chatHistory.forEach((item) => {
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${item.role}`;
+      bubble.textContent = item.text;
+      chatLogEl.appendChild(bubble);
+    });
+    chatLogEl.scrollTop = chatLogEl.scrollHeight;
+  };
+
+  const appendChatTurn = (userText, assistantText) => {
+    chatHistory.push({ role: 'user', text: userText });
+    chatHistory.push({ role: 'assistant', text: assistantText });
+    renderChat();
+  };
+
+  const activateProvider = (providerId) => {
+    activeProvider = providerId;
+    providerCards.forEach((card) => card.classList.toggle('active', card.dataset.provider === providerId));
+    if (providerId === 'openai') {
+      workspaceEl.classList.add('open');
+      resetOutput();
+      refreshFromCore();
+      chatShellEl.classList.remove('open');
+      chatHistory = [];
+      renderChat();
+      return;
+    }
+    workspaceEl.classList.remove('open');
+    chatShellEl.classList.remove('open');
+      setNotice(false, [
+        mkStrong(providerId),
+        document.createTextNode(' ยังเป็นแผนอยู่ ตอนนี้หน้า Gen4 เปิดให้ใช้งานเฉพาะ OpenAI lane ครับ'),
+      ]);
+  };
+
+  const runMock = async () => {
+    if (activeProvider !== 'openai') {
+      setNotice(false, [
+        document.createTextNode('กรุณากด '),
+        mkStrong('OpenAI'),
+        document.createTextNode(' ก่อน แล้วค่อยรัน GPT lane ครับ'),
+      ]);
+      return;
+    }
+    if (!pullPacketFromCore()) {
+      messageEl.textContent = 'ยังอ่าน Unified State Packet จาก Core ไม่ได้';
+      return;
+    }
+    const packet = JSON.parse(packetEl.value);
+    let response;
+    try {
+      response = await window.NuengdeawGen4.orchestrateAsync({
+        packet,
+        userInput: userInputEl.value,
+        lane: laneEl.value,
+        provider: 'openai',
+      });
+    } catch (error) {
+      messageEl.textContent = `Gen4 lane error: ${error.message}`;
+      requestEl.textContent = '(failed)';
+      promptEl.textContent = '(empty)';
+      resultEl.textContent = '(empty)';
+      renderFlags(['transport-error']);
+      return;
+    }
+    if (!response.success) {
+      messageEl.textContent = `Gen4 lane error: ${response.error}`;
+      promptEl.textContent = '(empty)';
+      resultEl.textContent = JSON.stringify(response, null, 2);
+      renderFlags(['orchestration-error'], response.validation_errors || []);
+      return;
+    }
+    messageEl.textContent = response.output.message;
+    requestEl.textContent = JSON.stringify(response.request_payload, null, 2);
+    promptEl.textContent = response.prompt_preview;
+    resultEl.textContent = JSON.stringify(response.output, null, 2);
+    renderFlags(response.output.safety_flags, response.output.reasoning_tags);
+  };
+
+  const openChat = () => {
+    if (activeProvider !== 'openai') {
+      setNotice(false, [
+        document.createTextNode('กรุณากด '),
+        mkStrong('OpenAI'),
+        document.createTextNode(' ก่อน แล้วค่อยเปิด GPT chat ครับ'),
+      ]);
+      return;
+    }
+    chatShellEl.classList.add('open');
+    if (!chatHistory.length) {
+      appendChatTurn('เปิดแชต', 'พร้อมแล้วค่ะ ฉันจะอิง packet ปัจจุบันเป็นหลัก ถามต่อได้เลย');
+    }
+    chatInputEl.focus();
+  };
+
+  const sendChat = async () => {
+    if (activeProvider !== 'openai') {
+      setNotice(false, [
+        document.createTextNode('กรุณากด '),
+        mkStrong('OpenAI'),
+        document.createTextNode(' ก่อน แล้วค่อยคุยกับ GPT lane ครับ'),
+      ]);
+      return;
+    }
+    const userText = chatInputEl.value.trim();
+    if (!userText) return;
+    if (!pullPacketFromCore()) {
+      appendChatTurn(userText, 'ตอนนี้ยังอ่าน Unified State Packet จาก Core ไม่ได้ค่ะ เลยยังไม่ควรรัน Gen4 ต่อ');
+      return;
+    }
+    const packet = JSON.parse(packetEl.value);
+    let response;
+    try {
+      response = await window.NuengdeawGen4.orchestrateAsync({
+        packet,
+        userInput: userText,
+        lane: laneEl.value,
+        provider: 'openai',
+      });
+    } catch (error) {
+      appendChatTurn(userText, `Gen4 lane error: ${error.message}`);
+      return;
+    }
+    if (!response.success) {
+      appendChatTurn(userText, `Gen4 lane error: ${response.error}`);
+      return;
+    }
+    requestEl.textContent = JSON.stringify(response.request_payload, null, 2);
+    promptEl.textContent = response.prompt_preview;
+    resultEl.textContent = JSON.stringify(response.output, null, 2);
+    messageEl.textContent = response.output.message;
+    renderFlags(response.output.safety_flags, response.output.reasoning_tags);
+    appendChatTurn(userText, response.output.message);
+    chatInputEl.value = '';
+  };
+
+  providerCards.forEach((card) => {
+    if (card.dataset.provider === 'openai') {
+      card.addEventListener('click', () => activateProvider('openai'));
+    } else {
+      card.addEventListener('click', () => activateProvider(card.dataset.provider));
+    }
+  });
+
+  document.getElementById('refresh-core').addEventListener('click', refreshFromCore);
+  document.getElementById('tick-human-sim').addEventListener('click', tickHumanSim);
+  document.getElementById('run-mock').addEventListener('click', runMock);
+  document.getElementById('open-chat').addEventListener('click', openChat);
+  document.getElementById('send-chat').addEventListener('click', sendChat);
+  chatInputEl.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') sendChat();
+  });
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,3748 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroBook — Passive BCI Neuro-Adaptive Reading System Gen 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --deep: #040810;
+    --panel: rgba(8,14,28,0.88);
+    --accent: #00e5ff;
+    --gold: #ffd166;
+    --glow: #7b2fff;
+    --eeg: #b59aff;
+    --green: #00ffb3;
+    --red: #ff4f6a;
+    --text: #c8daf0;
+    --muted: #4a6280;
+    --border: rgba(0,229,255,0.12);
+    --eeg-border: rgba(181,154,255,0.2);
+    --theta: #b59aff;
+    --alpha: #00e5ff;
+    --beta: #00ffb3;
+    --gamma: #ffd166;
+    --delta: #ff4f6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    font-family: 'Sarabun', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 50px 1fr 148px 26px;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--eeg-border);
+    background: rgba(4,8,16,0.95);
+    backdrop-filter: blur(16px);
+    flex-shrink: 0;
+  }
+
+  .logo { display: flex; align-items: center; gap: 10px; }
+
+  .logo-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #b59aff, #00e5ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 16px rgba(181,154,255,0.35);
+  }
+
+  .logo-text-group { display: flex; flex-direction: column; gap: 1px; }
+
+  .logo-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--eeg), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .logo-sub {
+    font-size: 0.52rem;
+    color: var(--muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .gen-badge {
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, rgba(181,154,255,0.15), rgba(0,229,255,0.08));
+    border: 1px solid var(--eeg-border);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.52rem;
+    color: var(--eeg);
+    letter-spacing: 1px;
+  }
+
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eeg-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--eeg-border);
+    background: rgba(181,154,255,0.04);
+  }
+
+  .eeg-live-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--eeg);
+    animation: eeg-pulse 0.8s infinite;
+  }
+
+  @keyframes eeg-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--eeg); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  .eeg-live-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--eeg);
+    letter-spacing: 1px;
+  }
+
+  .header-pills { display: flex; gap: 6px; }
+
+  .pill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    border: 1px solid;
+    background: rgba(255,255,255,0.03);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.5px;
+  }
+  .pill.active, .pill:hover {
+    background: var(--eeg);
+    color: var(--deep);
+    border-color: var(--eeg);
+  }
+  .pill:not(.active) {
+    color: var(--muted);
+    border-color: var(--border);
+  }
+  .pill.pill-engine  { border-color: rgba(0,229,255,0.25); color: var(--accent); }
+  .pill.pill-kalman  { border-color: rgba(181,154,255,0.25); color: var(--eeg); }
+  .pill.pill-export  { border-color: rgba(0,255,179,0.25); color: var(--green); }
+  .pill.pill-sim     { border-color: rgba(255,209,102,0.25); color: var(--gold); }
+  .pill.pill-shield  { border-color: rgba(0,255,179,0.30); color: var(--green); }
+  .pill.pill-simad   { border-color: rgba(255,79,106,0.30); color: var(--red); position: relative; }
+  .pill.pill-monitor { border-color: rgba(0,240,255,0.25); color: rgba(0,240,255,0.8); }
+
+  /* ── Main ── */
+  main { overflow: hidden; min-height: 0; }
+
+  .reader-center {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 18px 6px;
+    gap: 7px;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 10px;
+  }
+
+  .book-title { font-size: 0.88rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .book-meta { font-size: 0.58rem; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; white-space: nowrap; }
+
+  .mode-toggle-group { display: flex; gap: 5px; }
+  .mode-btn {
+    padding: 3px 9px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-size: 0.56rem;
+    font-family: 'Space Mono', monospace; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .mode-btn.active { background: rgba(181,154,255,0.1); color: var(--eeg); border-color: var(--eeg); }
+
+  /* --- */
+  .content-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ── EEG Brain pane ── */
+  .pane-3d {
+    border-radius: 10px;
+    border: 1px solid var(--eeg-border);
+    background: rgba(4,8,16,0.75);
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pane-3d-label {
+    position: absolute;
+    top: 8px; left: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .pane-3d-badges {
+    position: absolute;
+    top: 8px; right: 10px;
+    display: flex;
+    gap: 5px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .eeg-band-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.48rem;
+    border: 1px solid;
+    letter-spacing: 0.5px;
+  }
+
+  #neuro-canvas {
+    width: 100%; height: 100%;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  #neuro-canvas canvas { width: 100% !important; height: 100% !important; border-radius: 10px; }
+
+  /* EEG waveform overlay */
+  .eeg-wave-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  #eeg-wave-canvas { width: 100%; height: 60px; }
+
+  /* Fusion indicator */
+  .fusion-badge {
+    position: absolute;
+    bottom: 68px; right: 10px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(181,154,255,0.08);
+    border: 1px solid var(--eeg-border);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--eeg);
+    z-index: 4;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Text pane (right) ── */
+  .content-area {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    line-height: 1.88;
+    font-size: 0.87rem;
+    position: relative;
+    transition: border-color 0.5s;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .content-area.adapting { border-color: var(--eeg); box-shadow: 0 0 18px rgba(181,154,255,0.07); }
+
+  .adapt-badge { position: absolute; top: 8px; right: 8px; padding: 2px 7px; border-radius: 7px; font-size: 0.53rem; font-family: 'Space Mono', monospace; opacity: 0; transition: opacity 0.4s; }
+  .adapt-badge.visible { opacity: 1; }
+  .content-text { transition: opacity 0.35s; }
+  .content-text.fading { opacity: 0; }
+
+  .mnemonic-anchor { background: linear-gradient(135deg, rgba(181,154,255,0.08), rgba(0,229,255,0.04)); border: 1px solid rgba(181,154,255,0.25); border-radius: 7px; padding: 9px 12px; margin-top: 8px; display: none; }
+  .mnemonic-anchor.visible { display: block; }
+  .mnemonic-title { font-size: 0.54rem; text-transform: uppercase; letter-spacing: 2px; color: var(--eeg); font-family: 'Space Mono', monospace; margin-bottom: 6px; }
+  .mnemonic-types { display: flex; gap: 5px; flex-wrap: wrap; }
+  .mnemonic-chip { padding: 3px 8px; border-radius: 5px; font-size: 0.68rem; border: 1px solid rgba(181,154,255,0.3); background: rgba(181,154,255,0.06); color: var(--eeg); }
+
+  .feedback-bar { display: none; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(181,154,255,0.03); border: 1px solid var(--eeg-border); border-radius: 6px; margin-top: 7px; }
+  .feedback-bar.visible { display: flex; }
+  .feedback-label { font-size: 0.58rem; font-family: 'Space Mono', monospace; color: var(--muted); flex: 1; }
+  .fb-btn { padding: 3px 9px; border-radius: 5px; border: 1px solid; font-size: 0.62rem; cursor: pointer; font-family: 'Space Mono', monospace; transition: all 0.2s; background: transparent; }
+  .fb-btn.like    { color: var(--green); border-color: rgba(0,255,179,0.3); }
+  .fb-btn.dislike { color: var(--red);   border-color: rgba(255,79,106,0.3); }
+  .fb-btn.like:hover    { background: rgba(0,255,179,0.08); }
+  .fb-btn.dislike:hover { background: rgba(255,79,106,0.08); }
+  .fb-btn.selected.like    { background: rgba(0,255,179,0.1); border-color: var(--green); }
+  .fb-btn.selected.dislike { background: rgba(255,79,106,0.1); border-color: var(--red); }
+
+  /* ── Progress ── */
+  .progress-section { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .progress-bar-wrap { flex: 1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 1px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--eeg), var(--accent)); border-radius: 1px; transition: width 1s ease; }
+  .progress-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); white-space: nowrap; }
+
+  .controls { display: flex; gap: 6px; }
+  .ctrl-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 0.6rem; font-family: 'Space Mono', monospace; cursor: pointer; transition: all 0.2s; }
+  .ctrl-btn:hover { background: rgba(181,154,255,0.07); border-color: var(--eeg); color: var(--eeg); }
+  .ctrl-btn.primary { background: linear-gradient(135deg, var(--eeg), var(--accent)); color: var(--deep); border: none; font-weight: 700; }
+  .ctrl-btn.primary:hover { opacity: 0.85; }
+
+  .state-sim { display: flex; gap: 5px; }
+  .sim-btn { padding: 4px 9px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 0.58rem; font-family: 'Space Mono', monospace; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .sim-btn.active { background: rgba(255,255,255,0.04); }
+  .sim-btn[data-state="boredom"]   { color: #f7b731; }
+  .sim-btn[data-state="confusion"] { color: var(--red); }
+  .sim-btn[data-state="flow"]      { color: var(--green); }
+  .sim-btn[data-state="encoding"]  { color: var(--eeg); }
+  .sim-btn[data-state="overload"]  { color: #ff8c42; }
+  .sim-btn[data-state="neutral"]   { color: var(--muted); }
+  .sim-btn.active { border-color: currentColor; }
+
+  /* ---
+     BOTTOM BAR
+  ======================================== */
+  .bottom-bar {
+    border-top: 1px solid var(--eeg-border);
+    background: rgba(4,8,16,0.95);
+    backdrop-filter: blur(16px);
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 0;
+    height: 148px;
+    overflow: hidden;
+  }
+
+  /* ── EEG bands strip (left) ── */
+  .bb-bio {
+    display: flex;
+    gap: 0;
+    border-right: 1px solid var(--eeg-border);
+    padding: 0;
+  }
+
+  .bb-signal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 14px;
+    border-right: 1px solid var(--eeg-border);
+    min-width: 100px;
+    gap: 3px;
+  }
+
+  .bb-sig-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .bb-sig-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: color 0.5s;
+    line-height: 1;
+  }
+
+  .bb-sig-unit { font-size: 0.52rem; color: var(--muted); margin-left: 2px; }
+
+  .bb-sig-chart {
+    height: 22px;
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    margin-top: 2px;
+  }
+
+  .bb-bar { width: 3px; border-radius: 1px 1px 0 0; transition: height 0.4s ease; min-height: 2px; }
+
+  .bb-sig-trend {
+    font-size: 0.5rem;
+    font-family: 'Space Mono', monospace;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 85px;
+  }
+
+  /* ── State + log ── */
+  .bb-center {
+    display: grid;
+    grid-template-columns: 165px 1fr;
+    border-right: 1px solid var(--eeg-border);
+    overflow: hidden;
+  }
+
+  .bb-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-right: 1px solid var(--eeg-border);
+    gap: 4px;
+  }
+
+  .bb-state-icon { font-size: 1.5rem; }
+
+  .bb-state-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: color 0.4s;
+    text-align: center;
+  }
+
+  .bb-fuse-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .bb-fuse-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.46rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .bb-conf-bar {
+    width: 70px;
+    height: 2px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .bb-conf-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--eeg), var(--accent));
+    border-radius: 1px;
+    transition: width 0.8s;
+  }
+
+  .bb-conf-txt { font-family: 'Space Mono', monospace; font-size: 0.48rem; color: var(--muted); }
+
+  .bb-eeg-source {
+    display: flex;
+    gap: 5px;
+    margin-top: 3px;
+  }
+
+  .source-chip {
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.44rem;
+    border: 1px solid;
+    letter-spacing: 0.5px;
+  }
+
+  .source-chip.eeg { color: var(--eeg); border-color: rgba(181,154,255,0.3); background: rgba(181,154,255,0.05); }
+  .source-chip.hrv { color: var(--accent); border-color: rgba(0,229,255,0.25); background: rgba(0,229,255,0.04); }
+
+  .bb-log {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 12px;
+    overflow-y: auto;
+    justify-content: flex-end;
+  }
+
+  .bb-log-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    line-height: 1.4;
+    animation: slide-in 0.3s ease;
+    color: var(--muted);
+    border-left: 2px solid var(--border);
+    padding-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+  .bb-log-item .log-action { color: var(--eeg); font-weight: 700; }
+
+  /* ── EEG Spectrum + Timeline ── */
+  .bb-right { display: flex; gap: 0; }
+
+  .bb-radar {
+    padding: 8px 10px;
+    border-right: 1px solid var(--eeg-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .bb-radar-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.48rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  #radar-canvas { width: 90px; height: 90px; }
+
+  .bb-timeline {
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 190px;
+  }
+
+  .bb-timeline-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.48rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  #timeline-canvas { width: 100%; height: 68px; display: block; }
+
+  .bb-tl-legend { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .bb-tl-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.46rem;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+
+  .bb-tl-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* ── Metrics strip (right) ── */
+  .bb-metrics {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    border-left: 1px solid var(--eeg-border);
+    padding: 0;
+  }
+
+  .bb-metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--eeg-border);
+    gap: 16px;
+  }
+
+  .bb-metric-row:last-child { border-bottom: none; }
+
+  .bb-metric-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .bb-metric-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--eeg);
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--eeg-border);
+    padding: 5px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.55rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    background: rgba(4,8,16,0.92);
+  }
+
+  .footer-status { display: flex; align-items: center; gap: 6px; }
+
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--eeg); animation: blink 1.2s infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  @keyframes adDotBlink {
+    0%,100% { opacity:1; box-shadow:0 0 8px #ff4f6a,0 0 16px rgba(255,79,106,0.4); transform:scale(1); }
+    50%      { opacity:0.5; box-shadow:0 0 4px #ff4f6a; transform:scale(0.85); }
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%) translateY(14px);
+    background: rgba(8,14,28,0.97);
+    border: 1px solid var(--eeg);
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    color: var(--eeg);
+    opacity: 0;
+    transition: all 0.35s;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Calibration overlay ── */
+  .calib-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4,8,16,0.96);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    backdrop-filter: blur(24px);
+    transition: opacity 0.6s;
+  }
+
+  .calib-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .calib-icon { font-size: 3rem; }
+
+  .calib-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--eeg), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .calib-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    max-width: 380px;
+    line-height: 1.7;
+  }
+
+  .calib-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 340px;
+  }
+
+  .calib-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--eeg-border);
+    background: rgba(181,154,255,0.03);
+    font-size: 0.72rem;
+    opacity: 0.4;
+    transition: all 0.4s;
+  }
+
+  .calib-step.active { opacity: 1; border-color: var(--eeg); background: rgba(181,154,255,0.06); }
+  .calib-step.done { opacity: 0.7; border-color: var(--green); }
+
+  .calib-step-icon { font-size: 1rem; }
+
+  .calib-bar-wrap { width: 280px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .calib-bar { height: 100%; background: linear-gradient(90deg, var(--eeg), var(--accent)); border-radius: 2px; transition: width 0.15s linear; }
+
+  .calib-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+  }
+
+  /* ── Quiz modal ── */
+  .quiz-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(4,8,16,0.88);
+    backdrop-filter: blur(16px);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+  }
+
+  .quiz-modal.show { opacity: 1; pointer-events: all; }
+
+  .quiz-box {
+    background: rgba(8,14,28,0.98);
+    border: 1px solid var(--eeg-border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 0 48px rgba(181,154,255,0.08);
+  }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .quiz-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--eeg);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .quiz-q-num { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); }
+
+  #quiz-question {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-option {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--eeg-border);
+    background: rgba(181,154,255,0.03);
+    color: var(--text);
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    font-family: 'Sarabun', sans-serif;
+  }
+
+  .quiz-option:hover:not(:disabled) { background: rgba(181,154,255,0.07); border-color: var(--eeg); }
+  .quiz-option.correct { border-color: var(--green) !important; background: rgba(0,255,179,0.07) !important; color: var(--green) !important; }
+  .quiz-option.wrong   { border-color: var(--red) !important;   background: rgba(255,79,106,0.07) !important; color: var(--red) !important; }
+
+  .quiz-result {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .quiz-result.show { opacity: 1; }
+  .quiz-result.pass { background: rgba(0,255,179,0.06); border: 1px solid rgba(0,255,179,0.2); color: var(--green); }
+  .quiz-result.fail { background: rgba(255,79,106,0.06); border: 1px solid rgba(255,79,106,0.2); color: var(--red); }
+
+  .quiz-footer { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
+
+  #quiz-next-btn, #quiz-close-btn {
+    padding: 7px 18px; border-radius: 8px; border: 1px solid; cursor: pointer;
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; transition: all 0.2s;
+  }
+
+  #quiz-next-btn { background: linear-gradient(135deg, var(--eeg), var(--accent)); color: var(--deep); border-color: transparent; display: none; }
+  #quiz-close-btn { background: transparent; color: var(--muted); border-color: var(--border); }
+  #quiz-close-btn:hover { border-color: var(--eeg); color: var(--eeg); }
+
+  /* ---
+     EEG AD DETECTION SYSTEM
+  ======================================== */
+
+  /* Simulated ad intrusion — appears as a real interruption */
+  .ad-intrusion {
+    position: fixed;
+    z-index: 160;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+    transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    transform: scale(0.88) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ad-intrusion.show { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+  .ad-intrusion.dismiss {
+    transform: scale(0.7) translateY(-30px) rotate(-4deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ad-inner {
+    background: linear-gradient(135deg, #1a0a2e, #0d1a30);
+    border: 1px solid rgba(255,100,60,0.4);
+    padding: 18px 20px 14px;
+    width: 280px;
+    position: relative;
+  }
+
+  .ad-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.44rem;
+    color: rgba(255,150,80,0.7);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ad-headline {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+
+  .ad-body {
+    font-size: 0.7rem;
+    color: rgba(200,218,240,0.65);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .ad-cta {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ff6420, #ff9100);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.5px;
+  }
+
+  .ad-close-btn {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(200,218,240,0.3);
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .ad-close-btn:hover { color: rgba(200,218,240,0.7); }
+
+  .ad-source {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.42rem;
+    color: rgba(200,218,240,0.25);
+    margin-top: 8px;
+  }
+
+  /* EEG Shield overlay — appears on top of ad */
+  .eeg-shield {
+    position: fixed;
+    z-index: 161;
+    border-radius: 12px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .eeg-shield.active { opacity: 1; }
+
+  .shield-inner {
+    background: rgba(4,8,16,0.97);
+    border: 1px solid var(--eeg);
+    width: 280px;
+    padding: 16px 18px;
+    box-shadow: 0 0 32px rgba(181,154,255,0.25), inset 0 0 24px rgba(181,154,255,0.04);
+  }
+
+  .shield-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.56rem;
+    color: var(--eeg);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .shield-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--eeg);
+    animation: eeg-pulse 0.6s infinite;
+  }
+
+  .shield-eeg-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+    align-items: flex-end;
+  }
+
+  .shield-band {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+  }
+
+  .shield-bar-wrap {
+    width: 100%;
+    height: 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .shield-bar {
+    width: 8px;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.4s ease;
+  }
+
+  .shield-band-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.44rem;
+    color: var(--muted);
+  }
+
+  .shield-verdict {
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .shield-verdict.detected {
+    background: rgba(255,79,106,0.08);
+    border: 1px solid rgba(255,79,106,0.3);
+    color: var(--red);
+  }
+
+  .shield-verdict.blocked {
+    background: rgba(0,255,179,0.06);
+    border: 1px solid rgba(0,255,179,0.25);
+    color: var(--green);
+  }
+
+  .shield-action-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+  }
+
+  .shield-action-icon { font-size: 0.9rem; }
+
+  /* Ad Alert bar in bottom bar */
+  .ad-alert-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 5px 14px;
+    background: rgba(255,79,106,0.07);
+    border-top: 1px solid rgba(255,79,106,0.2);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .ad-alert-bar.show { opacity: 1; }
+
+  /* EEG disruption flash on content area */
+  @keyframes eeg-disrupt {
+    0%   { border-color: rgba(255,79,106,0.7); box-shadow: 0 0 20px rgba(255,79,106,0.2); }
+    50%  { border-color: rgba(255,79,106,0.2); }
+    100% { border-color: var(--border); box-shadow: none; }
+  }
+
+  .content-area.eeg-disrupted { animation: eeg-disrupt 1.2s ease forwards; }
+
+  /* Shield scan line animation */
+  @keyframes scan-line {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(200%); }
+  }
+
+  .shield-scan {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--eeg), transparent);
+    animation: scan-line 0.8s ease-in-out;
+    pointer-events: none;
+  }
+
+  /* Stats panel for ad detection */
+  .ad-stats-panel {
+    position: fixed;
+    top: 60px; right: 16px;
+    width: 200px;
+    background: rgba(4,8,16,0.97);
+    border: 1px solid var(--eeg-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    z-index: 155;
+    opacity: 0;
+    transform: translateX(220px);
+    transition: all 0.4s cubic-bezier(0.34,1.2,0.64,1);
+    pointer-events: none;
+  }
+
+  .ad-stats-panel.show { opacity: 1; transform: translateX(0); pointer-events: all; }
+
+  .ad-stats-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.52rem;
+    color: var(--eeg);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ad-stats-close {
+    background: transparent; border: none; color: var(--muted);
+    font-family: 'Space Mono', monospace; font-size: 0.6rem;
+    cursor: pointer; transition: color 0.2s;
+  }
+  .ad-stats-close:hover { color: var(--eeg); }
+
+  .ad-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(181,154,255,0.07);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+  }
+  .ad-stat-row:last-child { border-bottom: none; }
+  .ad-stat-label { color: var(--muted); }
+  .ad-stat-val { font-weight: 700; }
+
+  /* Neuroplasticity progress row */
+  .np-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+  }
+
+  .np-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.46rem;
+    color: var(--muted);
+    width: 30px;
+    text-align: right;
+  }
+
+  .np-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .np-bar { height: 100%; border-radius: 2px; transition: width 1s ease; }
+
+  /* ===== RESPONSIVE ===== */
+
+  /* Tablet ≤900px */
+  @media (max-width: 900px) {
+    body { overflow: auto; height: auto; }
+    .shell {
+      grid-template-rows: 50px 1fr auto 26px;
+      height: auto;
+      min-height: 100vh;
+      overflow: visible;
+    }
+    main { overflow: visible; height: auto; min-height: 0; }
+    .reader-center { height: auto; overflow: visible; padding: 10px 14px 8px; }
+    .content-split {
+      grid-template-columns: 1fr;
+      height: auto;
+      overflow: visible;
+      gap: 10px;
+    }
+    .pane-3d { height: 300px; flex: none; min-height: 300px; }
+    .right-panel { height: auto; overflow-y: auto; max-height: 400px; }
+    .content-area { min-height: 200px; overflow-y: auto; }
+    .bottom-bar {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      height: auto;
+      overflow: visible;
+    }
+    .bb-bio {
+      border-right: none;
+      border-bottom: 1px solid var(--eeg-border);
+      grid-column: 1 / -1;
+      flex-wrap: wrap;
+    }
+    .bb-center { grid-column: 1 / -1; border-right: none; }
+    .bb-actions { grid-column: 1 / -1; }
+    .bb-neuro { grid-column: 1 / -1; border-left: none; border-top: 1px solid var(--eeg-border); }
+    .header-pills { display: none; }
+    .header-center { gap: 6px; }
+  }
+
+  /* Mobile ≤600px */
+  @media (max-width: 600px) {
+    header { padding: 0 12px; }
+    .logo-sub { display: none; }
+    .gen-badge { display: none; }
+    .pane-3d { height: 220px; min-height: 220px; }
+    .book-header { flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+    .mode-toggle-group { flex-wrap: wrap; gap: 4px; }
+    .state-sim { flex-wrap: wrap; gap: 4px; }
+    .sim-btn { font-size: 0.54rem; padding: 3px 7px; }
+    .bb-signal { min-width: 72px; padding: 6px 8px; }
+    .bb-sig-val { font-size: 0.95rem; }
+    .bb-bio { overflow-x: auto; flex-wrap: nowrap; }
+    .bb-sig-chart { display: none; }
+    .eeg-live-text { font-size: 0.5rem; }
+    footer { font-size: 0.48rem; padding: 4px 10px; flex-wrap: wrap; gap: 4px; }
+    .quiz-modal, .modal-box { width: 95vw; max-width: 95vw; padding: 16px; }
+    .content-area { padding: 12px 14px; font-size: 0.82rem; }
+  }
+
+  /* ---
+     ENGINE / KALMAN / EXPORT TABS
+  ======================================== */
+  .nb-tab-bar {
+    display: flex; gap: 4px; padding: 8px 14px 0;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    overflow-x: auto; flex-shrink: 0;
+  }
+  .nb-tab-bar::-webkit-scrollbar { height: 2px; }
+  .nb-tab-bar::-webkit-scrollbar-thumb { background: var(--border); }
+  .nb-tab { padding: 6px 12px; font-size: 0.6rem; font-family: 'Space Mono', monospace;
+    color: var(--muted); border: 1px solid transparent; border-radius: 4px 4px 0 0;
+    cursor: pointer; letter-spacing: 0.08em; white-space: nowrap; background: none; transition: all 0.2s; }
+  .nb-tab:hover { color: var(--text); border-color: var(--border); }
+  .nb-tab.active { color: var(--accent); border-color: var(--border); border-bottom-color: var(--deep);
+    background: rgba(0,229,255,0.06); }
+  .nb-page { display: none; flex: 1; overflow: hidden; }
+  .nb-page.active { display: flex; flex-direction: column; }
+
+  /* ENGINE PAGE */
+  .engine-page { display: grid; grid-template-columns: 210px 1fr 210px;
+    gap: 10px; padding: 10px 14px; overflow: hidden; height: 100%; }
+  .eng-col { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .eng-panel { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px; }
+  .eng-panel-title { font-size: 0.58rem; font-family: 'Space Mono', monospace;
+    color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .eng-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+  .eng-btn { padding: 6px 10px; font-size: 0.62rem; font-family: 'Space Mono', monospace;
+    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+    background: rgba(255,255,255,0.03); color: var(--text); transition: all 0.2s; flex: 1; }
+  .eng-btn:hover { opacity: 0.85; }
+  .eng-btn.green { background: rgba(0,255,179,0.1); border-color: rgba(0,255,179,0.3); color: var(--green); }
+  .eng-btn.amber { background: rgba(255,209,102,0.1); border-color: rgba(255,209,102,0.3); color: var(--gold); }
+  .eng-btn.red   { background: rgba(255,79,106,0.1);  border-color: rgba(255,79,106,0.3);  color: var(--red); }
+  .eng-btn.wide  { flex: 1 1 100%; }
+  .eng-log { overflow-y: auto; max-height: 160px; display: flex; flex-direction: column; gap: 2px; }
+  .eng-log-item { font-size: 0.58rem; font-family: 'Space Mono', monospace; color: var(--muted);
+    padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .log-time { color: rgba(0,229,255,0.35); margin-right: 4px; }
+
+  .state-indicator { text-align: center; padding: 12px 8px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px; transition: border-color 0.4s; }
+  .state-indicator.active-flow      { border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,179,0.15); }
+  .state-indicator.active-ready     { border-color: var(--green); }
+  .state-indicator.active-confusion { border-color: var(--red); }
+  .state-indicator.active-stress    { border-color: var(--red); box-shadow: 0 0 10px rgba(255,79,106,0.2); }
+  .state-indicator.active-boredom   { border-color: var(--gold); }
+  .state-indicator.active-excitement{ border-color: var(--eeg); }
+  .state-indicator.active-fatigue   { border-color: var(--muted); }
+  .state-emoji    { font-size: 2rem; display: block; margin-bottom: 4px; }
+  .state-name-eng { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text); }
+  .state-ps       { font-size: 0.55rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
+  .state-conf-eng { font-size: 0.8rem; font-family: 'Space Mono', monospace; margin-top: 4px; color: var(--accent); }
+
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .sig-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; }
+  .sig-card.wide { grid-column: 1 / -1; }
+  .sig-name  { font-size: 0.55rem; font-family: 'Space Mono', monospace; color: var(--muted); margin-bottom: 2px; }
+  .sig-val   { font-size: 0.85rem; font-family: 'Space Mono', monospace; }
+  .sig-unit  { font-size: 0.6rem; color: var(--muted); }
+  .sig-z     { font-size: 0.55rem; font-family: 'Space Mono', monospace; color: var(--muted); margin-top: 2px; }
+  .sig-bar-wrap { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 4px 0; overflow: hidden; }
+  .sig-bar   { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+  .pipeline-stages { display: flex; flex-direction: column; gap: 4px; }
+  .pipeline-stage  { display: flex; align-items: center; gap: 8px; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: 4px; background: rgba(0,0,0,0.15); transition: all 0.3s; }
+  .pipeline-stage.active-stage { border-color: var(--accent); background: rgba(0,229,255,0.06); }
+  .stage-num  { font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--accent); opacity: 0.5; }
+  .stage-name { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--text); flex: 1; }
+  .stage-val  { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); }
+
+  .inject-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .inject-btn { padding: 4px 8px; font-size: 0.58rem; font-family: 'Space Mono', monospace;
+    background: rgba(181,154,255,0.08); border: 1px solid rgba(181,154,255,0.2); color: var(--eeg);
+    border-radius: 3px; cursor: pointer; flex: 1; transition: all 0.2s; }
+  .inject-btn:hover { background: rgba(181,154,255,0.18); }
+
+  .adapt-box { background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 4px; padding: 8px 10px; }
+  .adapt-title { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--accent); margin-bottom: 4px; }
+  .adapt-content { font-size: 0.65rem; color: var(--text); line-height: 1.5; }
+
+  .rules-list { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; max-height: 300px; }
+  .rule-item  { padding: 6px 8px; border: 1px solid var(--border); border-radius: 3px; }
+  .rule-id    { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--accent); }
+  .rule-desc  { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
+  .rule-action{ font-size: 0.58rem; font-family: 'Space Mono', monospace; color: var(--green); margin-top: 2px; }
+
+  #wave-canvas-eng { width: 100%; height: 80px; display: block; background: rgba(0,0,0,0.3); border-radius: 3px; }
+
+  /* KALMAN PAGE */
+  .kalman-page { display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding: 10px 14px; overflow-y: auto; height: 100%; }
+  .k-col  { display: flex; flex-direction: column; gap: 8px; }
+  .k-panel{ background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+  .k-title{ font-size: 0.58rem; font-family: 'Space Mono', monospace;
+    color: var(--eeg); letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .k-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .k-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; padding: 8px; text-align: center; }
+  .k-label{ font-size: 0.55rem; font-family: 'Space Mono', monospace; color: var(--muted); margin-bottom: 3px; }
+  .k-val  { font-size: 1rem; font-family: 'Space Mono', monospace; color: var(--eeg); }
+  .k-sub  { font-size: 0.52rem; font-family: 'Space Mono', monospace; color: var(--muted); margin-top: 2px; }
+  #kalman-canvas { width: 100%; height: 160px; display: block; border-radius: 3px; background: rgba(0,0,0,0.3); }
+
+  .ebnf-block { background: rgba(0,0,0,0.35); border: 1px solid rgba(181,154,255,0.15);
+    border-radius: 5px; padding: 14px 16px; font-family: 'Space Mono', monospace;
+    font-size: 0.62rem; line-height: 2; overflow-y: auto; white-space: pre-wrap; }
+  .ebnf-comment { color: rgba(181,154,255,0.4); font-style: italic; }
+  .ebnf-rule    { color: var(--accent); font-weight: 700; }
+  .ebnf-state   { color: var(--green); }
+  .ebnf-action  { color: var(--gold); }
+
+  /* EXPORT PAGE */
+  .export-page { display: grid; grid-template-columns: 300px 1fr; gap: 10px;
+    padding: 10px 14px; overflow: hidden; height: 100%; }
+  .exp-col   { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+  .exp-panel { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px; }
+  .exp-title { font-size: 0.58rem; font-family: 'Space Mono', monospace;
+    color: var(--eeg); letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .exp-row   { display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    font-size: 0.7rem; color: var(--text); }
+  .exp-check { accent-color: var(--accent); }
+  .exp-btn   { display: block; width: 100%; padding: 9px 12px; margin-bottom: 6px;
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.05em;
+    text-align: left; border: 1px solid var(--border); border-radius: 5px;
+    background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; transition: all 0.2s; }
+  .exp-btn:hover { opacity: 0.85; }
+  .exp-btn.pdf  { border-color: rgba(255,79,106,0.3);  color: var(--red);  background: rgba(255,79,106,0.05); }
+  .exp-btn.json { border-color: rgba(255,209,102,0.3); color: var(--gold); background: rgba(255,209,102,0.05); }
+  .exp-btn.csv  { border-color: rgba(0,255,179,0.3);   color: var(--green);background: rgba(0,255,179,0.05); }
+  .exp-btn.md   { border-color: rgba(0,229,255,0.3);   color: var(--accent);background: rgba(0,229,255,0.05); }
+  .exp-preview  { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border); border-radius: 5px; padding: 10px 12px;
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted);
+    line-height: 1.6; white-space: pre-wrap; }
+  .session-list { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; max-height: 200px; }
+  .session-item { display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
+    font-size: 0.65rem; }
+  .session-del  { cursor: pointer; color: var(--red); font-size: 0.7rem; padding: 2px 4px; }
+
+  /* SIMULATOR PAGE */
+  .sim-page { display: grid; grid-template-columns: 240px 1fr; gap: 10px;
+    padding: 10px 14px; overflow: hidden; height: 100%; }
+  .sim-col  { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+  .sim-panel{ background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+  .sim-title{ font-size: 0.58rem; font-family: 'Space Mono', monospace;
+    color: var(--theta); letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .sim-state-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .sim-state-btn  { padding: 7px 6px; font-size: 0.6rem; font-family: 'Space Mono', monospace;
+    border: 1px solid var(--border); border-radius: 4px; background: rgba(0,0,0,0.2);
+    cursor: pointer; color: var(--muted); transition: all 0.2s; text-align: center; }
+  .sim-state-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .sim-state-btn.active { background: rgba(181,154,255,0.12); border-color: var(--eeg); color: var(--eeg); }
+  .sim-signal-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .sim-sig-label  { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); width: 40px; }
+  .sim-sig-slider { flex: 1; accent-color: var(--accent); }
+  .sim-sig-val    { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--accent); width: 40px; text-align: right; }
+  .sim-log { overflow-y: auto; max-height: 200px; display: flex; flex-direction: column; gap: 2px; }
+  .sim-log-item { font-size: 0.58rem; font-family: 'Space Mono', monospace; color: var(--muted);
+    padding: 2px 4px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+  .ftsm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .ftsm-item { padding: 5px 7px; border: 1px solid var(--border); border-radius: 3px; font-family: 'Space Mono', monospace; font-size: 0.55rem; }
+  .ftsm-item.active { border-color: var(--green); background: rgba(0,255,179,0.08); color: var(--green); }
+
+  /* DARK TOGGLE */
+  .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 10px; color: var(--muted); font-family: 'Space Mono', monospace;
+    font-size: 0.62rem; cursor: pointer; transition: all 0.2s; }
+  .theme-toggle:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  body.nb-light { --deep: #eef2f8; --panel: rgba(230,236,248,0.88); --text: #1a2840;
+    --muted: #5a7090; --border: rgba(0,100,180,0.15); background: #eef2f8; }
+  body.nb-light header {
+    background: rgba(236,242,250,0.92);
+    border-bottom-color: rgba(38,90,160,0.18);
+  }
+  body.nb-light .eeg-live {
+    background: rgba(58,96,148,0.08);
+    border-color: rgba(58,96,148,0.24);
+  }
+  body.nb-light .pill { background: rgba(26,40,64,0.04); }
+  body.nb-light .pill.active,
+  body.nb-light .pill:hover { color: #14253d; }
+  body.nb-light .theme-toggle {
+    background: rgba(26,40,64,0.04);
+    border-color: rgba(38,90,160,0.26);
+    color: #35547a;
+  }
+  body.nb-light .theme-toggle:hover {
+    background: rgba(26,40,64,0.08);
+    border-color: rgba(24,76,146,0.45);
+    color: #1a2840;
+  }
+
+
+  @media (max-width: 768px) {
+    .engine-page { grid-template-columns: 1fr; overflow-y: auto; }
+    .kalman-page { grid-template-columns: 1fr; }
+    .export-page { grid-template-columns: 1fr; }
+    .sim-page    { grid-template-columns: 1fr; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Background canvas (EEG-style neural field) -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Calibration overlay -->
+<div class="calib-overlay" id="calib-overlay">
+  <div class="calib-icon">🧠</div>
+  <div class="calib-title">NEUROBOOK GEN 2</div>
+  <div class="calib-sub" id="g2-calib-sub">กำลังเชื่อมต่อ Passive BCI EEG Module<br>และปรับเทียบ Bayesian Fusion Engine</div>
+  <div class="calib-steps" id="calib-steps">
+    <div class="calib-step active" id="cs-0"><span class="calib-step-icon">📡</span> เชื่อมต่อ Muse S EEG · 4ch · 256Hz</div>
+    <div class="calib-step" id="cs-1"><span class="calib-step-icon">💓</span> Fuse HRV + GSR จาก TawanBook Wearable</div>
+    <div class="calib-step" id="cs-2"><span class="calib-step-icon">⚙️</span> Artifact Removal (ICA) + Band Filter</div>
+    <div class="calib-step" id="cs-3"><span class="calib-step-icon">🤖</span> โหลด Nuengdeaw AI Gen 2 (EEG-aware)</div>
+    <div class="calib-step" id="cs-4"><span class="calib-step-icon">✅</span> Bayesian Fusion Engine พร้อมใช้งาน</div>
+  </div>
+  <div class="calib-bar-wrap"><div class="calib-bar" id="calib-bar" style="width:0%"></div></div>
+  <div class="calib-label" id="calib-label">INITIALIZING NEURO TAWAN CONTROL LAYER V.0.0...</div>
+</div>
+
+<!-- Main shell -->
+<div class="shell">
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text-group">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="logo-text">NEUROBOOK</span>
+          <span class="gen-badge">GEN 2</span>
+        </div>
+        <div class="logo-sub">Passive BCI · EEG + Wearable Fusion · TAWAN</div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="eeg-live">
+        <div class="eeg-live-dot"></div>
+        <span class="eeg-live-text">EEG LIVE · <span id="h-accuracy">93.2</span>% ACC · <span id="h-latency">287</span>ms</span>
+      </div>
+    </div>
+
+    <div class="header-pills">
+      <button class="pill active" onclick="setView('eeg')">EEG View</button>
+      <button class="pill" onclick="setView('palace')">Memory Palace</button>
+      <button class="pill" onclick="setView('np')">NeuroPlasticity</button>
+      <button class="pill pill-engine" onclick="switchNbTab('engine')" id="pill-engine">⚙️ Engine</button>
+      <button class="pill pill-kalman" onclick="switchNbTab('kalman')" id="pill-kalman">📡 Kalman</button>
+      <button class="pill pill-export" onclick="switchNbTab('export')" id="pill-export">📤 Export</button>
+      <button class="pill pill-sim" onclick="switchNbTab('sim')" id="pill-sim">🧪 Simulator</button>
+      <button class="theme-toggle" onclick="toggleNbTheme()">🌙 Theme</button>
+      <button class="pill pill-shield" id="shield-pill" onclick="toggleAdStats()">🛡 <span id="shield-pill-count">0</span> Blocked</button>
+      <button class="pill pill-simad" id="simad-pill" onclick="acknowledgeAd()">
+        <span id="simad-dot" style="display:none;position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#ff4f6a;box-shadow:0 0 6px #ff4f6a;animation:adDotBlink 0.9s infinite;"></span>
+        ● Sim Ad
+      </button>
+      <button class="pill pill-monitor" onclick="window.open('REAL-TIME_SIMULATION_ENGINE.html','_blank','width=1200,height=820,resizable=yes')">🖥 Engine Monitor</button>
+    </div>
+  </header>
+
+  <!-- ── Main Reader ── -->
+  <main>
+    <div class="reader-center">
+
+      <div class="book-header">
+        <div>
+          <div class="book-title" id="book-title">NeuroBook - Chapter 1: จาก TawanBook สู่ NeuroBook</div>
+          <div class="book-meta" id="book-meta">NeuroSense EEG · Theta/Alpha Fusion · Nuengdeaw AI Gen 2</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="mode-toggle-group">
+            <button class="mode-btn active" onclick="setMode('eeg')">EEG+Bio Fusion</button>
+            <button class="mode-btn" onclick="setMode('bio')">Bio-only (Gen 1)</button>
+            <button class="mode-btn" onclick="setMode('eegonly')">EEG-only</button>
+          </div>
+          <div class="state-sim">
+            <button class="sim-btn" data-state="neutral" onclick="setState('neutral')">Neutral</button>
+            <button class="sim-btn" data-state="boredom" onclick="setState('boredom')">Bored</button>
+            <button class="sim-btn" data-state="confusion" onclick="setState('confusion')">Confused</button>
+            <button class="sim-btn" data-state="flow" onclick="setState('flow')">Flow</button>
+            <button class="sim-btn" data-state="encoding" onclick="setState('encoding')">Encoding</button>
+            <button class="sim-btn" data-state="overload" onclick="setState('overload')">Overload</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split zone -->
+      <div class="content-split">
+
+        <!-- 3D EEG Brain pane -->
+        <div class="pane-3d" id="pane-3d">
+          <div class="pane-3d-label">NEUROSENSE EEG · REAL-TIME BRAIN STATE</div>
+          <div class="pane-3d-badges" id="band-badges">
+            <span class="eeg-band-badge" style="color:var(--theta);border-color:rgba(181,154,255,0.3);">θ <span id="bb-theta">4.2</span></span>
+            <span class="eeg-band-badge" style="color:var(--alpha);border-color:rgba(0,229,255,0.25);">α <span id="bb-alpha">8.7</span></span>
+            <span class="eeg-band-badge" style="color:var(--beta);border-color:rgba(0,255,179,0.25);">β <span id="bb-beta">18.4</span></span>
+            <span class="eeg-band-badge" style="color:var(--gamma);border-color:rgba(255,209,102,0.25);">γ <span id="bb-gamma">32.1</span></span>
+          </div>
+          <div id="neuro-canvas"></div>
+          <div class="fusion-badge" id="fusion-badge">EEG+HRV FUSED · BAYES</div>
+          <div class="eeg-wave-overlay"><canvas id="eeg-wave-canvas"></canvas></div>
+        </div>
+
+        <!-- Text pane -->
+        <div class="content-area" id="content-area">
+          <div class="adapt-badge" id="adapt-badge"></div>
+          <div class="content-text" id="content-text"></div>
+          <div class="mnemonic-anchor" id="mnemonic-anchor">
+            <div class="mnemonic-title">🧠 EEG-Triggered Mnemonic Anchor · Encoding State Detected</div>
+            <div class="mnemonic-types" id="mnemonic-types"></div>
+          </div>
+          <div class="feedback-bar" id="feedback-bar">
+            <div class="feedback-label" id="feedback-label"></div>
+            <button class="fb-btn like" id="fb-like" onclick="submitFeedback('like')">👍 ช่วยได้</button>
+            <button class="fb-btn dislike" id="fb-dislike" onclick="submitFeedback('dislike')">👎 ไม่ช่วย</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section">
+        <div class="progress-bar-wrap"><div class="progress-fill" id="progress-fill" style="width:18%"></div></div>
+        <div class="progress-label"><span id="progress-label">18% · 9,000 / 50,000 คำ</span></div>
+        <div class="controls">
+          <button class="ctrl-btn" onclick="prevChunk()">← Back</button>
+          <button class="ctrl-btn primary" onclick="nextChunk()">Continue →</button>
+          <button class="ctrl-btn" onclick="openQuiz('q1')">📝 Recall Test</button>
+        </div>
+      </div>
+    </div>
+
+  <!-- =========================
+       TAB: ENGINE — Real-time Signal Processing
+  ========================== -->
+  <div class="nb-page" id="nb-engine" style="display:none;">
+    <div class="engine-page">
+      <!-- Left col -->
+      <div class="eng-col">
+        <div class="state-indicator" id="nb-state-indicator">
+          <span class="state-emoji" id="nb-state-emoji">⏳</span>
+          <div class="state-name-eng" id="nb-state-name">รอเริ่มต้น</div>
+          <div class="state-ps" id="nb-state-ps">PS.IDLE</div>
+          <div class="state-conf-eng" id="nb-state-conf">—</div>
+        </div>
+        <div class="eng-panel">
+          <div class="eng-panel-title">ENGINE CONTROL</div>
+          <div class="eng-controls">
+            <button class="eng-btn green wide" onclick="nbStartEngine()">▶ START ENGINE</button>
+            <button class="eng-btn amber" onclick="nbTogglePause()">⏸ PAUSE</button>
+            <button class="eng-btn red" onclick="nbStopEngine()">■ STOP</button>
+          </div>
+          <div style="margin-top:8px;">
+            <div class="eng-panel-title" style="margin-bottom:4px;">INJECT STATE</div>
+            <div class="inject-row">
+              <button class="inject-btn" onclick="nbInjectState('flow')">FLOW</button>
+              <button class="inject-btn" onclick="nbInjectState('confusion')">CONFUSE</button>
+              <button class="inject-btn" onclick="nbInjectState('boredom')">BOREDOM</button>
+              <button class="inject-btn" onclick="nbInjectState('stress')">STRESS</button>
+              <button class="inject-btn" onclick="nbInjectState('ready')">READY</button>
+              <button class="inject-btn" onclick="nbInjectState('fatigue')">FATIGUE</button>
+            </div>
+          </div>
+        </div>
+        <div class="eng-panel">
+          <div class="eng-panel-title">PIPELINE — Gen 2 EEG+Bio</div>
+          <div class="pipeline-stages">
+            <div class="pipeline-stage" id="nb-stage-1"><div class="stage-num">01</div><div class="stage-name">EEG + BIO INPUT</div><div class="stage-val" id="nb-sv-tick">—</div></div>
+            <div class="pipeline-stage" id="nb-stage-2"><div class="stage-num">02</div><div class="stage-name">KALMAN FILTER</div><div class="stage-val" id="nb-sv-filter">—</div></div>
+            <div class="pipeline-stage" id="nb-stage-3"><div class="stage-num">03</div><div class="stage-name">THETA/ALPHA RATIO</div><div class="stage-val" id="nb-sv-ratio">—</div></div>
+            <div class="pipeline-stage" id="nb-stage-4"><div class="stage-num">04</div><div class="stage-name">BAYESIAN FUSION</div><div class="stage-val" id="nb-sv-rule">—</div></div>
+            <div class="pipeline-stage" id="nb-stage-5"><div class="stage-num">05</div><div class="stage-name">N400 VETO CHECK</div><div class="stage-val" id="nb-sv-veto">—</div></div>
+            <div class="pipeline-stage" id="nb-stage-6"><div class="stage-num">06</div><div class="stage-name">CONTENT ADAPT</div><div class="stage-val" id="nb-sv-adapt">—</div></div>
+          </div>
+        </div>
+        <div class="eng-panel" style="flex:1;">
+          <div class="eng-panel-title">ADAPT ACTIONS</div>
+          <div id="nb-adapt-actions"><div style="font-size:0.65rem;color:var(--muted);text-align:center;padding:16px 0;">เริ่ม Engine เพื่อดู actions</div></div>
+        </div>
+      </div>
+      <!-- Center col -->
+      <div class="eng-col" style="overflow:hidden;">
+        <div class="eng-panel" style="flex-shrink:0;">
+          <div class="eng-panel-title">LIVE SIGNALS — EEG + Wearable Fusion</div>
+          <div class="signal-grid">
+            <div class="sig-card"><div class="sig-name">HRV</div><div class="sig-val"><span id="nb-sv-hrv">—</span><span class="sig-unit"> ms</span></div><div class="sig-bar-wrap"><div class="sig-bar" id="nb-sb-hrv" style="background:var(--green)"></div></div><div class="sig-z">z=<span id="nb-z-hrv">—</span></div></div>
+            <div class="sig-card"><div class="sig-name">HEART RATE</div><div class="sig-val"><span id="nb-sv-hr">—</span><span class="sig-unit"> bpm</span></div><div class="sig-bar-wrap"><div class="sig-bar" id="nb-sb-hr" style="background:var(--red)"></div></div><div class="sig-z">z=<span id="nb-z-hr">—</span></div></div>
+            <div class="sig-card"><div class="sig-name">GSR</div><div class="sig-val"><span id="nb-sv-gsr">—</span><span class="sig-unit"> µS</span></div><div class="sig-bar-wrap"><div class="sig-bar" id="nb-sb-gsr" style="background:var(--gold)"></div></div><div class="sig-z">z=<span id="nb-z-gsr">—</span></div></div>
+            <div class="sig-card"><div class="sig-name">θ/α RATIO</div><div class="sig-val"><span id="nb-sv-taratio" style="color:var(--eeg)">—</span></div><div class="sig-bar-wrap"><div class="sig-bar" id="nb-sb-taratio" style="background:var(--eeg)"></div></div><div class="sig-z">optimal: 0.5–1.0</div></div>
+            <div class="sig-card wide"><div class="sig-name">EEG AMPLITUDE · N400 VETO</div><div class="sig-val"><span id="nb-sv-eeg" style="color:var(--eeg)">—</span><span class="sig-unit"> µV</span>&nbsp;&nbsp;<span id="nb-veto-badge" style="font-size:0.58rem;display:none;">🛑 N400 VETO</span></div><div class="sig-bar-wrap"><div class="sig-bar" id="nb-sb-eeg" style="background:var(--eeg)"></div></div></div>
+          </div>
+        </div>
+        <div class="eng-panel" style="flex-shrink:0;">
+          <div class="eng-panel-title">HRV WAVEFORM</div>
+          <canvas id="nb-wave-canvas"></canvas>
+        </div>
+        <div class="eng-panel" style="flex:1;overflow:hidden;">
+          <div class="eng-panel-title">ACTION LOG</div>
+          <div class="eng-log" id="nb-action-log"></div>
+        </div>
+      </div>
+      <!-- Right col -->
+      <div class="eng-col">
+        <div class="eng-panel">
+          <div class="eng-panel-title">NEURO RULE ENGINE (Gen 2)</div>
+          <div class="rules-list" id="nb-rules-list"></div>
+        </div>
+        <div class="eng-panel" style="flex:1;overflow:hidden;">
+          <div class="eng-panel-title">SESSION STATS</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-family:'Space Mono',monospace;"><span style="color:var(--muted)">TICKS</span><span id="nb-stat-ticks" style="color:var(--accent)">0</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-family:'Space Mono',monospace;"><span style="color:var(--muted)">STATE CHANGES</span><span id="nb-stat-changes">0</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-family:'Space Mono',monospace;"><span style="color:var(--muted)">RULES FIRED</span><span id="nb-stat-rules">0</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-family:'Space Mono',monospace;"><span style="color:var(--muted)">ENGINE UPTIME</span><span id="nb-stat-uptime">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-family:'Space Mono',monospace;"><span style="color:var(--muted)">N400 VETO</span><span id="nb-stat-veto" style="color:var(--eeg)">inactive</span></div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="eng-panel-title" style="margin-bottom:6px;">FULL LOG</div>
+            <div class="eng-log" id="nb-full-log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       TAB: KALMAN/EBNF — Filter State + Gen 2 Grammar
+  ========================== -->
+  <div class="nb-page" id="nb-kalman" style="display:none;">
+    <div class="kalman-page">
+      <div class="k-col">
+        <div class="k-panel">
+          <div class="k-title">KALMAN FILTER — EEG + Bio Estimates</div>
+          <div class="k-grid">
+            <div class="k-card"><div class="k-label">HRV x̂</div><div class="k-val" id="k-hrv" style="color:var(--green)">—</div><div class="k-sub">P=<span id="kp-hrv">—</span></div></div>
+            <div class="k-card"><div class="k-label">HR x̂</div><div class="k-val" id="k-hr" style="color:var(--red)">—</div><div class="k-sub">P=<span id="kp-hr">—</span></div></div>
+            <div class="k-card"><div class="k-label">GSR x̂</div><div class="k-val" id="k-gsr" style="color:var(--gold)">—</div><div class="k-sub">P=<span id="kp-gsr">—</span></div></div>
+            <div class="k-card"><div class="k-label">EEG x̂</div><div class="k-val" id="k-eeg" style="color:var(--eeg)">—</div><div class="k-sub">P=<span id="kp-eeg">—</span></div></div>
+            <div class="k-card"><div class="k-label">θ/α x̂</div><div class="k-val" id="k-taratio" style="color:var(--eeg)">—</div><div class="k-sub">EEG ratio</div></div>
+            <div class="k-card"><div class="k-label">N400</div><div class="k-val" id="k-n400" style="color:var(--red)">—</div><div class="k-sub">ERP veto</div></div>
+          </div>
+        </div>
+        <div class="k-panel" style="flex:1;">
+          <div class="k-title">KALMAN TRACE — HRV + HR</div>
+          <canvas id="kalman-canvas"></canvas>
+        </div>
+      </div>
+      <div class="k-col">
+        <div class="k-panel">
+          <div class="k-title">EBNF GRAMMAR — NeuroBook Gen 2</div>
+          <div class="ebnf-block"><span class="ebnf-comment">(* NeuroBook EBNF Grammar V.0.0 — EEG-aware *)</span>
+
+<span class="ebnf-rule">cognitive_state</span> ::= <span class="ebnf-state">FLOW</span> | <span class="ebnf-state">CONFUSION</span> | <span class="ebnf-state">BOREDOM</span>
+                   | <span class="ebnf-state">STRESS</span> | <span class="ebnf-state">READY</span> | <span class="ebnf-state">EXCITEMENT</span>
+                   | <span class="ebnf-state">FATIGUE</span> | <span class="ebnf-state">NEUTRAL</span>
+
+<span class="ebnf-rule">neuro_signal</span>     ::= eeg_bands "," hrv_val "," hr_val "," gsr_val
+<span class="ebnf-rule">eeg_bands</span>        ::= theta_val "," alpha_val "," beta_val "," gamma_val
+<span class="ebnf-rule">theta_val</span>        ::= number <span class="ebnf-comment">(* µV², 4–8 Hz *)</span>
+<span class="ebnf-rule">alpha_val</span>        ::= number <span class="ebnf-comment">(* µV², 8–13 Hz *)</span>
+<span class="ebnf-rule">theta_alpha_ratio</span> ::= theta_val "/" alpha_val <span class="ebnf-comment">(* Klimesch 2018 *)</span>
+<span class="ebnf-rule">n400_erp</span>         ::= "N400" | "P300" <span class="ebnf-comment">(* Neuro doc §A *)</span>
+
+<span class="ebnf-rule">neuro_rule</span>       ::= rule_id ":" neuro_cond "→" <span class="ebnf-state">cognitive_state</span> "·" <span class="ebnf-action">action</span>
+<span class="ebnf-rule">neuro_cond</span>       ::= eeg_expr ( "∧" bio_expr )* [ "∧" veto_expr ]
+<span class="ebnf-rule">veto_expr</span>        ::= "¬N400" <span class="ebnf-comment">(* cognitive veto — highest priority *)</span>
+
+<span class="ebnf-rule">action</span>           ::= <span class="ebnf-action">ACT.MAINTAIN</span>   <span class="ebnf-comment">(* NL-001 *)</span>
+                   | <span class="ebnf-action">ACT.SIMPLIFY</span>   <span class="ebnf-comment">(* NL-002 *)</span>
+                   | <span class="ebnf-action">ACT.CLARIFY</span>    <span class="ebnf-comment">(* NL-003 · N400 veto *)</span>
+                   | <span class="ebnf-action">ACT.ANCHOR</span>     <span class="ebnf-comment">(* NL-004 *)</span>
+                   | <span class="ebnf-action">ACT.BREAK</span>      <span class="ebnf-comment">(* NL-005 *)</span>
+                   | <span class="ebnf-action">ACT.CHALLENGE</span>  <span class="ebnf-comment">(* NL-006 *)</span>
+                   | <span class="ebnf-action">SET_COMPAT_LEVEL</span> <span class="ebnf-comment">(* NL-007 · EEG loss *)</span>
+
+<span class="ebnf-comment">(* Bayesian fusion: w_EEG=0.60, w_Bio=0.40 *)</span>
+<span class="ebnf-comment">(* N400 veto suppresses CONFUSION/STRESS transitions *)</span>
+<span class="ebnf-comment">(* θ/α ratio: 0.5–1.0 = optimal encoding zone *)</span></div>
+        </div>
+        <div class="k-panel" style="flex:1;">
+          <div class="k-title">ACTIVE NEURO RULES STATUS</div>
+          <div id="kalman-rules-status" style="display:flex;flex-direction:column;gap:4px;font-size:0.62rem;font-family:'Space Mono',monospace;">
+            <div style="color:var(--muted)">เริ่ม Engine เพื่อดู rule status</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       TAB: EXPORT — Research Data Export
+  ========================== -->
+  <div class="nb-page" id="nb-export" style="display:none;">
+    <div class="export-page">
+      <div class="exp-col">
+        <div class="exp-panel">
+          <div class="exp-title">REPORT CONTENTS</div>
+          <div class="exp-row"><input type="checkbox" id="exp-meta" class="exp-check" checked><label for="exp-meta">Session Metadata</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-eeg" class="exp-check" checked><label for="exp-eeg">EEG Band Power Log</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-signals" class="exp-check" checked><label for="exp-signals">Bio-Signal Log (Kalman)</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-states" class="exp-check" checked><label for="exp-states">Cognitive State History</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-rules" class="exp-check" checked><label for="exp-rules">Neuro Rule Trigger Log</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-anchors" class="exp-check" checked><label for="exp-anchors">Mnemonic Anchors</label></div>
+          <div class="exp-row"><input type="checkbox" id="exp-np" class="exp-check" checked><label for="exp-np">Neuroplasticity Metrics</label></div>
+        </div>
+        <div class="exp-panel">
+          <div class="exp-title">EXPORT FORMAT</div>
+          <button class="exp-btn pdf" id="g2-exp-pdf" onclick="nbExportPDF()">📄 Export PDF Report (Research)</button>
+          <button class="exp-btn json" id="g2-exp-json" onclick="nbExportJSON()">{ } Export JSON (Raw Data)</button>
+          <button class="exp-btn csv" id="g2-exp-csv" onclick="nbExportCSV()">📊 Export CSV (Signals)</button>
+          <button class="exp-btn md" id="g2-exp-md" onclick="nbExportMarkdown()">📝 Export Markdown (Summary)</button>
+        </div>
+        <div class="exp-panel" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+          <div class="exp-title">SAVED SESSIONS (IndexedDB)</div>
+          <div class="exp-row" style="gap:6px;flex-wrap:wrap;">
+            <button class="exp-btn json" style="flex:1;margin-bottom:0;padding:5px;" onclick="nbSaveSession()">💾 Save Session</button>
+            <button class="exp-btn" style="flex:1;margin-bottom:0;padding:5px;color:var(--muted);" onclick="nbLoadSessions()">📂 Load Sessions</button>
+          </div>
+          <div class="session-list" id="nb-session-list" style="margin-top:8px;">
+            <div id="g2-session-loading" style="font-size:0.62rem;color:var(--muted);text-align:center;padding:12px;">กำลังโหลด...</div>
+          </div>
+        </div>
+      </div>
+      <div class="exp-col">
+        <div class="exp-panel" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div class="exp-title" style="margin-bottom:0;">PREVIEW</div>
+            <button class="exp-btn json" style="padding:3px 10px;font-size:0.58rem;width:auto;margin-bottom:0;" onclick="nbRefreshPreview()">↺ Refresh</button>
+          </div>
+          <div class="exp-preview" id="nb-exp-preview">Click "↺ Refresh" to preview report data...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       TAB: SIMULATOR — Tawan Control Layer Gen 2
+  ========================== -->
+  <div class="nb-page" id="nb-sim" style="display:none;">
+    <div class="sim-page">
+      <!-- Left: controls -->
+      <div class="sim-col">
+        <div class="sim-panel">
+          <div class="sim-title">FUSION MODE</div>
+          <div class="sim-state-grid" id="sim-mode-grid">
+            <button class="sim-state-btn active" id="smode-neuro" onclick="setSimFusionMode('neuro')">EEG+Bio (Gen 2)</button>
+            <button class="sim-state-btn" id="smode-bio" onclick="setSimFusionMode('bio')">Bio-only (Gen 1)</button>
+          </div>
+        </div>
+        <div class="sim-panel">
+          <div class="sim-title">INJECT SCENARIO</div>
+          <div class="sim-state-grid" id="sim-scenario-grid"></div>
+        </div>
+        <div class="sim-panel">
+          <div class="sim-title">BIO SLIDERS</div>
+          <div class="sim-signal-row"><span class="sim-sig-label">HRV</span><input type="range" class="sim-sig-slider" id="sl-hrv" min="10" max="90" value="38" oninput="updateSimBio('hrv',this.value)"><span class="sim-sig-val" id="sv-hrv-sim">38</span></div>
+          <div class="sim-signal-row"><span class="sim-sig-label">HR</span><input type="range" class="sim-sig-slider" id="sl-hr" min="45" max="140" value="72" oninput="updateSimBio('hr',this.value)"><span class="sim-sig-val" id="sv-hr-sim">72</span></div>
+          <div class="sim-signal-row"><span class="sim-sig-label">GSR</span><input type="range" class="sim-sig-slider" id="sl-gsr" min="1" max="25" value="4" step="0.5" oninput="updateSimBio('gsr',this.value)"><span class="sim-sig-val" id="sv-gsr-sim">4</span></div>
+        </div>
+        <div class="sim-panel">
+          <div class="sim-title">EEG SLIDERS (Gen 2)</div>
+          <div class="sim-signal-row"><span class="sim-sig-label">θ Theta</span><input type="range" class="sim-sig-slider" id="sl-theta" min="1" max="15" value="4.8" step="0.1" oninput="updateSimEeg('theta',this.value)"><span class="sim-sig-val" id="sv-theta-sim">4.8</span></div>
+          <div class="sim-signal-row"><span class="sim-sig-label">α Alpha</span><input type="range" class="sim-sig-slider" id="sl-alpha" min="1" max="15" value="6.2" step="0.1" oninput="updateSimEeg('alpha',this.value)"><span class="sim-sig-val" id="sv-alpha-sim">6.2</span></div>
+          <div class="sim-signal-row"><span class="sim-sig-label">β Beta</span><input type="range" class="sim-sig-slider" id="sl-beta" min="1" max="20" value="8.5" step="0.1" oninput="updateSimEeg('beta',this.value)"><span class="sim-sig-val" id="sv-beta-sim">8.5</span></div>
+          <div class="sim-signal-row"><span class="sim-sig-label">δ Delta</span><input type="range" class="sim-sig-slider" id="sl-delta" min="0.5" max="8" value="2.1" step="0.1" oninput="updateSimEeg('delta',this.value)"><span class="sim-sig-val" id="sv-delta-sim">2.1</span></div>
+          <div style="margin-top:8px;font-size:0.6rem;font-family:'Space Mono',monospace;">
+            θ/α Ratio: <span id="sim-taratio" style="color:var(--eeg)">—</span>
+          </div>
+        </div>
+        <div class="sim-panel">
+          <div class="sim-title">FAULT TOLERANCE (FTSM)</div>
+          <div class="ftsm-grid" id="ftsm-grid"></div>
+        </div>
+      </div>
+      <!-- Right: viz + log -->
+      <div class="sim-col" style="overflow:hidden;">
+        <div class="sim-panel" style="flex-shrink:0;">
+          <div class="sim-title">CURRENT STATE — Bayesian Fusion Output</div>
+          <div id="sim-state-display" style="text-align:center;padding:14px;">
+            <div style="font-size:2.5rem;">⏳</div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--text);margin-top:6px;">IDLE</div>
+            <div style="font-size:0.6rem;color:var(--muted);margin-top:4px;">Confidence: —</div>
+          </div>
+          <div id="sim-probs-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 8px 8px;"></div>
+        </div>
+        <div class="sim-panel">
+          <div class="sim-title">NEURO RULES EVALUATION</div>
+          <div id="sim-rules-fired" style="display:flex;flex-direction:column;gap:4px;font-size:0.6rem;font-family:'Space Mono',monospace;"></div>
+        </div>
+        <div class="sim-panel" style="flex:1;overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div class="sim-title" style="margin-bottom:0;">SIM LOG</div>
+            <div style="display:flex;gap:6px;">
+              <button class="eng-btn amber" style="flex:0;padding:3px 8px;font-size:0.58rem;" onclick="simAutoToggle()">⚡ AUTO</button>
+              <button class="eng-btn red" style="flex:0;padding:3px 8px;font-size:0.58rem;" onclick="simReset()">↺ RESET</button>
+            </div>
+          </div>
+          <div class="sim-log" id="sim-log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+  <!-- --- -->
+  <div class="bottom-bar">
+
+    <!-- EEG bands + Bio signals -->
+    <div class="bb-bio">
+      <div class="bb-signal">
+        <div class="bb-sig-label">θ/α RATIO</div>
+        <div class="bb-sig-val" id="s-ta" style="color:var(--eeg);">0.48</div>
+        <div class="bb-sig-chart" id="chart-ta"></div>
+        <div class="bb-sig-trend" id="trend-ta" style="color:var(--eeg);">Cognitive Load ↑</div>
+      </div>
+      <div class="bb-signal">
+        <div class="bb-sig-label">THETA (Fz)</div>
+        <div class="bb-sig-val" id="s-theta" style="color:var(--theta);">4.2 <span class="bb-sig-unit">μV</span></div>
+        <div class="bb-sig-chart" id="chart-theta"></div>
+        <div class="bb-sig-trend" id="trend-theta" style="color:var(--theta);">Working Mem ↑</div>
+      </div>
+      <div class="bb-signal">
+        <div class="bb-sig-label">ALPHA (Pz)</div>
+        <div class="bb-sig-val" id="s-alpha" style="color:var(--alpha);">8.7 <span class="bb-sig-unit">μV</span></div>
+        <div class="bb-sig-chart" id="chart-alpha"></div>
+        <div class="bb-sig-trend" id="trend-alpha" style="color:var(--alpha);">Visual Proc ↑</div>
+      </div>
+      <div class="bb-signal">
+        <div class="bb-sig-label">HRV (RMSSD)</div>
+        <div class="bb-sig-val" id="s-hrv" style="color:var(--accent);">62<span class="bb-sig-unit">ms</span></div>
+        <div class="bb-sig-chart" id="chart-hrv"></div>
+        <div class="bb-sig-trend" id="trend-hrv" style="color:var(--accent);">Fused ✓</div>
+      </div>
+      <div class="bb-signal">
+        <div class="bb-sig-label">GSR (μS)</div>
+        <div class="bb-sig-val" id="s-gsr" style="color:var(--green);">0.31<span class="bb-sig-unit">μS</span></div>
+        <div class="bb-sig-chart" id="chart-gsr"></div>
+        <div class="bb-sig-trend" id="trend-gsr" style="color:var(--green);">Fused ✓</div>
+      </div>
+    </div>
+
+    <!-- State + log -->
+    <div class="bb-center">
+      <div class="bb-state">
+        <div class="bb-state-icon" id="bb-state-icon">😐</div>
+        <div class="bb-state-name" id="bb-state-name">NEUTRAL</div>
+        <div class="bb-fuse-row">
+          <div class="bb-conf-bar"><div class="bb-conf-fill" id="bb-conf-fill" style="width:72%"></div></div>
+          <div class="bb-conf-txt" id="bb-conf-txt">72%</div>
+        </div>
+        <div class="bb-eeg-source">
+          <span class="source-chip eeg">EEG</span>
+          <span class="source-chip hrv">HRV</span>
+          <span class="source-chip hrv" style="color:var(--green);border-color:rgba(0,255,179,0.25);">GSR</span>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.44rem;color:var(--muted);margin-top:3px;" id="active-rule">NL-003 · ACT.MAINTAIN</div>
+      </div>
+      <div class="bb-log" id="bb-log"></div>
+    </div>
+
+    <!-- EEG Spectrum + Timeline -->
+    <div class="bb-right">
+      <div class="bb-radar">
+        <div class="bb-radar-label">EEG SPECTRUM</div>
+        <canvas id="radar-canvas" width="90" height="90"></canvas>
+        <div style="font-family:'Space Mono',monospace;font-size:0.42rem;color:var(--muted);">δ·θ·α·β·γ</div>
+      </div>
+      <div class="bb-timeline">
+        <div class="bb-timeline-label">STATE TIMELINE</div>
+        <canvas id="timeline-canvas" height="68"></canvas>
+        <div class="bb-tl-legend">
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#c8daf0"></div>Neutral</div>
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#f7b731"></div>Bored</div>
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#ff4f6a"></div>Confused</div>
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#00ffb3"></div>Flow</div>
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#b59aff"></div>Encoding</div>
+          <div class="bb-tl-item"><div class="bb-tl-dot" style="background:#ff8c42"></div>Overload</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="bb-metrics">
+      <div class="bb-metric-row">
+        <div class="bb-metric-label">RETENTION</div>
+        <div class="bb-metric-val" id="m-retention">--</div>
+      </div>
+      <div class="bb-metric-row">
+        <div class="bb-metric-label">EEG ACC</div>
+        <div class="bb-metric-val" id="m-accuracy">93.2%</div>
+      </div>
+      <div class="bb-metric-row">
+        <div class="bb-metric-label">FUSION</div>
+        <div class="bb-metric-val" id="m-fusion" style="color:var(--green);">ACTIVE</div>
+      </div>
+      <div class="bb-metric-row">
+        <div class="bb-metric-label">ADAPT×</div>
+        <div class="bb-metric-val" id="m-adapt">0</div>
+      </div>
+      <div class="bb-metric-row">
+        <div class="bb-metric-label">SESSION</div>
+        <div class="bb-metric-val" id="m-session">00:00</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-status">
+      <div class="status-dot"></div>
+      <span>NeuroBook Gen 2 · Passive BCI Active · Neuro Tawan Control Layer V.0.0</span>
+    </div>
+    <span>ภูชิศส์ แสงกล้า (ตะวัน) · ทีมวิจัย TAWAN · พ.ศ. 2569</span>
+    <span>© 2026 TAWAN Research. All Rights Reserved.</span>
+  </footer>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- --- -->
+<div class="ad-intrusion" id="ad-intrusion" style="display:none;">
+  <div class="ad-inner">
+    <div class="ad-tag">⚠ SPONSORED · INTERRUPTION DETECTED</div>
+    <div class="ad-headline" id="ad-headline">ดูหนังไม่สะดุด 4K ทุกเครื่อง!</div>
+    <div class="ad-body" id="ad-body">ทดลองใช้ฟรี 30 วัน ไม่ต้องผูกบัตร สมัครง่ายใน 30 วินาที</div>
+    <button class="ad-cta" id="ad-cta">สมัครเลย →</button>
+    <button class="ad-close-btn" onclick="manualCloseAd()">✕</button>
+    <div class="ad-source" id="ad-source">adserver-ext.net · tracking-id: 0x4f2a</div>
+  </div>
+</div>
+
+<div class="eeg-shield" id="eeg-shield" style="display:none;">
+  <div class="shield-inner" style="position:relative;overflow:hidden;">
+    <div class="shield-scan" id="shield-scan" style="display:none;top:0;"></div>
+    <div class="shield-title"><div class="shield-dot"></div>EEG INTERRUPTION SHIELD</div>
+    <div class="shield-eeg-row" id="shield-eeg-row">
+      <div class="shield-band"><div class="shield-bar-wrap"><div class="shield-bar" id="sh-alpha" style="background:var(--alpha);height:4px;"></div></div><div class="shield-band-label">α DROP</div></div>
+      <div class="shield-band"><div class="shield-bar-wrap"><div class="shield-bar" id="sh-theta" style="background:var(--theta);height:4px;"></div></div><div class="shield-band-label">θ SPIKE</div></div>
+      <div class="shield-band"><div class="shield-bar-wrap"><div class="shield-bar" id="sh-beta" style="background:var(--beta);height:4px;"></div></div><div class="shield-band-label">β REACT</div></div>
+      <div class="shield-band"><div class="shield-bar-wrap"><div class="shield-bar" id="sh-gamma" style="background:var(--gamma);height:4px;"></div></div><div class="shield-band-label">γ ALERT</div></div>
+    </div>
+    <div class="shield-verdict detected" id="shield-verdict">⚠ FLOW STATE INTERRUPTED · PATTERN MATCH 97.4%</div>
+    <div class="shield-action-row" id="shield-action"><span class="shield-action-icon">🛡️</span><span id="shield-action-text">กำลังวิเคราะห์ EEG Pattern...</span></div>
+  </div>
+</div>
+
+<div class="ad-stats-panel" id="ad-stats-panel">
+  <div class="ad-stats-title">🛡 AD SHIELD STATS<button class="ad-stats-close" onclick="toggleAdStats()">✕</button></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">ADS DETECTED</span><span class="ad-stat-val" id="stat-detected" style="color:var(--red);">0</span></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">ADS BLOCKED</span><span class="ad-stat-val" id="stat-blocked" style="color:var(--green);">0</span></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">FLOW SAVED</span><span class="ad-stat-val" id="stat-flow" style="color:var(--eeg);">0 times</span></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">EEG ACCURACY</span><span class="ad-stat-val" id="stat-acc" style="color:var(--accent);">--</span></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">AVG RESPONSE</span><span class="ad-stat-val" id="stat-resp" style="color:var(--eeg);">--</span></div>
+  <div class="ad-stat-row"><span class="ad-stat-label">RETENTION SAVED</span><span class="ad-stat-val" id="stat-retention" style="color:var(--green);">--</span></div>
+</div>
+
+<div class="ad-alert-bar" id="ad-alert-bar" style="display:none!important;">
+  <span>⚡</span><span id="ad-alert-text">EEG ตรวจพบ Interruption Pattern - กำลัง Shield...</span>
+</div>
+
+<!-- Quiz Modal -->
+<div class="quiz-modal" id="quiz-modal">
+  <div class="quiz-box">
+    <div class="quiz-header">
+      <div class="quiz-title">🧠 EEG RECALL TEST · Encoding State Triggered</div>
+      <div class="quiz-q-num" id="quiz-q-num">ข้อ 1/2</div>
+    </div>
+    <div id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div class="quiz-result" id="quiz-result"></div>
+    <div class="quiz-footer">
+      <button id="quiz-close-btn" onclick="closeQuiz()">ปิด</button>
+      <button id="quiz-next-btn" onclick="nextQuestion()">ข้อถัดไป →</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/Nuengdeaw_UI_Config_DB.js"></script>
+<script src="../shared/Nuengdeaw_Product_Runtime.js"></script>
+<script src="../shared/Nuengdeaw_AI_Gen_2_for_NeuroSignal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+/* ---
+   UI TEXT CATALOG (shared/gen2)
+======================================== */
+(function applyGen2SharedTexts() {
+  const db = (typeof NuengdeawUIConfigDB !== 'undefined') ? NuengdeawUIConfigDB : null;
+  if (!db || typeof db.resolveText !== 'function') return;
+
+  const setText = (id, key, mode = 'single') => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = db.resolveText(key, { mode, fallback: el.textContent });
+  };
+  const setHtmlMulti = (id, key) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const html = db.resolveText(key, { mode: 'multi', joinWith: '<br>', fallback: el.innerHTML });
+    el.innerHTML = html;
+  };
+
+  setHtmlMulti('g2-calib-sub', 'gen2.calibration.sub');
+  setText('g2-exp-pdf', 'shared.export.pdf_research');
+  setText('g2-exp-json', 'shared.export.json_raw');
+  setText('g2-exp-csv', 'shared.export.csv_signals');
+  setText('g2-exp-md', 'shared.export.markdown_summary');
+  setText('g2-session-loading', 'shared.status.loading');
+})();
+
+/* ---
+   BACKGROUND: Neural Field (EEG-wave aesthetic)
+======================================== */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], time = 0;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = Math.floor((W * H) / 14000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        r: Math.random() * 1.2 + 0.3,
+        alpha: Math.random() * 0.3 + 0.05,
+        phase: Math.random() * Math.PI * 2,
+        freq: Math.random() * 0.02 + 0.008
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    time += 0.012;
+
+    // EEG-like horizontal wave traces in background
+    for (let row = 0; row < 6; row++) {
+      const y = (H / 7) * (row + 1);
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(181,154,255,${0.015 + row * 0.003})`;
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 3) {
+        const wave = Math.sin(x * 0.01 + time * (0.8 + row * 0.3)) * 8
+                   + Math.sin(x * 0.025 + time * 1.2) * 3;
+        if (x === 0) ctx.moveTo(x, y + wave);
+        else ctx.lineTo(x, y + wave);
+      }
+      ctx.stroke();
+    }
+
+    // Particles
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H;
+      if (p.y > H) p.y = 0;
+
+      const pulse = Math.sin(time * p.freq * 60 + p.phase) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(181,154,255,${p.alpha * pulse})`;
+      ctx.fill();
+    }
+
+    // Neural connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(181,154,255,${(1 - dist / 100) * 0.04})`;
+          ctx.lineWidth = 0.4;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initParticles();
+  draw();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+})();
+
+/* ---
+   THREE.JS — 3D EEG Brain Visualization
+======================================== */
+let scene, camera, renderer, brainMesh, electrodes = [], brainGroup;
+let signalParticles = [], eegTime = 0;
+
+function initThree() {
+  const container = document.getElementById('neuro-canvas');
+  const W = container.clientWidth, H = container.clientHeight;
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 200);
+  camera.position.set(0, 1.5, 7);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  brainGroup = new THREE.Group();
+  scene.add(brainGroup);
+
+  // Brain: layered spheres
+  const brainGeo = new THREE.SphereGeometry(2, 64, 48);
+  const brainMat = new THREE.MeshPhongMaterial({
+    color: 0x0a1428,
+    emissive: 0x1a0a40,
+    shininess: 60,
+    transparent: true,
+    opacity: 0.75,
+    wireframe: false
+  });
+  brainMesh = new THREE.Mesh(brainGeo, brainMat);
+  brainGroup.add(brainMesh);
+
+  // Inner glow sphere
+  const glowGeo = new THREE.SphereGeometry(1.85, 32, 24);
+  const glowMat = new THREE.MeshPhongMaterial({
+    color: 0x2a0a60,
+    emissive: 0x120030,
+    transparent: true,
+    opacity: 0.35,
+    side: THREE.BackSide
+  });
+  brainGroup.add(new THREE.Mesh(glowGeo, glowMat));
+
+  // Wireframe overlay
+  const wfGeo = new THREE.SphereGeometry(2.02, 24, 18);
+  const wfMat = new THREE.MeshBasicMaterial({
+    color: 0xb59aff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.06
+  });
+  brainGroup.add(new THREE.Mesh(wfGeo, wfMat));
+
+  // EEG Electrodes (10-20 system positions)
+  const electrodePositions = [
+    { name:'Fz', pos: new THREE.Vector3(0, 2.3, 0.8), band:'theta' },
+    { name:'Cz', pos: new THREE.Vector3(0, 2.4, 0), band:'theta' },
+    { name:'Pz', pos: new THREE.Vector3(0, 2, -1), band:'alpha' },
+    { name:'Oz', pos: new THREE.Vector3(0, 1.2, -1.8), band:'alpha' },
+    { name:'F3', pos: new THREE.Vector3(-1.2, 1.9, 1.0), band:'theta' },
+    { name:'F4', pos: new THREE.Vector3(1.2, 1.9, 1.0), band:'theta' },
+    { name:'C3', pos: new THREE.Vector3(-2.1, 1.2, 0), band:'beta' },
+    { name:'C4', pos: new THREE.Vector3(2.1, 1.2, 0), band:'beta' },
+    { name:'T3', pos: new THREE.Vector3(-2.2, 0, 0.2), band:'gamma' },
+    { name:'T4', pos: new THREE.Vector3(2.2, 0, 0.2), band:'gamma' },
+  ];
+
+  const BAND_COLORS = { theta: 0xb59aff, alpha: 0x00e5ff, beta: 0x00ffb3, gamma: 0xffd166 };
+
+  electrodePositions.forEach(ep => {
+    const geo = new THREE.SphereGeometry(0.08, 12, 8);
+    const mat = new THREE.MeshPhongMaterial({
+      color: BAND_COLORS[ep.band],
+      emissive: BAND_COLORS[ep.band],
+      emissiveIntensity: 0.6,
+      transparent: true,
+      opacity: 0.9
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(ep.pos);
+    brainGroup.add(mesh);
+    electrodes.push({ mesh, mat, name: ep.name, band: ep.band, baseColor: BAND_COLORS[ep.band], phase: Math.random() * Math.PI * 2 });
+
+    // Thin connection line from electrode to center
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([ep.pos, new THREE.Vector3(0, 0.5, 0)]);
+    const lineMat = new THREE.LineBasicMaterial({ color: BAND_COLORS[ep.band], transparent: true, opacity: 0.08 });
+    brainGroup.add(new THREE.Line(lineGeo, lineMat));
+  });
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0x0a0820, 1.5));
+  const pt1 = new THREE.PointLight(0xb59aff, 1.2, 20);
+  pt1.position.set(5, 5, 5);
+  scene.add(pt1);
+  const pt2 = new THREE.PointLight(0x00e5ff, 0.8, 15);
+  pt2.position.set(-4, 2, -3);
+  scene.add(pt2);
+  const pt3 = new THREE.PointLight(0x7b2fff, 0.5, 12);
+  pt3.position.set(0, -4, 2);
+  scene.add(pt3);
+
+  animateThree();
+}
+
+function animateThree() {
+  requestAnimationFrame(animateThree);
+  eegTime += 0.012;
+
+  const stateAmps = {
+    neutral: 0.3,
+    boredom: 0.15,
+    confusion: 0.6,
+    flow: 0.9,
+    encoding: 1.0,
+    overload: 0.7
+  };
+
+  const amp = stateAmps[currentState] || 0.3;
+
+  // Rotate brain
+  brainGroup.rotation.y = eegTime * 0.18;
+  brainGroup.rotation.x = Math.sin(eegTime * 0.07) * 0.08;
+
+  // Animate electrodes
+  electrodes.forEach((el, i) => {
+    const pulse = Math.sin(eegTime * 2.5 + el.phase) * amp;
+    const intensity = 0.5 + pulse * 0.5;
+    el.mat.emissiveIntensity = Math.max(0.1, intensity);
+
+    // Scale pop
+    const s = 1 + pulse * 0.2 * amp;
+    el.mesh.scale.setScalar(s);
+  });
+
+  // Brain mesh emissive pulsing
+  const statePulse = Math.sin(eegTime * 1.8) * amp * 0.3;
+  brainMesh.material.emissiveIntensity = 0.15 + statePulse;
+
+  renderer.render(scene, camera);
+}
+
+/* ---
+   EEG WAVEFORM CANVAS
+======================================== */
+let eegWaveCanvas, eegWaveCtx, eegWaveTime = 0;
+
+function initEEGWave() {
+  eegWaveCanvas = document.getElementById('eeg-wave-canvas');
+  eegWaveCtx = eegWaveCanvas.getContext('2d');
+  drawEEGWave();
+}
+
+function drawEEGWave() {
+  requestAnimationFrame(drawEEGWave);
+  const W = eegWaveCanvas.offsetWidth;
+  const H = 60;
+  eegWaveCanvas.width = W;
+  eegWaveCanvas.height = H;
+  eegWaveCtx.clearRect(0, 0, W, H);
+  eegWaveTime += 0.025;
+
+  const bands = [
+    { freq: 6, amp: 6, color: 'rgba(181,154,255,0.8)', label: 'θ' },
+    { freq: 10, amp: 4, color: 'rgba(0,229,255,0.6)', label: 'α' },
+    { freq: 20, amp: 2.5, color: 'rgba(0,255,179,0.5)', label: 'β' },
+    { freq: 35, amp: 1.5, color: 'rgba(255,209,102,0.4)', label: 'γ' },
+  ];
+
+  const stateAmp = { neutral: 1, boredom: 0.6, confusion: 1.4, flow: 1.8, encoding: 2.0, overload: 1.6 };
+  const amp = stateAmp[currentState] || 1;
+
+  bands.forEach((band, bi) => {
+    eegWaveCtx.beginPath();
+    eegWaveCtx.strokeStyle = band.color;
+    eegWaveCtx.lineWidth = 1;
+
+    for (let x = 0; x < W; x++) {
+      const t = (x / W) * Math.PI * 2 * 3;
+      const y = H / 2 + Math.sin(t * band.freq * 0.5 + eegWaveTime * band.freq * 0.3) * band.amp * amp
+              + Math.sin(t * band.freq * 0.25 + eegWaveTime) * band.amp * 0.4;
+      if (x === 0) eegWaveCtx.moveTo(x, y);
+      else eegWaveCtx.lineTo(x, y);
+    }
+    eegWaveCtx.stroke();
+  });
+
+  // Gradient overlay
+  const grad = eegWaveCtx.createLinearGradient(0, 0, W, 0);
+  grad.addColorStop(0, 'rgba(4,8,16,0.7)');
+  grad.addColorStop(0.15, 'rgba(4,8,16,0)');
+  grad.addColorStop(0.85, 'rgba(4,8,16,0)');
+  grad.addColorStop(1, 'rgba(4,8,16,0.7)');
+  eegWaveCtx.fillStyle = grad;
+  eegWaveCtx.fillRect(0, 0, W, H);
+}
+
+/* ---
+   CONTENT DATA
+======================================== */
+const CHUNKS = [
+  {
+    title: 'บทที่ 1: ที่มาและความสำคัญ - จาก TawanBook สู่ NeuroBook',
+    meta: 'NeuroSense EEG · Theta/Alpha Fusion · TAWAN Gen 2 · พ.ศ. 2569',
+    text: `<strong>TawanBook: สิ่งที่พิสูจน์แล้ว และสิ่งที่ยังค้างอยู่</strong><br><br>
+ในปี พ.ศ. 2571 ทีมวิจัย TAWAN ปิดโครงการ <em>TawanBook</em> พร้อมผลลัพธ์ที่เกินเป้าหมายหลายด้าน ระบบ Passive Bio-Adaptive Reading แสดงให้เห็นว่า HRV, GSR และ Respiration จาก commercial wearables สามารถจำแนกสภาวะผู้อ่านได้แม่นยำถึง <strong style="color:var(--eeg)">88.3%</strong> และเพิ่ม retention rate ได้ถึง <strong style="color:var(--green)">291%</strong><br><br>
+อย่างไรก็ตาม รายงาน TawanBook ยังชี้ข้อจำกัดสำคัญ ได้แก่ ความแม่นยำของ wearable-based classification ที่ยังด้อยกว่า EEG โดยตรง ปัญหา signal ambiguity ระหว่าง Boredom/Confusion/Excitement และการขาดงานศึกษาด้าน neuroplasticity ระยะยาว<br><br>
+<strong>NeuroBook</strong> จึงเป็นภาคต่อที่ออกแบบมาเพื่อแก้ช่องว่างเหล่านี้ ด้วยการเพิ่ม <em>Passive BCI (EEG consumer-grade)</em> เข้ามาในระบบ และเชื่อมสัญญาณ EEG + HRV + GSR ผ่าน Bayesian Fusion Engine`,
+    anchor: ['🧠 Spatial Memory Loci', '🔊 Theta Rhythm Sync', '💡 N400 Semantic Bridge', '🔁 Spaced Repetition +30d'],
+    level: 'normal'
+  },
+  {
+    title: 'บทที่ 2: ช่องว่างที่ TawanBook ยังแก้ไม่จบ',
+    meta: 'Research Gap Analysis · EEG Integration · TAWAN 2569',
+    text: `<strong>Accuracy Gap: ทำไม EEG จึงแม่นกว่า wearable?</strong><br><br>
+Bio-signals จาก wearable ให้ความแม่นยำประมาณ <strong style="color:var(--gold)">88.3%</strong> ขณะที่ EEG โดยตรงให้ได้ราว <strong style="color:var(--green)">90-95%</strong> ช่องว่าง 7-12% นี้สำคัญมากเมื่อประยุกต์ใช้กับกลุ่ม Dyslexia/ADHD ที่ต้องการความละเอียดของสัญญาณสูง<br><br>
+<strong>Signal Ambiguity Gap:</strong> สภาวะ Boredom, Confusion และ Excitement อาจมี GSR pattern ใกล้กัน แต่ EEG Theta/Alpha ratio ช่วยแยกได้ตรงกว่า โดย Theta ที่ Frontal-Midline (Fz, Cz) สัมพันธ์กับ working memory load ส่วน Alpha ที่ Occipital-Parietal สะท้อน visual processing<br><br>
+<strong>Neuroplasticity Gap:</strong> TawanBook วัด retention ได้เด่นที่สุดที่ 7 วัน ขณะที่ NeuroBook ตั้งสมมติฐานว่าการใช้งาน EEG-adaptive ต่อเนื่องอย่างน้อย 6 เดือน จะสัมพันธ์กับ <em>VWFA functional connectivity</em> ที่วัดได้ด้วย fMRI`,
+    anchor: ['🧬 VWFA Connectivity Map', '⚡ Alpha Suppression Cue', '🔬 Theta/Alpha Ratio Anchor', '📊 fMRI Neuroplasticity'],
+    level: 'simplified'
+  },
+  {
+    title: 'บทที่ 3: สถาปัตยกรรม NeuroBook Gen 2',
+    meta: 'Layer 0–5 Architecture · Neuro Tawan Control Layer V.0.0 · 2569',
+    text: `<strong>Layer 0 (ใหม่): NeuroSense EEG Module</strong><br>
+Passive BCI consumer-grade เช่น <em>Muse S (4ch, 256Hz)</em> หรือ <em>Neurosity Crown (8ch)</em> ใช้วัด Theta, Alpha, Beta, Gamma จาก 4-8 electrode positions ตามระบบ 10-20<br><br>
+<strong>Layer 1 (อัปเกรด): Multi-modal Fusion Engine</strong><br>
+รวม EEG + HRV + GSR + Respiration ด้วย <em>Bayesian Fusion Algorithm</em> เป้าหมาย Accuracy ≥93% และลด latency จาก 500ms เหลือ 300ms<br><br>
+<strong>Layer 2: Neuro Tawan Control Layer Gen 2</strong><br>
+Rule-based + ML ที่ Train บน TawanBook Dataset (n=1,260) + EEG Data ใหม่ รองรับ State: <span style="color:var(--green)">PS.FLOW</span> · <span style="color:var(--eeg)">PS.ENCODING</span> · <span style="color:var(--gold)">PS.BOREDOM</span> · <span style="color:var(--red)">PS.OVERLOAD</span> · <span style="color:var(--red)">PS.CONFUSION</span><br><br>
+<strong>Layer 4–5: NeuroSpace Gen 2 + Long-term Memory Tracker</strong><br>
+WebXR + Three.js + Haptic Sync + Audio Spatial · วัด Retention @1 สัปดาห์, 1 เดือน, 3 เดือน พร้อม Spaced Repetition Engine`,
+    anchor: ['🏗️ Control Layer BNF Rule', '⚙️ Bytecode Interpreter', '🔐 On-device EEG Privacy', '🌐 WebXR Spatial Anchor'],
+    level: 'enhanced'
+  }
+];
+
+let chunkIdx = 0;
+let progressPct = 18;
+let adaptCount = 0;
+let sessionStart = Date.now();
+let nbSessionTimerId = null;
+let nbAutoStateTimerId = null;
+
+function renderChunk() {
+  const chunk = CHUNKS[chunkIdx % CHUNKS.length];
+  document.getElementById('book-title').textContent = chunk.title;
+  document.getElementById('book-meta').textContent = chunk.meta;
+  const ct = document.getElementById('content-text');
+  ct.classList.add('fading');
+  setTimeout(() => {
+    ct.innerHTML = _nbSanitizeRichHtml(chunk.text);
+    ct.classList.remove('fading');
+  }, 300);
+  document.getElementById('mnemonic-anchor').classList.remove('visible');
+  document.getElementById('feedback-bar').classList.remove('visible');
+}
+
+function nextChunk() {
+  chunkIdx++;
+  progressPct = Math.min(100, progressPct + 16);
+  document.getElementById('progress-fill').style.width = progressPct + '%';
+  document.getElementById('progress-label').textContent = `${progressPct}% · ${Math.round(progressPct * 500)} / 50,000 คำ`;
+  renderChunk();
+  addLog('CHUNK ADVANCE', `Moving to chunk ${chunkIdx + 1} · ${progressPct}% complete`, 'var(--accent)');
+  showToast(`📖 บทที่ ${chunkIdx + 1} · EEG ปรับเนื้อหาแล้ว`);
+}
+
+function prevChunk() {
+  if (chunkIdx > 0) { chunkIdx--; renderChunk(); }
+}
+
+/* ---
+   STATE ENGINE (NeuroBook States)
+------------------------------------------- */
+let currentState = 'neutral';
+let _nbLastBookAdaptRenderKey = '';
+
+const STATES = {
+  neutral:   { icon:'😐', name:'NEUTRAL',   color:'#c8daf0', action: 'ACT.MAINTAIN', rule:'NL-003', conf:72, eegNote:'θ/α balanced', text:'ระบบรักษาสภาวะปัจจุบัน' },
+  boredom:   { icon:'😴', name:'BOREDOM',   color:'#f7b731', action: 'ACT.CHALLENGE', rule:'NL-001', conf:89, eegNote:'α↑ θ↓', text:'EEG Alpha สูง → เพิ่ม Cognitive Load' },
+  confusion: { icon:'🤔', name:'CONFUSION', color:'#ff4f6a', action: 'ACT.CLARIFY',  rule:'NL-002', conf:85, eegNote:'θ↑↑ α↓', text:'EEG Theta spike → ลด Complexity' },
+  flow:      { icon:'🌊', name:'FLOW',      color:'#00ffb3', action: 'ACT.MAINTAIN', rule:'NL-005', conf:94, eegNote:'α↑ β↑ balanced', text:'EEG Flow State → คงสภาวะนี้ไว้' },
+  encoding:  { icon:'🧠', name:'ENCODING',  color:'#b59aff', action: 'ACT.ANCHOR',   rule:'NL-007', conf:91, eegNote:'θ↑ Fz/Cz spike', text:'EEG Encoding Pattern → สร้าง Mnemonic' },
+  overload:  { icon:'⚡', name:'OVERLOAD',  color:'#ff8c42', action: 'ACT.BREAK',    rule:'NL-004', conf:88, eegNote:'β↑↑ γ↑', text:'EEG Beta/Gamma spike → ลด Intensity' }
+};
+
+const EEG_VALS = {
+  neutral:   { ta: 0.48, theta: 4.2, alpha: 8.7, beta: 18.4, gamma: 32.1, hrv: 62, gsr: 0.31 },
+  boredom:   { ta: 0.22, theta: 2.8, alpha: 11.5, beta: 12.1, gamma: 28.3, hrv: 55, gsr: 0.18 },
+  confusion: { ta: 0.82, theta: 7.4, alpha: 5.2, beta: 22.6, gamma: 35.8, hrv: 48, gsr: 0.54 },
+  flow:      { ta: 0.55, theta: 5.1, alpha: 9.8, beta: 20.5, gamma: 38.2, hrv: 68, gsr: 0.28 },
+  encoding:  { ta: 0.91, theta: 8.3, alpha: 4.8, beta: 16.2, gamma: 29.4, hrv: 61, gsr: 0.41 },
+  overload:  { ta: 0.35, theta: 3.6, alpha: 7.1, beta: 31.4, gamma: 48.5, hrv: 42, gsr: 0.72 }
+};
+
+const STATE_CONTENT = {
+  boredom:   { badge:'⚡ CHALLENGE MODE — Cognitive Load ↑', badgeColor:'#f7b731', adapt:'ระบบเพิ่ม Cognitive Density พร้อมเติมศัพท์เทคนิคและ cross-reference' },
+  confusion: { badge:'🎯 SIMPLIFY MODE — Decomposing Concept', badgeColor:'#ff4f6a', adapt:'ระบบลด sentence complexity และเพิ่ม analogy กับ visual cue' },
+  flow:      { badge:'🌊 FLOW MAINTAINED — Optimal Zone', badgeColor:'#00ffb3', adapt:'Flow State detected - ระบบคงอัตราเนื้อหาปัจจุบันไว้' },
+  encoding:  { badge:'🧠 ANCHOR MODE — Memory Encoding Active', badgeColor:'#b59aff', adapt:'EEG Theta spike ที่ Fz/Cz — สร้าง Mnemonic Anchor โดยอัตโนมัติ' },
+  overload:  { badge:'⛔ REDUCE MODE — Cognitive Break', badgeColor:'#ff8c42', adapt:'Beta/Gamma สูงเกินเกณฑ์ - ระบบลด intensity และแนะนำ break 90 วินาที' },
+  neutral:   { badge: '', badgeColor:'', adapt:'' }
+};
+
+function setState(s) {
+  currentState = s;
+  _nbLastBookAdaptRenderKey = '';
+  const st = STATES[s] || STATES.neutral;
+  const eeg = EEG_VALS[s] || EEG_VALS.neutral;
+  const cnt = STATE_CONTENT[s] || {};
+
+  // Update bottom bar
+  document.getElementById('bb-state-icon').textContent = st.icon;
+  document.getElementById('bb-state-name').textContent = st.name;
+  document.getElementById('bb-state-name').style.color = st.color;
+  document.getElementById('bb-conf-fill').style.width = st.conf + '%';
+  document.getElementById('bb-conf-txt').textContent = st.conf + '%';
+  document.getElementById('active-rule').textContent = `${st.rule} · ${st.action} · ${st.eegNote}`;
+
+  // EEG signal values
+  document.getElementById('s-ta').textContent = eeg.ta.toFixed(2);
+  document.getElementById('s-theta').innerHTML = `${eeg.theta.toFixed(1)} <span class="bb-sig-unit">μV</span>`;
+  document.getElementById('s-alpha').innerHTML = `${eeg.alpha.toFixed(1)} <span class="bb-sig-unit">μV</span>`;
+  document.getElementById('s-hrv').innerHTML = `${eeg.hrv}<span class="bb-sig-unit">ms</span>`;
+  document.getElementById('s-gsr').innerHTML = `${eeg.gsr.toFixed(2)}<span class="bb-sig-unit">μS</span>`;
+
+  // Header accuracy
+  document.getElementById('h-accuracy').textContent = (88 + st.conf * 0.06).toFixed(1);
+  document.getElementById('h-latency').textContent = Math.round(300 - st.conf * 0.5);
+
+  // EEG band badges
+  document.getElementById('bb-theta').textContent = eeg.theta.toFixed(1);
+  document.getElementById('bb-alpha').textContent = eeg.alpha.toFixed(1);
+  document.getElementById('bb-beta').textContent = eeg.beta.toFixed(1);
+  document.getElementById('bb-gamma').textContent = eeg.gamma.toFixed(1);
+
+  // Chart history
+  updateBars('chart-ta', eeg.ta, 1, st.color);
+  updateBars('chart-theta', eeg.theta, 12, 'var(--theta)');
+  updateBars('chart-alpha', eeg.alpha, 15, 'var(--alpha)');
+  updateBars('chart-hrv', eeg.hrv, 80, 'var(--accent)');
+  updateBars('chart-gsr', eeg.gsr, 1, 'var(--green)');
+
+  // Adapt badge
+  const area = document.getElementById('content-area');
+  const badge = document.getElementById('adapt-badge');
+  if (cnt.badge) {
+    badge.textContent = cnt.badge;
+    badge.style.background = `${cnt.badgeColor}22`;
+    badge.style.border = `1px solid ${cnt.badgeColor}55`;
+    badge.style.color = cnt.badgeColor;
+    badge.classList.add('visible');
+    area.classList.add('adapting');
+    adaptCount++;
+    document.getElementById('m-adapt').textContent = adaptCount;
+    addLog(st.action, `${st.name} detected (${st.conf}%) · ${cnt.adapt}`, cnt.badgeColor);
+    if (cnt.adapt) setTimeout(() => showFeedbackBar(cnt.adapt, cnt.badgeColor), 1200);
+  } else {
+    badge.classList.remove('visible');
+    area.classList.remove('adapting');
+  }
+
+  // Encoding: show mnemonic anchors
+  if (s === 'encoding') {
+    const chunk = CHUNKS[chunkIdx % CHUNKS.length];
+    const anchors = chunk.anchor || [];
+    const typesEl = document.getElementById('mnemonic-types');
+    typesEl.innerHTML = anchors.map(a => `<span class="mnemonic-chip">${_nbEscHtml(a)}</span>`).join('');
+    document.getElementById('mnemonic-anchor').classList.add('visible');
+    // ---
+  } else {
+    document.getElementById('mnemonic-anchor').classList.remove('visible');
+  }
+
+  // Sim button highlight
+  document.querySelectorAll('.sim-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.state === s);
+  });
+
+  // Timeline
+  pushTimeline(s);
+  drawRadar(eeg);
+}
+
+function _nbStripHtmlToText(html) {
+  const el = document.createElement('div');
+  el.innerHTML = html || '';
+  return (el.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function _nbSummaryHtml(html, maxLen = 280) {
+  const text = _nbStripHtmlToText(html);
+  const clipped = text.length > maxLen ? `${text.slice(0, maxLen)}...` : text;
+  return `<span style="font-size:0.62rem;color:var(--muted);font-family:'Space Mono';letter-spacing:1px;text-transform:uppercase;">📋 Book Adapt Summary</span><br><br>${clipped}`;
+}
+
+function _nbEscHtml(v) {
+  return String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function _nbSanitizeRichHtml(input) {
+  const template = document.createElement('template');
+  template.innerHTML = String(input ?? '');
+
+  const allowedTags = new Set(['STRONG', 'EM', 'BR', 'SPAN', 'DIV']);
+  const allowedStyleProps = new Set([
+    'color',
+    'font-size',
+    'font-family',
+    'letter-spacing',
+    'text-transform',
+    'margin-top',
+    'padding',
+    'border',
+    'border-radius',
+    'background'
+  ]);
+
+  const safeStyleValue = (value) => !/(?:url\s*\(|expression\s*\(|javascript:|data:|[<>`])/i.test(value || '');
+
+  const sanitizeNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return document.createTextNode(node.textContent || '');
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return document.createTextNode('');
+    }
+
+    const tagName = node.tagName.toUpperCase();
+    if (!allowedTags.has(tagName)) {
+      return document.createTextNode(node.textContent || '');
+    }
+
+    const clean = document.createElement(tagName.toLowerCase());
+    if ((tagName === 'SPAN' || tagName === 'DIV') && node.hasAttribute('style')) {
+      const rawStyle = String(node.getAttribute('style') || '');
+      const safeParts = rawStyle
+        .split(';')
+        .map(part => part.trim())
+        .filter(Boolean)
+        .map(part => {
+          const idx = part.indexOf(':');
+          if (idx === -1) return null;
+          const prop = part.slice(0, idx).trim().toLowerCase();
+          const val = part.slice(idx + 1).trim();
+          if (!allowedStyleProps.has(prop)) return null;
+          if (!safeStyleValue(val)) return null;
+          return `${prop}:${val}`;
+        })
+        .filter(Boolean);
+      if (safeParts.length) clean.setAttribute('style', safeParts.join(';'));
+    }
+
+    Array.from(node.childNodes).forEach(child => clean.appendChild(sanitizeNode(child)));
+    return clean;
+  };
+
+  const wrap = document.createElement('div');
+  Array.from(template.content.childNodes).forEach(child => wrap.appendChild(sanitizeNode(child)));
+  return wrap.innerHTML;
+}
+
+function nbApplyBookAdaptationToReader(state, conf, bookPacket, bookAdaptation) {
+  const mapState = { FLOW:'flow', CONFUSION:'confusion', BOREDOM:'boredom', READY:'encoding', STRESS:'overload', ANXIETY:'overload', FRUSTRATION:'overload', EXCITEMENT:'flow', CALM:'flow', NEUTRAL:'neutral', IDLE:'neutral' };
+  const localState = mapState[state] || currentState || 'neutral';
+  const st = STATES[localState] || STATES.neutral;
+  const adapt = bookAdaptation || { pacing: 'normal', hint_level: 'medium', summarize: false, break_prompt: false };
+  const key = `${localState}|${adapt.pacing}|${adapt.hint_level}|${adapt.summarize ? 1 : 0}|${adapt.break_prompt ? 1 : 0}|${bookPacket?.actions?.recommended_action || '-'}`;
+  if (key === _nbLastBookAdaptRenderKey) return;
+  _nbLastBookAdaptRenderKey = key;
+
+  const chunk = CHUNKS[chunkIdx % CHUNKS.length];
+  const contentEl = document.getElementById('content-text');
+  const badge = document.getElementById('adapt-badge');
+  const area = document.getElementById('content-area');
+  const mnemonic = document.getElementById('mnemonic-anchor');
+  if (!chunk || !contentEl || !badge || !area || !mnemonic) return;
+
+  let html = chunk.text;
+  if (adapt.summarize) html = _nbSummaryHtml(chunk.text);
+  if (adapt.hint_level === 'high') {
+    html += `<div style="margin-top:10px;padding:8px;border:1px solid rgba(181,154,255,0.3);border-radius:7px;background:rgba(181,154,255,0.08);font-size:0.8rem;">💡 Hint: แยกอ่านทีละช่วง 1) นิยาม 2) ตัวอย่าง 3) ผลลัพธ์</div>`;
+  } else if (adapt.hint_level === 'medium') {
+    html += `<div style="margin-top:8px;color:var(--muted);font-size:0.78rem;">Hint: จับคู่ข้อมูล EEG กับเนื้อหาประโยคที่กำลังอ่าน</div>`;
+  }
+  if (adapt.break_prompt) {
+    html += `<div style="margin-top:10px;padding:8px;border:1px solid rgba(255,140,66,0.32);border-radius:7px;background:rgba(255,140,66,0.1);font-size:0.8rem;color:#ffc6a1;">⏸ แนะนำพัก 60-90 วินาที เพื่อลด cognitive overload</div>`;
+  }
+
+  contentEl.classList.add('fading');
+  setTimeout(() => {
+    contentEl.innerHTML = _nbSanitizeRichHtml(html);
+    contentEl.classList.remove('fading');
+  }, 220);
+
+  const speed = adapt.pacing === 'slow' ? 0.95 : adapt.pacing === 'fast' ? 1.05 : 1.0;
+  contentEl.style.fontSize = `${(0.86 * speed).toFixed(2)}rem`;
+  contentEl.style.lineHeight = adapt.pacing === 'slow' ? '1.86' : adapt.pacing === 'fast' ? '1.58' : '1.7';
+
+  badge.textContent = `BOOK ADAPT · ${adapt.pacing.toUpperCase()} · HINT:${adapt.hint_level.toUpperCase()}`;
+  badge.style.background = 'rgba(181,154,255,0.18)';
+  badge.style.border = '1px solid rgba(181,154,255,0.45)';
+  badge.style.color = 'var(--eeg)';
+  badge.classList.add('visible');
+  area.classList.add('adapting');
+  if (adapt.break_prompt) area.classList.add('eeg-disrupted');
+  else area.classList.remove('eeg-disrupted');
+
+  if (localState === 'encoding' || adapt.hint_level === 'high') mnemonic.classList.add('visible');
+  else mnemonic.classList.remove('visible');
+
+  addLog(bookPacket?.actions?.recommended_action || st.action, `pacing:${adapt.pacing} · hint:${adapt.hint_level} · conf:${(conf*100).toFixed(0)}%`, st.color || 'var(--eeg)');
+}
+
+/* ---
+   MINI BAR CHARTS
+======================================== */
+const HIST = {};
+const HIST_LEN = 18;
+
+function updateBars(id, val, max, color) {
+  if (!HIST[id]) HIST[id] = Array(HIST_LEN).fill(val);
+  HIST[id].push(val);
+  if (HIST[id].length > HIST_LEN) HIST[id].shift();
+  renderChart(id, HIST[id], color, max);
+}
+
+function renderChart(id, data, color, maxVal) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const max = maxVal || Math.max(...data, 1);
+  el.innerHTML = data.map((v, i) => {
+    const h = Math.max(2, (v / max) * 20);
+    const opacity = 0.3 + (i / data.length) * 0.7;
+    return `<div class="bb-bar" style="height:${h}px;background:${color};opacity:${opacity};"></div>`;
+  }).join('');
+}
+
+/* ---
+   EEG SPECTRUM RADAR
+======================================== */
+function drawRadar(eeg) {
+  const canvas = document.getElementById('radar-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2, r = 36;
+  ctx.clearRect(0, 0, W, H);
+
+  const eegV = eeg || EEG_VALS.neutral;
+  const bands = [
+    { label:'δ', val: 2, max: 5, color:'#ff4f6a' },
+    { label:'θ', val: eegV.theta, max: 12, color:'#b59aff' },
+    { label:'α', val: eegV.alpha, max: 15, color:'#00e5ff' },
+    { label:'β', val: eegV.beta, max: 35, color:'#00ffb3' },
+    { label:'γ', val: eegV.gamma, max: 55, color:'#ffd166' },
+  ];
+
+  const n = bands.length;
+
+  // Grid circles
+  for (let gr = 1; gr <= 3; gr++) {
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(181,154,255,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.arc(cx, cy, r * (gr / 3), 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Filled polygon
+  ctx.beginPath();
+  bands.forEach((b, i) => {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const ratio = Math.min(b.val / b.max, 1);
+    const x = cx + Math.cos(angle) * r * ratio;
+    const y = cy + Math.sin(angle) * r * ratio;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(181,154,255,0.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(181,154,255,0.5)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Dots + labels
+  bands.forEach((b, i) => {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const ratio = Math.min(b.val / b.max, 1);
+    const x = cx + Math.cos(angle) * r * ratio;
+    const y = cy + Math.sin(angle) * r * ratio;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = b.color;
+    ctx.fill();
+
+    const lx = cx + Math.cos(angle) * (r + 9);
+    const ly = cy + Math.sin(angle) * (r + 9);
+    ctx.fillStyle = b.color;
+    ctx.font = '8px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, lx, ly);
+  });
+}
+
+/* ---
+   STATE TIMELINE
+======================================== */
+const STATE_COLORS = {
+  neutral:'#c8daf0', boredom:'#f7b731', confusion:'#ff4f6a',
+  flow:'#00ffb3', encoding:'#b59aff', overload:'#ff8c42'
+};
+const STATE_Y = { neutral:54, boredom:42, confusion:18, flow:6, encoding:30, overload:30 };
+let timelineData = [];
+let tlCanvas, tlCtx;
+
+function initTimeline() {
+  tlCanvas = document.getElementById('timeline-canvas');
+  tlCtx = tlCanvas.getContext('2d');
+  tlCanvas.width = tlCanvas.offsetWidth * window.devicePixelRatio || 190;
+  tlCanvas.height = 68;
+  drawTimeline();
+}
+
+function pushTimeline(state) {
+  timelineData.push({ state, t: Date.now() });
+  if (timelineData.length > 80) timelineData.shift();
+  drawTimeline();
+}
+
+function drawTimeline() {
+  if (!tlCtx) return;
+  const W = tlCanvas.width, H = tlCanvas.height;
+  tlCtx.clearRect(0, 0, W, H);
+  for (let y of [18, 30, 42, 54]) {
+    tlCtx.strokeStyle = 'rgba(255,255,255,0.04)';
+    tlCtx.lineWidth = 0.5;
+    tlCtx.beginPath();
+    tlCtx.moveTo(0, y); tlCtx.lineTo(W, y);
+    tlCtx.stroke();
+  }
+  const labelMap = { 6:'Flow', 18:'Confused', 30:'Encoding', 42:'Bored', 54:'Neutral' };
+  Object.entries(labelMap).forEach(([y, lbl]) => {
+    tlCtx.fillStyle = 'rgba(74,98,128,0.6)';
+    tlCtx.font = '7px monospace';
+    tlCtx.fillText(lbl, 2, parseFloat(y) + 4);
+  });
+  if (timelineData.length < 2) return;
+  const xStep = (W - 30) / Math.max(timelineData.length - 1, 1);
+  timelineData.forEach((pt, i) => {
+    if (i === 0) return;
+    const prev = timelineData[i - 1];
+    const x1 = 30 + (i - 1) * xStep, x2 = 30 + i * xStep;
+    const y1 = (STATE_Y[prev.state] || 54) + 3, y2 = (STATE_Y[pt.state] || 54) + 3;
+    tlCtx.strokeStyle = STATE_COLORS[pt.state] || '#c8daf0';
+    tlCtx.lineWidth = 1.5;
+    tlCtx.beginPath();
+    tlCtx.moveTo(x1, y1);
+    tlCtx.lineTo(x2, y1);
+    tlCtx.lineTo(x2, y2);
+    tlCtx.stroke();
+    tlCtx.fillStyle = STATE_COLORS[pt.state] || '#c8daf0';
+    tlCtx.beginPath();
+    tlCtx.arc(x2, y2, 3, 0, Math.PI * 2);
+    tlCtx.fill();
+  });
+  const last = timelineData[timelineData.length - 1];
+  const lx = 30 + (timelineData.length - 1) * xStep;
+  const ly = (STATE_Y[last.state] || 54) + 3;
+  tlCtx.fillStyle = (STATE_COLORS[last.state] || '#c8daf0') + '44';
+  tlCtx.beginPath();
+  tlCtx.arc(lx, ly, 6, 0, Math.PI * 2);
+  tlCtx.fill();
+  tlCtx.fillStyle = STATE_COLORS[last.state] || '#c8daf0';
+  tlCtx.beginPath();
+  tlCtx.arc(lx, ly, 3, 0, Math.PI * 2);
+  tlCtx.fill();
+}
+
+/* ---
+   LOG
+======================================== */
+function addLog(action, detail, color) {
+  const log = document.getElementById('bb-log');
+  const item = document.createElement('div');
+  item.className = 'bb-log-item';
+  const ts = new Date().toLocaleTimeString('th', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  item.innerHTML = `<span class="log-action" style="color:${color || 'var(--eeg)'}">${_nbEscHtml(action)}</span> - ${_nbEscHtml(detail)} <span style="color:var(--muted);opacity:0.6;">${ts}</span>`;
+  log.appendChild(item);
+  while (log.children.length > 14) log.removeChild(log.firstChild);
+  log.scrollTop = log.scrollHeight;
+}
+
+/* ---
+   TOAST
+======================================== */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ---
+   FEEDBACK BAR
+======================================== */
+let lastFeedbackAction = null;
+
+function showFeedbackBar(action, color) {
+  lastFeedbackAction = action;
+  const bar = document.getElementById('feedback-bar');
+  const label = document.getElementById('feedback-label');
+  label.textContent = `การปรับ "${action}" ช่วยได้ไหม?`;
+  bar.classList.add('visible');
+  document.getElementById('fb-like').classList.remove('selected');
+  document.getElementById('fb-dislike').classList.remove('selected');
+}
+
+function submitFeedback(type) {
+  const like = document.getElementById('fb-like');
+  const dis = document.getElementById('fb-dislike');
+  like.classList.remove('selected'); dis.classList.remove('selected');
+  if (type === 'like') {
+    like.classList.add('selected');
+    addLog('RL FEEDBACK', `👍 Like · ${lastFeedbackAction} · priority ×1.1`, 'var(--green)');
+    showToast('👍 RL model ปรับ priority แล้ว');
+  } else {
+    dis.classList.add('selected');
+    addLog('RL FEEDBACK', `👎 Dislike · ${lastFeedbackAction} · priority ×0.9`, 'var(--red)');
+    showToast('👎 ระบบปรับ EEG strategy ใหม่');
+  }
+  setTimeout(() => document.getElementById('feedback-bar').classList.remove('visible'), 4000);
+}
+
+/* ---
+   VIEW / MODE TOGGLES
+======================================== */
+function setView(v) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  if (v === 'eeg') {
+    document.getElementById('neuro-canvas').style.display = '';
+    document.getElementById('fusion-badge').style.display = '';
+    showToast('🧠 EEG Brain View — 3D Electrode Visualization');
+    addLog('VIEW', 'Switched to EEG Brain 3D View', 'var(--eeg)');
+  } else if (v === 'palace') {
+    showToast('🏛️ Memory Palace - NeuroSpace Gen 2 (WebXR)');
+    addLog('VIEW', 'Memory Palace mode — Spatial Loci Active', 'var(--accent)');
+  } else if (v === 'np') {
+    showToast('🔬 Neuroplasticity Tracker — VWFA + Hippocampus');
+    addLog('VIEW', 'Neuroplasticity tracking — fMRI substudy data', 'var(--green)');
+    document.getElementById('m-retention').textContent = '79%';
+  }
+}
+
+function setMode(m) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const labels = {
+    eeg: 'EEG+Bio Fusion · ACC 93.2%',
+    bio: 'Bio-only (TawanBook Gen 1) · ACC 88.3%',
+    eegonly: 'EEG-only Mode · ACC 91.5%'
+  };
+  document.getElementById('m-fusion').textContent = m === 'eeg' ? 'ACTIVE' : m === 'bio' ? 'OFF' : 'EEG ONLY';
+  document.getElementById('m-accuracy').textContent = m === 'eeg' ? '93.2%' : m === 'bio' ? '88.3%' : '91.5%';
+  addLog('MODE SWITCH', labels[m], 'var(--eeg)');
+  showToast('⚙️ ' + labels[m]);
+}
+
+/* ---
+   QUIZ
+======================================== */
+const QUIZ_BANK = {
+  q1: [
+    { q: 'NeuroBook แก้ "Accuracy Gap" ของ TawanBook ด้วยวิธีใด?',
+      options: ['ใช้ wearable ที่แม่นยำกว่า', 'เพิ่ม EEG Passive BCI เข้าไปใน fusion', 'เพิ่มจำนวนผู้ทดลอง', 'ใช้ AI รุ่นใหม่กว่า'],
+      correct: 1,
+      explanation: '✓ ถูกต้อง! NeuroBook เพิ่ม EEG Layer (Muse S / Neurosity Crown) ทำให้ accuracy ราว 93% สูงกว่า wearable-only ที่ 88.3%' },
+    { q: 'EEG Theta ที่ตำแหน่ง Fz/Cz บ่งบอกถึงอะไร?',
+      options: ['Visual Processing', 'Working Memory Load', 'Boredom State', 'Gamma Band Activity'],
+      correct: 1,
+      explanation: '✓ ถูกต้อง! Theta ที่ Frontal-Midline (Fz, Cz) เป็น biomarker ของ Working Memory Load และใช้ตรวจสภาวะ Encoding' }
+  ],
+  q2: [
+    { q: 'Bayesian Fusion Engine ใน NeuroBook รวมสัญญาณใดบ้าง?',
+      options: ['EEG + GPS', 'EEG + HRV + GSR', 'HRV + Camera', 'EEG + Temperature'],
+      correct: 1,
+      explanation: '✓ ถูกต้อง! Bayesian Fusion รวม EEG (NeuroSense) + HRV + GSR + Respiration เป้า Accuracy ≥93% ที่ latency 300ms' },
+    { q: 'วัตถุประสงค์ของ Long-term Memory Tracker ใน Layer 5 คืออะไร?',
+      options: ['วัด Real-time EEG', 'วัด Retention @1 สัปดาห์, 1 เดือน, 3 เดือน', 'ส่งข้อมูลไป Cloud', 'แสดง 3D Brain'],
+      correct: 1,
+      explanation: '✓ ถูกต้อง! Layer 5 วัด Long-term Retention พร้อม Spaced Repetition Engine เพื่อแก้ Neuroplasticity Gap ของ TawanBook' }
+  ]
+};
+
+let quizCurrentQ = 0, quizAnswered = false, quizScore = 0, quizQuestions = [];
+
+function openQuiz(id) {
+  quizQuestions = QUIZ_BANK[id] || QUIZ_BANK.q1;
+  quizCurrentQ = 0; quizScore = 0;
+  renderQuestion();
+  document.getElementById('quiz-modal').classList.add('show');
+  addLog('RECALL TEST', `EEG Encoding state → Immediate recall triggered`, 'var(--eeg)');
+}
+
+function renderQuestion() {
+  const q = quizQuestions[quizCurrentQ];
+  document.getElementById('quiz-q-num').textContent = `ข้อ ${quizCurrentQ + 1}/${quizQuestions.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-result').className = 'quiz-result';
+  document.getElementById('quiz-result').textContent = '';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+  quizAnswered = false;
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = q.options.map((o, i) =>
+    `<button class="quiz-option" onclick="answerQuiz(${i})">${String.fromCharCode(65 + i)}. ${_nbEscHtml(o)}</button>`
+  ).join('');
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizCurrentQ];
+  const btns = document.querySelectorAll('.quiz-option');
+  const isCorrect = idx === q.correct;
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+    else if (i === idx && !isCorrect) b.classList.add('wrong');
+  });
+  if (isCorrect) quizScore++;
+  const resultEl = document.getElementById('quiz-result');
+  resultEl.textContent = isCorrect ? q.explanation : `✗ ไม่ถูก · ${q.explanation}`;
+  resultEl.className = `quiz-result show ${isCorrect ? 'pass' : 'fail'}`;
+  const isLast = quizCurrentQ >= quizQuestions.length - 1;
+  const nextBtn = document.getElementById('quiz-next-btn');
+  nextBtn.style.display = 'inline-block';
+  nextBtn.textContent = isLast ? 'ดูผลลัพธ์ →' : 'ข้อถัดไป →';
+}
+
+function nextQuestion() {
+  if (quizCurrentQ >= quizQuestions.length - 1) {
+    showQuizResult();
+  } else {
+    quizCurrentQ++;
+    renderQuestion();
+  }
+}
+
+function showQuizResult() {
+  const total = quizQuestions.length;
+  const pct = Math.round(quizScore / total * 100);
+  const pass = pct >= 80;
+  document.getElementById('quiz-options').innerHTML = '';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+  const resultEl = document.getElementById('quiz-result');
+  resultEl.className = `quiz-result show ${pass ? 'pass' : 'fail'}`;
+  resultEl.innerHTML = pass
+    ? `✓ ผ่าน ${quizScore}/${total} (${pct}%) · EEG Encoding Anchor มีประสิทธิภาพ · บันทึกลง Memory Palace`
+    : `✗ ${quizScore}/${total} (${pct}%) · EEG ปรับ Anchor ประเภทใหม่`;
+  document.getElementById('quiz-question').textContent = pass ? '🧠 EEG Mnemonic Anchor ทำงานได้ดี!' : '🔄 NeuroBook กำลังปรับ Anchor ใหม่...';
+  document.getElementById('m-retention').textContent = pct + '%';
+  addLog('QUIZ RESULT', `Score: ${quizScore}/${total} (${pct}%) · ${pass ? 'PASS — EEG anchor effective' : 'FAIL — switching anchor'}`, pass ? 'var(--green)' : 'var(--red)');
+  setTimeout(() => {
+    document.getElementById('quiz-modal').classList.remove('show');
+    showToast(pass ? `🧠 Recall ${pct}% — Memory Palace updated` : '🔄 ปรับ Mnemonic Anchor ประเภทใหม่...');
+  }, 3000);
+}
+
+function closeQuiz() { document.getElementById('quiz-modal').classList.remove('show'); }
+
+/* ---
+   CALIBRATION
+======================================== */
+function startCalibration() {
+  const steps = [
+    { id:'cs-0', dur:700, label:'เชื่อมต่อ Muse S EEG · SQI: 0.94...' },
+    { id:'cs-1', dur:900, label:'Fusing HRV + GSR · Bayesian Init...' },
+    { id:'cs-2', dur:800, label:'ICA Artifact Removal · Band Filter 4–45Hz...' },
+    { id:'cs-3', dur:1000, label:'Loading Nuengdeaw AI Gen 2 · EEG model...' },
+    { id:'cs-4', dur:600, label:'Control Layer V.0.0 READY ✓' }
+  ];
+
+  let pct = 0;
+  const bar = document.getElementById('calib-bar');
+  const label = document.getElementById('calib-label');
+  let delay = 400;
+
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      document.querySelectorAll('.calib-step').forEach((el, j) => {
+        if (j < i) el.classList.add('done');
+        el.classList.remove('active');
+      });
+      document.getElementById(step.id).classList.add('active');
+      label.textContent = step.label;
+    }, delay);
+
+    // Smooth bar
+    const startPct = pct;
+    const endPct = ((i + 1) / steps.length) * 100;
+    const interval = setInterval(() => {
+      pct = Math.min(pct + 1, endPct);
+      bar.style.width = pct + '%';
+      if (pct >= endPct) clearInterval(interval);
+    }, step.dur / (endPct - startPct));
+
+    delay += step.dur;
+  });
+
+  setTimeout(() => {
+    const overlay = document.getElementById('calib-overlay');
+    overlay.classList.add('hidden');
+    setTimeout(() => overlay.style.display = 'none', 700);
+    addLog('SYSTEM BOOT', 'NeuroBook Gen 2 · Neuro Tawan Control Layer V.0.0 initialized', 'var(--eeg)');
+    addLog('EEG DEVICE', 'Muse S connected · 4ch · 256Hz · SQI: 0.94', 'var(--theta)');
+    addLog('WEARABLE', 'Apple Watch Ultra fused · HRV+GSR active · Bayesian READY', 'var(--accent)');
+    addLog('FUSION', 'EEG+Bio Fusion active · Target Accuracy ≥93%', 'var(--green)');
+    showToast('🧠 NeuroBook Gen 2 — EEG Passive BCI พร้อมใช้งาน');
+  }, delay + 300);
+}
+
+/* ---
+   SESSION TIMER
+======================================== */
+if (nbSessionTimerId) clearInterval(nbSessionTimerId);
+nbSessionTimerId = setInterval(() => {
+  const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('m-session').textContent = `${m}:${s}`;
+}, 1000);
+
+/* ---
+   AUTO STATE SIMULATION (EEG-like natural drift)
+======================================== */
+const AUTO_STATES = ['neutral', 'flow', 'encoding', 'neutral', 'boredom', 'neutral', 'confusion', 'flow', 'encoding'];
+let autoIdx = 0;
+
+if (nbAutoStateTimerId) clearInterval(nbAutoStateTimerId);
+nbAutoStateTimerId = setInterval(() => {
+  autoIdx = (autoIdx + 1) % AUTO_STATES.length;
+  setState(AUTO_STATES[autoIdx]);
+}, 9000);
+
+/* ---
+   INIT
+======================================== */
+renderChunk();
+for (const key of ['ta', 'theta', 'alpha', 'hrv', 'gsr']) {
+  const vals = EEG_VALS.neutral;
+  const maxMap = { ta: 1, theta: 12, alpha: 15, hrv: 80, gsr: 1 };
+  const colorMap = { ta:'var(--eeg)', theta:'var(--theta)', alpha:'var(--alpha)', hrv:'var(--accent)', gsr:'var(--green)' };
+  HIST['chart-' + key] = Array(18).fill(vals[key] || 0);
+  renderChart('chart-' + key, HIST['chart-' + key], colorMap[key], maxMap[key]);
+}
+drawRadar();
+initTimeline();
+pushTimeline('neutral');
+initThree();
+initEEGWave();
+startCalibration();
+
+/* ---
+   EEG AD DETECTION ENGINE — Dot-only mode
+   โฆษณาไม่ popup รบกวน — แสดงแค่จุดแดงที่ปุ่ม
+======================================== */
+const AD_LIBRARY = [
+  { id:'AD-7291', source:'adstream-cdn.io' },
+  { id:'AD-8841', source:'fintech-adnet.com' },
+  { id:'AD-4453', source:'gamead-burst.net' },
+  { id:'AD-6617', source:'health-clickbait.net' },
+  { id:'AD-9902', source:'fake-deals.shop' },
+];
+
+let adStats = { detected:0, blocked:0, flowSaved:0, totalResponseMs:0 };
+let adStatsVisible = false;
+
+// Show only red dot on button — no popup, no interruption
+function triggerAdDot() {
+  var adData = AD_LIBRARY[Math.floor(Math.random() * AD_LIBRARY.length)];
+  adStats.detected++;
+  adStats.blocked++;
+  adStats.flowSaved++;
+  adStats.totalResponseMs += 280 + Math.floor(Math.random() * 120);
+
+  // Light up red dot
+  var dot = document.getElementById('simad-dot');
+  if (dot) dot.style.display = 'block';
+
+  // Log in system feed only — no overlay, no disruption
+  addLog('AD DETECTED', '[' + adData.id + '] ' + adData.source + ' — EEG Shield blocked silently', 'var(--red)');
+  setTimeout(function() {
+    addLog('SHIELD', '[' + adData.id + '] Blocked · Flow protected · Reading undisrupted', 'var(--green)');
+  }, 320);
+
+  updateAdStats();
+}
+
+// User clicks the dot → acknowledge, dot turns off
+function acknowledgeAd() {
+  var dot = document.getElementById('simad-dot');
+  if (dot) dot.style.display = 'none';
+  toggleAdStats();
+}
+
+function updateAdStats() {
+  document.getElementById('stat-detected').textContent  = adStats.detected;
+  document.getElementById('stat-blocked').textContent   = adStats.blocked;
+  document.getElementById('stat-flow').textContent      = adStats.flowSaved + ' times';
+  document.getElementById('stat-acc').textContent       = '97.' + Math.floor(Math.random()*9) + '%';
+  document.getElementById('stat-resp').textContent      = Math.round(adStats.totalResponseMs / Math.max(adStats.blocked,1)) + 'ms';
+  document.getElementById('stat-retention').textContent = '+' + (adStats.blocked * 2.3).toFixed(1) + '%';
+  document.getElementById('shield-pill-count').textContent = adStats.blocked;
+}
+
+function toggleAdStats() {
+  adStatsVisible = !adStatsVisible;
+  document.getElementById('ad-stats-panel').classList.toggle('show', adStatsVisible);
+}
+
+// Auto: fire silent detection every 25-45s
+function scheduleNextAd() {
+  var delay = 25000 + Math.random() * 20000;
+  setTimeout(function() {
+    triggerAdDot();
+    scheduleNextAd();
+  }, delay);
+}
+
+// First silent detection after 18s
+setTimeout(function() {
+  triggerAdDot();
+  scheduleNextAd();
+}, 18000);
+
+
+
+// ============================================================
+// NB TAB SWITCHER
+// ============================================================
+const NB_TABS = ['engine','kalman','export','sim'];
+function switchNbTab(name) {
+  // Hide reader main, show nb-page
+  const mainEl = document.querySelector('main');
+  NB_TABS.forEach(t => {
+    const el = document.getElementById('nb-' + t);
+    if (el) el.style.display = 'none';
+  });
+  if (name) {
+    const el = document.getElementById('nb-' + name);
+    if (el) {
+      el.style.display = 'flex';
+      if (mainEl) mainEl.style.display = 'none';
+    }
+    // Lazy-init
+    if (name === 'engine' && !nbEngineInited) { nbInitEngine(); nbEngineInited = true; }
+    if (name === 'kalman') { nbDrawKalmanTrace(); nbUpdateKalmanRules(); }
+    if (name === 'export') { nbLoadSessions(); }
+    if (name === 'sim')    { nbInitSim(); }
+  } else {
+    if (mainEl) mainEl.style.display = '';
+  }
+}
+
+// Back to reader
+document.querySelectorAll('#pill-engine,#pill-kalman,#pill-export,#pill-sim').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // deactivate setView pills
+    document.querySelectorAll('.pill.active').forEach(p => p.classList.remove('active'));
+  });
+});
+
+// ============================================================
+// NB ENGINE — wraps Nuengdeaw Core engine
+// ============================================================
+let nbEngineInited = false;
+let nbUptimeInterval = null;
+let nbT0 = 0;
+
+function nbInitEngine() {
+  // Wire engine.onUpdate to NB display
+  const origUpdate = engine.onUpdate;
+  engine.onUpdate = function(data) {
+    if (origUpdate) origUpdate.call(this, data);
+    nbHandleEngineUpdate(data);
+  };
+  nbRenderRules();
+}
+
+function nbHandleEngineUpdate(data) {
+  const { tick, filtered, z, state, conf, matchedRule, stateChanges, rulesFired, bookPacket, bookAdaptation } = data;
+
+  // ── BROADCAST to reader (parent iframe) + dashboard ──────
+  const broadcast = {
+    source: 'nuengdeaw-demo',
+    bookType: 'neuro',
+    tick, state, conf,
+    filtered: { hrv:+filtered.hrv.toFixed(2), hr:+filtered.hr.toFixed(1), gsr:+filtered.gsr.toFixed(3), eeg:+filtered.eeg.toFixed(3), rr:+filtered.rr.toFixed(2) },
+    z: { hrv:+z.hrv.toFixed(3), hr:+z.hr.toFixed(3), gsr:+z.gsr.toFixed(3) },
+    bands: data.bands ? { theta:+(data.bands.theta||0).toFixed(3), alpha:+(data.bands.alpha||0).toFixed(3), thetaAlphaRatio:+(data.bands.thetaAlphaRatio||1).toFixed(3) } : null,
+    n400Veto: data.n400Veto || false,
+    rule: matchedRule ? { id:matchedRule.id, action:matchedRule.action, desc:matchedRule.desc } : null,
+    bookPacket: bookPacket || null,
+    bookAdaptation: bookAdaptation || null,
+    stateChanges, rulesFired,
+    ts: Date.now()
+  };
+  if (window.parent !== window) {
+    const targetOrigin = window.NUENGDEAW_PARENT_ORIGIN || window.location.origin;
+    try { window.parent.postMessage(broadcast, targetOrigin); } catch (_) {}
+  }
+  try { new BroadcastChannel('nuengdeaw-live').postMessage(broadcast); } catch(_) {}
+  // ──────────────────────────────────────────────────────────
+  const sv = (id,v,d=1) => { const e=document.getElementById(id); if(e) e.textContent=v.toFixed(d); };
+  sv('nb-sv-hrv',filtered.hrv); sv('nb-sv-hr',filtered.hr,0); sv('nb-sv-gsr',filtered.gsr,2); sv('nb-sv-eeg',filtered.eeg,2);
+
+  const ratio = data.bands ? data.bands.thetaAlphaRatio || (data.bands.theta/Math.max(data.bands.alpha||1,0.01)) : 1.0;
+  const ratioEl = document.getElementById('nb-sv-taratio');
+  if (ratioEl) { ratioEl.textContent = ratio.toFixed(2); ratioEl.style.color = ratio < 1.0 ? 'var(--green)' : ratio < 2.0 ? 'var(--gold)' : 'var(--red)'; }
+
+  const zv = (id,v) => { const e=document.getElementById(id); if(e) { e.textContent=v.toFixed(2); e.style.color=Math.abs(v)>1.5?'var(--red)':Math.abs(v)>0.8?'var(--gold)':'var(--muted)'; } };
+  zv('nb-z-hrv',z.hrv); zv('nb-z-hr',z.hr); zv('nb-z-gsr',z.gsr);
+
+  const sb = (id,p) => { const e=document.getElementById(id); if(e) e.style.width=Math.min(100,Math.max(0,p))+'%'; };
+  sb('nb-sb-hrv',(filtered.hrv/80)*100); sb('nb-sb-hr',((filtered.hr-40)/80)*100);
+  sb('nb-sb-gsr',(filtered.gsr/20)*100); sb('nb-sb-eeg',(filtered.eeg/4)*100);
+  sb('nb-sb-taratio',Math.min(100,ratio/3*100));
+
+  // Kalman display
+  const kv = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v.toFixed(2); };
+  kv('k-hrv',engine.kalman.hrv.x); kv('k-hr',engine.kalman.hr.x); kv('k-gsr',engine.kalman.gsr.x); kv('k-eeg',engine.kalman.eeg.x);
+  kv('kp-hrv',engine.kalman.hrv.P); kv('kp-hr',engine.kalman.hr.P); kv('kp-gsr',engine.kalman.gsr.P); kv('kp-eeg',engine.kalman.eeg.P);
+  const kta = document.getElementById('k-taratio'); if(kta) kta.textContent = ratio.toFixed(3);
+  const kn4 = document.getElementById('k-n400'); if(kn4) kn4.textContent = (ratio > 2.5 ? 'ACTIVE' : 'clear');
+
+  // N400 veto badge
+  const veto = ratio > 2.5;
+  const vetoBadge = document.getElementById('nb-veto-badge');
+  if (vetoBadge) vetoBadge.style.display = veto ? 'inline' : 'none';
+  const vetoStat = document.getElementById('nb-stat-veto');
+  if (vetoStat) { vetoStat.textContent = veto ? 'ACTIVE 🛑' : 'clear'; vetoStat.style.color = veto ? 'var(--red)' : 'var(--eeg)'; }
+
+  // State indicator
+  const META = typeof STATE_META !== 'undefined' ? STATE_META : {};
+  const meta = META[state] || { emoji:'🧘', name: state, ps: 'PS.'+state, cls:'', color:'var(--muted)' };
+  ['nb-state-emoji','nb-state-name','nb-state-ps','nb-state-conf'].forEach((id,i) => {
+    const e = document.getElementById(id);
+    if (!e) return;
+    if (i===0) e.textContent = meta.emoji;
+    else if (i===1) e.textContent = meta.name;
+    else if (i===2) e.textContent = meta.ps;
+    else { e.textContent = (conf*100).toFixed(0)+'%'; e.style.color = meta.color; }
+  });
+  const si = document.getElementById('nb-state-indicator');
+  if (si) si.className = 'state-indicator ' + (meta.cls||'');
+
+  // Stats
+  const ss=document.getElementById('nb-stat-ticks'); if(ss) ss.textContent=tick;
+  const sc=document.getElementById('nb-stat-changes'); if(sc) sc.textContent=stateChanges;
+  const sr=document.getElementById('nb-stat-rules'); if(sr) sr.textContent=rulesFired;
+
+  // Pipeline
+  nbUpdatePipeline(filtered, z, state, matchedRule, ratio, veto, bookAdaptation);
+
+  // Adapt action
+  if (matchedRule) {
+    const adaptLine = bookAdaptation
+      ? `pacing:${bookAdaptation.pacing} · hint:${bookAdaptation.hint_level} · summarize:${bookAdaptation.summarize ? 'on' : 'off'} · break:${bookAdaptation.break_prompt ? 'on' : 'off'}`
+      : 'adaptation: none';
+    const actEl = document.getElementById('nb-adapt-actions');
+    if (actEl) actEl.innerHTML = `<div class="adapt-box"><div class="adapt-title">${_nbEscHtml(matchedRule.id)} - ${_nbEscHtml(matchedRule.action)}</div><div class="adapt-content">${_nbEscHtml(matchedRule.desc)}<br><span style="color:var(--accent)">-> ${_nbEscHtml(state)}</span> conf: ${(conf*100).toFixed(0)}%<br><span style="color:var(--muted)">${_nbEscHtml(adaptLine)}</span></div></div>`;
+    nbAddLog('nb-action-log', matchedRule.id, matchedRule.action + ' → ' + state);
+    nbAddLog('nb-full-log', matchedRule.id, matchedRule.desc);
+  } else if (bookAdaptation) {
+    const recAction = bookPacket?.actions?.recommended_action || 'ACT.MAINTAIN';
+    const actEl = document.getElementById('nb-adapt-actions');
+    if (actEl) actEl.innerHTML = `<div class="adapt-box"><div class="adapt-title">${_nbEscHtml(recAction)}</div><div class="adapt-content">pacing:${_nbEscHtml(bookAdaptation.pacing)} - hint:${_nbEscHtml(bookAdaptation.hint_level)}<br>summarize:${bookAdaptation.summarize ? 'on' : 'off'} - break:${bookAdaptation.break_prompt ? 'on' : 'off'}<br><span style="color:var(--accent)">-> ${_nbEscHtml(state)}</span> conf: ${(conf*100).toFixed(0)}%</div></div>`;
+  }
+
+  nbApplyBookAdaptationToReader(state, conf, bookPacket, bookAdaptation);
+
+  // Rules status
+  nbUpdateKalmanRules(z, filtered);
+  // Waveform
+  nbDrawWaveform();
+  // Kalman trace
+  nbDrawKalmanTrace();
+}
+
+function nbUpdatePipeline(filtered, z, state, rule, ratio, veto, bookAdaptation) {
+  for (let i=1;i<=6;i++) document.getElementById('nb-stage-'+i)?.classList.remove('active-stage');
+  const t = engine.tick % 12;
+  if (t<2)  { document.getElementById('nb-stage-1')?.classList.add('active-stage'); const e=document.getElementById('nb-sv-tick'); if(e) e.textContent=engine.tick; }
+  else if (t<4) { document.getElementById('nb-stage-2')?.classList.add('active-stage'); const e=document.getElementById('nb-sv-filter'); if(e) e.textContent=filtered.hrv.toFixed(1); }
+  else if (t<6) { document.getElementById('nb-stage-3')?.classList.add('active-stage'); const e=document.getElementById('nb-sv-ratio'); if(e) e.textContent=ratio.toFixed(2); }
+  else if (t<8) { document.getElementById('nb-stage-4')?.classList.add('active-stage'); const e=document.getElementById('nb-sv-rule'); if(e) e.textContent=rule?rule.id:'—'; }
+  else if (t<10){ document.getElementById('nb-stage-5')?.classList.add('active-stage'); const e=document.getElementById('nb-sv-veto'); if(e) e.textContent=veto?'🛑 VETO':'pass'; }
+  else {
+    document.getElementById('nb-stage-6')?.classList.add('active-stage');
+    const e=document.getElementById('nb-sv-adapt');
+    if(e) e.textContent = bookAdaptation ? `${bookAdaptation.pacing}/${bookAdaptation.hint_level}` : state;
+  }
+}
+
+function nbRenderRules() {
+  const el = document.getElementById('nb-rules-list'); if (!el) return;
+  el.innerHTML = engine.rules.map(r=>`<div class="rule-item"><div class="rule-id">${_nbEscHtml(r.id)} - P${_nbEscHtml(r.priority)}</div><div class="rule-desc">${_nbEscHtml(r.desc)}</div><div class="rule-action">${_nbEscHtml(r.action)}</div></div>`).join('');
+}
+
+function nbUpdateKalmanRules(z, filtered) {
+  const el = document.getElementById('kalman-rules-status'); if (!el) return;
+  el.innerHTML = engine.rules.map(r=>{
+    let fired = false;
+    try { fired = r.cond(z, filtered); } catch(e) {}
+    return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03)">
+      <div style="width:7px;height:7px;border-radius:50%;background:${fired?'var(--green)':'var(--muted)'}"></div>
+      <span style="color:${fired?'var(--green)':'var(--muted)'}">${_nbEscHtml(r.id)}</span>
+      <span style="flex:1;font-size:0.58rem;">${_nbEscHtml(r.desc)}</span>
+      <span style="color:${fired?'var(--accent)':'var(--muted)'}">${fired?'FIRED':'—'}</span>
+    </div>`;
+  }).join('');
+}
+
+function nbAddLog(containerId, layer, msg) {
+  const el = document.getElementById(containerId); if (!el) return;
+  const now = new Date(); const t=`${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  const item=document.createElement('div'); item.className='eng-log-item';
+  item.innerHTML=`<span class="log-time">[${t}]</span> <span style="color:var(--accent)">${_nbEscHtml(layer)}</span> <span>${_nbEscHtml(msg)}</span>`;
+  el.insertBefore(item,el.firstChild); while(el.children.length>20) el.removeChild(el.lastChild);
+}
+
+function nbDrawWaveform() {
+  const canvas = document.getElementById('nb-wave-canvas'); if (!canvas) return;
+  const W=canvas.offsetWidth||300, H=80; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  const buf = engine.waveBuffer.slice(-W); if (buf.length<2) return;
+  const mn=Math.min(...buf), mx=Math.max(...buf), range=mx-mn||1;
+  ctx.beginPath();
+  buf.forEach((v,i)=>{ const x=i*(W/buf.length), y=H-(v-mn)/range*(H-10)-5; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.strokeStyle='rgba(181,154,255,0.8)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fillStyle='rgba(181,154,255,0.05)'; ctx.fill();
+}
+
+function nbDrawKalmanTrace() {
+  const canvas = document.getElementById('kalman-canvas'); if (!canvas) return;
+  const W=canvas.offsetWidth||300, H=160; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,0,W,H);
+  for(let y=0;y<H;y+=20){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.stroke(); }
+  const hdata=engine.kalmanHistory.hrv;
+  if(hdata.length>1){ ctx.beginPath(); hdata.forEach((v,i)=>{ const x=i*(W/79),y=H-((v-10)/(80-10))*(H-8)-4; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }); ctx.strokeStyle='rgba(0,229,255,0.7)';ctx.lineWidth=1.5;ctx.stroke(); }
+  const hrdata=engine.kalmanHistory.hr;
+  if(hrdata.length>1){ ctx.beginPath(); hrdata.forEach((v,i)=>{ const x=i*(W/79),y=H-((v-40)/(140-40))*(H-8)-4; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }); ctx.strokeStyle='rgba(255,79,106,0.6)';ctx.lineWidth=1;ctx.stroke(); }
+  ctx.font='9px Space Mono,monospace'; ctx.fillStyle='rgba(0,229,255,0.5)'; ctx.fillText('HRV',4,H-4);
+  ctx.fillStyle='rgba(255,79,106,0.5)'; ctx.fillText('HR',50,H-4);
+}
+
+function nbStartEngine() {
+  if(engine.running&&!engine.paused){ if(typeof showToast==='function') showToast('⚙️ Engine already running'); return; }
+  if(engine.paused){ engine.resume(); if(typeof showToast==='function') showToast('▶ Engine resumed'); return; }
+  engine.start('random',500,0.05);
+  if(!nbEngineInited){ nbInitEngine(); nbEngineInited=true; }
+  nbT0=Date.now();
+  if(nbUptimeInterval) clearInterval(nbUptimeInterval);
+  nbUptimeInterval=setInterval(()=>{ const s=Math.floor((Date.now()-nbT0)/1000); const e=document.getElementById('nb-stat-uptime'); if(e)e.textContent=`${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; },1000);
+  nbRenderRules();
+  if(typeof showToast==='function') showToast('▶ NeuroEngine Gen 2 started');
+}
+function nbTogglePause() {
+  if(!engine.running) return;
+  if(engine.paused){ engine.resume(); if(typeof showToast==='function') showToast('▶ Resumed'); }
+  else { engine.pause(); if(typeof showToast==='function') showToast('⏸ Paused'); }
+}
+function nbStopEngine() {
+  engine.stop(); if(nbUptimeInterval){ clearInterval(nbUptimeInterval); nbUptimeInterval=null; }
+  if(typeof showToast==='function') showToast('■ Engine stopped');
+}
+function nbInjectState(state) {
+  engine.inject(state,25);
+  if(typeof showToast==='function') showToast(`💉 Injecting: ${state.toUpperCase()} (25 ticks)`);
+}
+
+// ============================================================
+// NB EXPORT — IndexedDB + CSV/JSON/PDF/Markdown
+// ============================================================
+let nbDb = null;
+
+function nbInitDB() {
+  return new Promise((resolve) => {
+    const req = indexedDB.open('NeuroBookDB', 1);
+    req.onupgradeneeded = e => { const d=e.target.result; if(!d.objectStoreNames.contains('sessions')) d.createObjectStore('sessions',{keyPath:'id',autoIncrement:true}); };
+    req.onsuccess = e => { nbDb=e.target.result; resolve(nbDb); };
+    req.onerror = () => resolve(null);
+  });
+}
+
+function nbBuildReportData() {
+  const hist = typeof stateHistory!=='undefined' ? stateHistory : {};
+  const ratio = typeof simEeg!=='undefined' ? (simEeg.theta/Math.max(simEeg.alpha,0.1)).toFixed(3) : 'N/A';
+  return {
+    metadata: { exported_at:new Date().toISOString(), system:'NeuroBook Gen 2', researcher:'TAWAN Research Team' },
+    engine_stats: { ticks:engine.tick, state_changes:engine.stateChanges, rules_fired:engine.rulesFired, current_state:engine.currentState, confidence:(engine.stateConf*100).toFixed(0)+'%' },
+    kalman_state: Object.entries(engine.kalman).map(([k,v])=>({signal:k,filtered:v.x.toFixed(2),uncertainty:v.P.toFixed(3)})),
+    cognitive_states: Object.entries(hist).map(([k,v])=>({state:k,count:v})),
+    eeg_ratio: ratio,
+    eeg_bands: typeof simEeg!=='undefined' ? {...simEeg} : {},
+    baseline: { hrv:engine.baseline.hrv.toFixed(1), hr:engine.baseline.hr.toFixed(0), gsr:engine.baseline.gsr.toFixed(2) },
+  };
+}
+
+function nbRefreshPreview() {
+  const el=document.getElementById('nb-exp-preview'); if(!el) return;
+  el.textContent=JSON.stringify(nbBuildReportData(),null,2);
+}
+function nbDlBlob(blob,fn){ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
+
+function nbExportJSON() { nbDlBlob(new Blob([JSON.stringify(nbBuildReportData(),null,2)],{type:'application/json'}),`neurobook_session_${Date.now()}.json`); if(typeof showToast==='function') showToast('✓ JSON exported'); }
+function nbExportCSV() {
+  const d=nbBuildReportData(); const rows=[['metric','value','unit']];
+  rows.push(['kalman_ticks',d.engine_stats.ticks,'ticks'],['state_changes',d.engine_stats.state_changes,'count'],['rules_fired',d.engine_stats.rules_fired,'count'],['eeg_theta_alpha_ratio',d.eeg_ratio,'ratio']);
+  d.kalman_state.forEach(s=>rows.push([`kalman_${s.signal}`,s.filtered,'filtered']));
+  if(d.cognitive_states) d.cognitive_states.forEach(s=>rows.push([`state_${s.state}`,s.count,'count']));
+  nbDlBlob(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}),`neurobook_data_${Date.now()}.csv`);
+  if(typeof showToast==='function') showToast('✓ CSV exported');
+}
+function nbExportMarkdown() {
+  const d=nbBuildReportData();
+  const md=`# NeuroBook Gen 2 · Research Session Report\n**ระบบ:** NeuroBook Gen 2 — EEG+Bio Fusion\n**วันที่:** ${new Date().toLocaleString('th-TH')}\n\n## Engine Stats\n| Metric | Value |\n|---|---|\n| Kalman Ticks | ${d.engine_stats.ticks} |\n| State Changes | ${d.engine_stats.state_changes} |\n| Rules Fired | ${d.engine_stats.rules_fired} |\n| θ/α Ratio | ${d.eeg_ratio} |\n\n## Kalman State\n| Signal | Filtered | P |\n|---|---|---|\n${d.kalman_state.map(s=>`| ${s.signal.toUpperCase()} | ${s.filtered} | ${s.uncertainty} |`).join('\n')}\n\n_Generated by NeuroBook Gen 2 · TAWAN Research_`;
+  nbDlBlob(new Blob([md],{type:'text/markdown'}),`neurobook_report_${Date.now()}.md`);
+  if(typeof showToast==='function') showToast('✓ Markdown exported');
+}
+function nbExportPDF() {
+  const d=nbBuildReportData();
+  const html=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>NeuroBook Report</title><style>body{font-family:sans-serif;color:#1a2840;padding:32px;max-width:800px;margin:0 auto;}h1{color:#4433aa;border-bottom:3px solid #4433aa;padding-bottom:8px;}table{border-collapse:collapse;width:100%;margin:12px 0;}th{background:#4433aa;color:#fff;padding:6px 10px;text-align:left;}td{padding:5px 10px;border:1px solid #dee6f0;}tr:nth-child(even){background:#f4f0ff;}</style></head><body><h1>🧠 NeuroBook Gen 2 · Session Report</h1><p>${new Date().toLocaleString('th-TH')}</p><h2>Engine Stats</h2><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Kalman Ticks</td><td>${d.engine_stats.ticks}</td></tr><tr><td>State Changes</td><td>${d.engine_stats.state_changes}</td></tr><tr><td>Rules Fired</td><td>${d.engine_stats.rules_fired}</td></tr><tr><td>θ/α Ratio</td><td>${d.eeg_ratio}</td></tr></table><h2>Kalman Filter State</h2><table><tr><th>Signal</th><th>Filtered</th><th>Uncertainty</th></tr>${d.kalman_state.map(s=>`<tr><td>${s.signal.toUpperCase()}</td><td>${s.filtered}</td><td>${s.uncertainty}</td></tr>`).join('')}</table></body></html>`;
+  const w=window.open('','_blank','width=900,height=700'); w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>w.print(),600);
+  if(typeof showToast==='function') showToast('📄 PDF report opened');
+}
+function nbSaveSession() {
+  if(!nbDb){ if(typeof showToast==='function') showToast('⚠ IndexedDB unavailable'); return; }
+  const session={ ts:new Date().toISOString(), date:new Date().toLocaleDateString('th-TH'), data:nbBuildReportData() };
+  const tx=nbDb.transaction('sessions','readwrite'); tx.objectStore('sessions').add(session);
+  tx.oncomplete=()=>{ if(typeof showToast==='function') showToast('💾 Session saved'); nbLoadSessions(); };
+}
+function nbLoadSessions() {
+  const el=document.getElementById('nb-session-list'); if(!el) return;
+  if(!nbDb){ el.innerHTML='<div style="font-size:0.62rem;color:var(--muted);text-align:center;padding:12px;">กำลังเชื่อมต่อ IndexedDB...</div>'; nbInitDB().then(nbLoadSessions); return; }
+  const tx=nbDb.transaction('sessions','readonly'); const req=tx.objectStore('sessions').getAll();
+  req.onsuccess=e=>{
+    const sessions=e.target.result.reverse();
+    if(!sessions.length){ el.innerHTML='<div style="font-size:0.62rem;color:var(--muted);text-align:center;padding:12px;">ยังไม่มี session ที่บันทึก</div>'; return; }
+    el.innerHTML=sessions.slice(0,10).map(s=>`<div class="session-item"><div><div style="font-weight:700;font-size:0.65rem;">${_nbEscHtml(s.date)}</div><div style="font-size:0.58rem;color:var(--muted);">Ticks:${_nbEscHtml(s.data?.engine_stats?.ticks||'—')} · θ/α:${_nbEscHtml(s.data?.eeg_ratio||'—')}</div></div><span class="session-del" onclick="nbDeleteSession(${Number(s.id)||0})">✕</span></div>`).join('');
+  };
+}
+function nbDeleteSession(id) {
+  if(!nbDb) return;
+  const tx=nbDb.transaction('sessions','readwrite'); tx.objectStore('sessions').delete(id);
+  tx.oncomplete=()=>{ if(typeof showToast==='function') showToast('✕ Deleted'); nbLoadSessions(); };
+}
+
+// ---
+// NB SIMULATOR — Engine-Driven Gen 2 (HumanSim → NuengdeawEngine Gen2 → UI)
+// ---
+// ---
+
+const NB_STATE_ICONS = {
+  FLOW:'🌊', CONFUSION:'😵', BOREDOM:'😴', STRESS:'😰',
+  READY:'🧠', EXCITEMENT:'⚡', FATIGUE:'😪', NEUTRAL:'🧘',
+  flow:'🌊', confusion:'😵', boredom:'😴', stress:'😰',
+  ready:'🧠', excitement:'⚡', fatigue:'😪', neutral:'🧘',
+};
+
+const NB_FTSM = [
+  {id:'SYS.FULL',lv:'L3'},{id:'SYS.EEG_PARTIAL',lv:'L2'},{id:'SYS.EEG_CORE',lv:'L2'},
+  {id:'SYS.BIO_ONLY',lv:'L1'},{id:'SYS.EEG_ONLY',lv:'L2'},{id:'SYS.PASSIVE',lv:'L0'},
+  {id:'SYS.FAULT',lv:'L0'},{id:'SYS.CALIBRATING',lv:'SUS'},
+];
+
+const NB_NEURO_RULES = [
+  {id:'NL-001',name:'Flow · MAINTAIN',      desc:'Alpha↑·θ/α<1.5·HRV↑',        action:'ACT.MAINTAIN'},
+  {id:'NL-002',name:'Overload · SIMPLIFY',  desc:'θ/α>2.0·Confusion↑',          action:'ACT.SIMPLIFY'},
+  {id:'NL-003',name:'N400 Veto · CLARIFY',  desc:'θ>9.0·Confusion↑↑ (highest)', action:'ACT.CLARIFY'},
+  {id:'NL-004',name:'Encoding · ANCHOR',    desc:'Alpha>6·θ/α<1.0·Ready↑',      action:'ACT.ANCHOR'},
+  {id:'NL-005',name:'Drowsy · BREAK',       desc:'Delta>4.5·Alpha>8.0 (safety)', action:'ACT.BREAK'},
+  {id:'NL-006',name:'Boredom · CHALLENGE',  desc:'Alpha↑·θ/α<0.8·Boredom↑',    action:'ACT.CHALLENGE'},
+  {id:'NL-007',name:'EEG Loss · FALLBACK',  desc:'SIGNAL_LOSS>30s → Bio-only',   action:'SET_COMPAT_LEVEL'},
+];
+
+let _nbAdapt = 0, _nbStart = Date.now();
+let nbFstmActive = 'SYS.FULL';
+let nbSimInited = false;
+
+// ── Engine-driven update (replaces nbRunSimStep) ──────────────────
+function _nbOnEngineUpdate(data) {
+  const { tick, filtered:f, z, bands, state, conf, matchedRule, mlPred, n400Veto } = data;
+  const eeg = bands || {};
+  const ratio = eeg.thetaAlphaRatio || (eeg.alpha>0.01 ? (eeg.theta||1)/(eeg.alpha||1) : 1.0);
+
+  // 1. State display
+  const icon = NB_STATE_ICONS[state] || '●';
+  const sd = document.getElementById('sim-state-display');
+  if(sd) sd.innerHTML = `<div style="font-size:2.5rem;">${_nbEscHtml(icon)}</div>
+<div style="font-family:'Space Mono',monospace;font-size:0.8rem;margin-top:6px;">${_nbEscHtml(state)}</div>
+<div style="font-size:0.6rem;color:var(--muted);margin-top:4px;">Confidence: ${(conf*100).toFixed(0)}%</div>
+<div style="font-size:0.55rem;color:var(--eeg);margin-top:2px;">HumanSim: ${_nbEscHtml(typeof HumanSim!=='undefined'?HumanSim.getState():'—')}</div>`;
+
+  // 2. Prob grid (from z-scores Bayesian fusion)
+  const sig = x=>1/(1+Math.exp(-x));
+  const P = {
+    flow:       sig((z.hrv||0)-1.0)*sig(-(z.hr||0)-0.5)*sig(-(z.gsr||0)-0.5),
+    ready:      sig((z.hrv||0)-2.0)*sig(-(z.hr||0)-1.5)*sig(-(z.gsr||0)-1.0),
+    stress:     sig(-(z.hrv||0)-1.5)*sig((z.hr||0)-1.5)*sig((z.gsr||0)-2.0),
+    confusion:  sig(-(z.hrv||0)-1.0)*sig(z.gsr||0)*sig(z.hr||0),
+    boredom:    sig((z.gsr||0)-1.5)*(1-sig(Math.abs(z.hrv||0))),
+    excitement: sig((z.hr||0)-1.0)*sig((z.gsr||0)-1.0),
+    fatigue:    sig(-(z.hrv||0)-0.5)*(1-sig(Math.abs(z.hr||0))),
+    neutral:    0.05,
+  };
+  // EEG fusion layer
+  if(eeg.theta) {
+    P.confusion = 0.60*(ratio>2.0?sig((ratio-2.0)*2):0.05) + 0.40*P.confusion;
+    P.flow      = 0.60*(ratio<1.0&&(eeg.alpha||0)>5?sig((1.0-ratio)*3):0.05) + 0.40*P.flow;
+    P.ready     = 0.60*(ratio<0.8&&(eeg.alpha||0)>6?sig((0.8-ratio)*4):0.05) + 0.40*P.ready;
+    P.boredom   = 0.60*(ratio<0.7&&(eeg.alpha||0)>7?0.4:0.05) + 0.40*P.boredom;
+    P.fatigue   = 0.60*((eeg.delta||0)>4?sig((eeg.delta||0)-4):0.05) + 0.40*P.fatigue;
+  }
+  const total = Object.values(P).reduce((a,b)=>a+Math.max(b,0.001),0);
+  Object.keys(P).forEach(k=>P[k]=Math.max(P[k],0.001)/total);
+
+  const pg = document.getElementById('sim-probs-grid');
+  if(pg) pg.innerHTML = Object.entries(P).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div style="background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:3px;padding:4px;text-align:center;font-family:'Space Mono',monospace;font-size:0.55rem;">
+      <div>${_nbEscHtml(NB_STATE_ICONS[k]||'')}</div>
+      <div style="color:var(--muted)">${_nbEscHtml(k.slice(0,4))}</div>
+      <div style="color:var(--accent)">${(v*100).toFixed(0)}%</div>
+      <div style="height:3px;background:rgba(0,229,255,0.2);margin-top:2px;border-radius:2px;">
+        <div style="height:100%;background:var(--accent);width:${(v*100).toFixed(0)}%;"></div>
+      </div>
+    </div>`).join('');
+
+  // 3. EEG bands display
+  const bandKeys = ['delta','theta','alpha','beta','gamma'];
+  const bandColors = {delta:'#3d5570',theta:'#b59aff',alpha:'#00ffb3',beta:'#00e5ff',gamma:'#ffd166'};
+  const bandVals = {
+    theta: eeg.theta||1.0, alpha: eeg.alpha||1.0,
+    beta:  eeg.beta||1.0,  gamma: eeg.gamma||0.5,
+    delta: eeg.delta || Math.max(0.5, 2.0 - (f.eeg||1.0)*0.6),
+  };
+  bandKeys.forEach(b=>{
+    const vEl = document.getElementById('sv-'+b+'-sim') || document.getElementById('sev-'+b);
+    const barEl = document.getElementById('seb-'+b);
+    if(vEl) vEl.textContent = (bandVals[b]||0).toFixed(1);
+    if(barEl){ barEl.style.height=Math.min(100,(bandVals[b]/15)*100)+'%'; barEl.style.background=bandColors[b]; }
+  });
+
+  // θ/α ratio indicator
+  const rEl = document.getElementById('sim-taratio');
+  if(rEl){ rEl.textContent=ratio.toFixed(2); rEl.style.color=ratio<1.0?'var(--green)':ratio<2.0?'var(--gold)':'var(--red)'; }
+
+  // N400 veto indicator
+  const n4El = document.getElementById('sim-n400');
+  if(n4El){ n4El.textContent=n400Veto?'VETO':'—'; n4El.style.color=n400Veto?'var(--red)':'var(--muted)'; }
+
+  // 4. Rules fired
+  const rf = document.getElementById('sim-rules-fired');
+  if(rf) rf.innerHTML = NB_NEURO_RULES.map(r=>{
+    const fired = matchedRule && matchedRule.id===r.id;
+    return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.02);">
+      <div style="width:7px;height:7px;border-radius:50%;background:${fired?'var(--green)':'var(--muted)'}"></div>
+      <span style="color:${fired?'var(--green)':'var(--muted)'};font-family:'Space Mono',monospace;font-size:0.55rem;">${_nbEscHtml(r.id)}</span>
+      <span style="flex:1;font-size:0.55rem;">${_nbEscHtml(r.name)}</span>
+      <span style="color:${fired?'var(--accent)':'var(--muted)'};font-size:0.55rem;">${_nbEscHtml(fired?r.action:'—')}</span>
+    </div>`;
+  }).join('');
+
+  // 5. Log if rule fired
+  if(matchedRule) {
+    _nbAdapt++;
+    nbSimLog(`${icon} ${state} → ${matchedRule.action} [${matchedRule.id}] conf:${(conf*100).toFixed(0)}%`);
+    const adaptEl = document.getElementById('sim-adapt-count');
+    if(adaptEl) adaptEl.textContent = _nbAdapt;
+  }
+
+  // 6. FTSM active state (auto-detect)
+  const ftsm = n400Veto ? 'SYS.FAULT' : (eeg.theta ? 'SYS.FULL' : 'SYS.BIO_ONLY');
+  if(ftsm !== nbFstmActive){ nbFstmActive=ftsm; _nbUpdateFTSM(); }
+}
+
+function _nbUpdateFTSM() {
+  document.querySelectorAll('.ftsm-item').forEach(e=>e.classList.remove('active'));
+  const el = document.getElementById('ftsm-'+nbFstmActive.replace(/\./g,'_'));
+  if(el) el.classList.add('active');
+}
+
+// ── Scenario controls (UI → HumanSim) ────────────────────────────
+function nbApplyScenario(name) {
+  if(typeof HumanSim==='undefined'){showToast('⚠ HumanSim not loaded');return;}
+  HumanSim.force(name.toUpperCase());
+  document.querySelectorAll('.sim-state-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('scen-'+name)?.classList.add('active');
+  nbSimLog(`Force state → ${name.toUpperCase()}`);
+  showToast('⚡ Force: '+name.toUpperCase());
+}
+
+function nbInitSim() {
+  if(nbSimInited) return;
+  nbSimInited = true;
+  // Build scenario buttons
+  const grid = document.getElementById('sim-scenario-grid');
+  if(grid) grid.innerHTML = Object.keys(NB_STATE_ICONS).filter(k=>k===k.toLowerCase()).map(s=>
+    `<button class="sim-state-btn" id="scen-${s}" onclick="nbApplyScenario('${s}')">${NB_STATE_ICONS[s]||'●'} ${s.toUpperCase()}</button>`
+  ).join('');
+  // Build FTSM
+  const fg = document.getElementById('ftsm-grid');
+  if(fg) fg.innerHTML = NB_FTSM.map(f=>
+    `<div class="ftsm-item ${f.id===nbFstmActive?'active':''}" id="ftsm-${f.id.replace(/\./g,'_')}">${f.id}<br><span style="color:var(--muted)">${f.lv}</span></div>`
+  ).join('');
+}
+
+function nbSimLog(msg) {
+  const el=document.getElementById('sim-log'); if(!el) return;
+  const ts=new Date().toLocaleTimeString('th-TH',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const item=document.createElement('div'); item.className='sim-log-item';
+  item.innerHTML=`<span style="color:var(--eeg);">[${_nbEscHtml(ts)}]</span> ${_nbEscHtml(msg)}`;
+  el.insertBefore(item,el.firstChild); while(el.children.length>50) el.removeChild(el.lastChild);
+}
+
+// ── Scenario shortcuts (for scenario buttons) ────────────────────
+function simAutoToggle() {
+  showToast('💡 Use HumanSim.setScenario() for auto-sequence');
+}
+function simReset() {
+  if(typeof HumanSim!=='undefined') HumanSim.reset();
+  engine.resetStats();
+  _nbAdapt=0; _nbStart=Date.now();
+  const log=document.getElementById('sim-log');
+  if(log) log.innerHTML='<div class="sim-log-item"><span style="color:var(--eeg)">[reset]</span> HumanSim + engine reset</div>';
+  showToast('↺ Reset complete');
+}
+
+// ============================================================
+// NB THEME TOGGLE
+// ============================================================
+function toggleNbTheme() {
+  document.body.classList.toggle('nb-light');
+  if(typeof showToast==='function') showToast(document.body.classList.contains('nb-light')?'☀️ Light mode':'🌙 Dark mode');
+}
+
+// ============================================================
+// BOOT — init DB on page load
+// ============================================================
+window.addEventListener('load', () => {
+  nbInitDB();
+  nbInitSim();
+  // Wire engine update → UI
+  const _nbOrigUpdate = engine.onUpdate;
+  engine.onUpdate = function(data) {
+    if(_nbOrigUpdate) _nbOrigUpdate.call(engine, data);
+    _nbOnEngineUpdate(data);
+  };
+});
+
+// ── EMBED MODE ──
+(function initEmbedMode() {
+  if (!new URLSearchParams(location.search).has('embed')) return;
+  const style = document.createElement('style');
+  style.textContent = `
+    header, footer,
+    .header-pills, .header-center,
+    .bottom-bar, .nb-page,
+    .content-area, .progress-section,
+    .feedback-bar, .mnemonic-anchor,
+    .adapt-badge, .controls,
+    #toast-container { display: none !important; }
+
+    .shell { overflow: hidden; }
+
+    /* --- */
+    .content-split {
+      display: block !important;
+      position: fixed !important;
+      inset: 0 !important;
+      pointer-events: none !important;
+    }
+    .pane-3d {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute !important;
+      inset: 0 !important;
+    }
+    #pane-3d { pointer-events: none !important; }
+    .pane-3d-label, .pane-3d-badges,
+    .fusion-badge, .eeg-wave-overlay { display: none !important; }
+
+    #bg-canvas { opacity: 1 !important; }
+  `;
+  document.head.appendChild(style);
+  if (window.parent !== window) {
+    const targetOrigin = window.NUENGDEAW_PARENT_ORIGIN || window.location.origin;
+    try { window.parent.postMessage({ source:'nuengdeaw-demo', type:'embed-ready' }, targetOrigin); } catch (_) {}
+  }
+})();
+</script>
+<div style="position:fixed;right:10px;bottom:6px;z-index:99999;font-size:10px;font-family:'Space Mono',monospace;color:rgba(180,200,220,.9);pointer-events:none;">© 2026 TAWAN</div>
+</body>
+</html>
+
+

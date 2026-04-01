@@ -1,0 +1,448 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+<title>Nuengdeaw Core Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<!-- LOAD ORDER
+  1. HumanSimSystem.js - simulated human source + lifecycle manager
+  2. SignalAnalysis.js - deception/scoring + artifact detection
+  3. EthicsGuard.js
+  4. ABTestManager.js
+  5. NuengdeawDB.js
+  6. NuengdeawCore.js - main orchestration + interpretation layer
+  7. Chart.js CDN
+  8. dashboard.js     - UI renderer driven by NuengdeawCore
+-->
+<script src="../shared/HumanSimSystem.js"></script>
+<script>
+  /* Bridge for module/browser scope so NuengdeawCore can always read HumanSim. */
+  if(typeof HumanSim==='undefined' && window.HumanSim) var HumanSim = window.HumanSim;
+</script>
+<script src="../shared/SignalAnalysis.js"></script>
+<script src="EthicsGuard.js"></script>
+<script src="../shared/ABTestManager.js"></script>
+<script src="NuengdeawLogger.js"></script>
+<script src="../shared/NuengdeawDB.js"></script>
+<script src="../shared/Nuengdeaw_Foundation_Standard_Bridge.js"></script>
+<script src="../shared/NuengdeawCore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="nuengdeaw-logo">
+        <div class="logo-svg">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+            <defs>
+              <radialGradient id="cg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00f5d4" stop-opacity="0.95"/>
+                <stop offset="70%" stop-color="#2b6ef0" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="gf" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="50" cy="50" r="42" fill="url(#cg)" filter="url(#gf)"/>
+            <line x1="50" y1="50" x2="50" y2="14" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <line x1="50" y1="50" x2="80" y2="28" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <line x1="50" y1="50" x2="80" y2="72" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <line x1="50" y1="50" x2="50" y2="86" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <line x1="50" y1="50" x2="20" y2="72" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <line x1="50" y1="50" x2="20" y2="28" stroke="#00f5d4" stroke-width="1.2" opacity="0.7"/>
+            <circle cx="50" cy="14" r="3" fill="#00f5d4"/><circle cx="80" cy="28" r="3" fill="#2b6ef0"/>
+            <circle cx="80" cy="72" r="3" fill="#00f5d4"/><circle cx="50" cy="86" r="3" fill="#c084fc"/>
+            <circle cx="20" cy="72" r="3" fill="#2b6ef0"/><circle cx="20" cy="28" r="3" fill="#00f5d4"/>
+            <circle cx="50" cy="50" r="10" fill="#00f5d4" opacity="0.85"/>
+            <circle cx="50" cy="50" r="4.5" fill="white" opacity="0.95"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>NUENG<span style="color:var(--gold);">DEAW</span></h1>
+          <p>หนึ่งเดียว · HUMAN STATE CORE</p>
+        </div>
+      </div>
+      <div class="badge"><i class="fas fa-brain"></i> Cognitive-Emotional Twin</div>
+      <div id="source-badge" class="source-badge sim"><i class="fas fa-flask"></i> SIMULATED HUMAN</div>
+    </div>
+    <div class="header-meta">
+      <button id="power-toggle" class="power-toggle on" type="button">ON</button>
+      <div id="tick-badge" class="tick-badge ACTIVE"><i class="fas fa-bolt"></i> ACTIVE 1s</div>
+      <div class="badge"><i class="fas fa-chart-line"></i> adaptive tick &nbsp;|&nbsp; <span id="live-time">--:--:--</span></div>
+    </div>
+  </div>
+
+  <!-- source strip -->
+  <div id="source-strip" class="source-strip sim" style="margin-top:-6px;"></div>
+  <div class="copyright-strip" role="note" aria-label="Copyright notice">
+    <div class="copyright-mark">IP</div>
+    <div class="copyright-copy">
+      <strong>Source-visible only</strong>
+      <p>ซอร์สโค้ด ระบบภาษา และมาตรฐาน <em>Phasa Tawan</em> ในรีโปนี้เปิดให้ดูเพื่อการตรวจสอบและอ้างอิงเท่านั้น การนำไปใช้ คัดลอก ดัดแปลง แจกจ่าย ผนวกรวม หรือใช้เชิงพาณิชย์ ต้องได้รับอนุญาตเป็นลายลักษณ์อักษรจากเจ้าของลิขสิทธิ์ก่อน</p>
+    </div>
+    <div class="copyright-actions">
+      <a class="copyright-link" href="../../LICENSE">License</a>
+      <a class="copyright-link" href="../../NOTICE.md">Notice</a>
+    </div>
+  </div>
+
+  <!-- 4 CARD GRID -->
+  <div class="grid">
+    <!-- EMOTION -->
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-heartbeat"></i> อารมณ์ปัจจุบัน</h3><i class="fas fa-smile"></i></div>
+      <span class="metric-value" id="emotion-name">--</span>
+      <div class="emotion-badge" style="margin:10px 0;"><i class="fas fa-mask"></i> แสดงออก: <span id="displayed-emotion">--</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="masking-fill" style="background:#c084fc"></div></div>
+      <div style="font-size:0.7rem;margin-top:6px;">
+        ความเข้มข้น <span id="emotion-intensity-val">0%</span> &nbsp;|&nbsp; Masking <span id="mask-level-inline">0%</span>
+      </div>
+    </div>
+
+    <!-- PHYSIOLOGY -->
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-heartbeat"></i> สัญญาณชีพ</h3><i class="fas fa-heart"></i></div>
+      <div><span class="metric-value" id="hr-val">--</span><span class="metric-unit"> bpm</span> &nbsp; HRV <span id="hrv-val">--</span><span class="metric-unit"> ms</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="hr-fill" style="background:#f87171"></div></div>
+      <div><span id="gsr-val">--</span><span class="metric-unit"> µS</span> &nbsp;|&nbsp; RR <span id="rr-val">--</span><span class="metric-unit">/min</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="gsr-fill" style="background:#fb923c"></div></div>
+      <div style="font-size:0.7rem;margin-top:6px;">EEG Theta <span id="theta-val">-</span> Alpha <span id="alpha-val">-</span> Beta <span id="beta-val">-</span> Gamma <span id="gamma-val">-</span></div>
+      <div id="sensor-valid-row" class="mem-row" style="display:none;">
+        <span><i class="fas fa-shield-alt"></i> Sensor</span>
+        <span class="mem-val" id="sensor-valid-val">-</span>
+      </div>
+    </div>
+
+    <!-- COGNITIVE -->
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-microchip"></i> ภาระสมอง</h3><i class="fas fa-charging-station"></i></div>
+      <div><span class="metric-value" id="cog-load">--</span><span class="metric-unit"> cognitive load</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="cog-fill"></div></div>
+      <div>โฟกัส <span id="attention-val">--</span>% &nbsp;|&nbsp; error <span id="error-val">--</span>%</div>
+      <div class="progress-bar"><div class="progress-fill" id="attention-fill" style="background:#c084fc"></div></div>
+      <div>ความมั่นใจ <span id="confidence-val">--</span>% &nbsp; anxiety base <span id="anxiety-base">--</span>%</div>
+      <div class="mem-row"><span>Semantic concepts</span><span class="mem-val" id="sem-count">0</span></div>
+      <div class="mem-row"><span>Autobiographical</span><span class="mem-val" id="autobio-count">0</span></div>
+    </div>
+
+    <!-- WELLBEING -->
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-leaf"></i> สุขภาวะและความเสี่ยง</h3><i class="fas fa-chart-pie"></i></div>
+      <div><span class="metric-value" id="wellbeing-score">--</span><span class="metric-unit"> wellbeing</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="well-fill" style="background:#4ade80"></div></div>
+      <div><span class="metric-value" id="risk-level" style="color:#fb923c;">--</span><span class="metric-unit"> ความเสี่ยง</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="risk-fill" style="background:#f97316"></div></div>
+      <div style="font-size:0.7rem;margin-top:4px;">
+        Social <span id="social-pressure">--</span>% &nbsp;|&nbsp; Baseline <span id="baseline-status">--</span>
+      </div>
+      <div class="mem-row">
+        <span>Personal weight</span>
+        <span class="mem-val" id="personal-weight-val">60%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE + REC -->
+  <div class="wide-row">
+    <div class="card timeline-card">
+      <div class="card-header"><h3><i class="fas fa-chart-scatter"></i> ประวัติ 60 วินาที</h3><i class="fas fa-history"></i></div>
+      <div class="chart-wrapper"><canvas id="timelineChart"></canvas></div>
+      <div style="font-size:0.62rem;margin-top:4px;color:var(--text-secondary);">
+        เส้นเขียว: Cognitive Load &nbsp;|&nbsp; เส้นฟ้า: HR/10 &nbsp;|&nbsp; เส้นม่วง: Wellbeing
+      </div>
+    </div>
+
+    <div class="card recommend-card">
+      <div class="card-header"><h3><i class="fas fa-comment-dots"></i> คำแนะนำ</h3><i class="fas fa-robot"></i></div>
+      <div id="recommend-message">Loading...</div>
+      <div id="action-buttons"></div>
+      <div id="quick-ask" style="display:flex;gap:8px;margin-top:10px;">
+        <input type="text" id="ask-input" placeholder="Ask Core, e.g. 'tick', 'insight', 'datasource'...">
+        <button id="ask-btn" class="primary">Ask</button>
+      </div>
+      <div id="qa-answer"></div>
+    </div>
+
+    <div class="card insights-card">
+      <div class="card-header"><h3><i class="fas fa-sparkles"></i> Insights</h3><i class="fas fa-chart-line"></i></div>
+      <div id="insight-list" class="insight-list">
+        <span style="color:var(--gray-muted);font-size:0.65rem;">Collecting data... (at least 10 session records recommended)</span>
+      </div>
+      <div style="margin-top:10px;">
+        <button onclick="refreshInsights()" style="font-size:0.65rem;padding:3px 8px;">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="card ops-card">
+      <div class="card-header"><h3><i class="fas fa-sliders-h"></i> System Panels</h3><i class="fas fa-toolbox"></i></div>
+      <div class="rec-sections">
+        <div class="panel panel-silver" id="human-sim-panel">
+        <h4>WEARABLE TRANSITION</h4>
+        <div class="hs-status-row">
+          <div>
+            <div id="hs-title" class="hs-title">กำลังตรวจสอบสถานะ...</div>
+            <div id="hs-summary" class="hs-summary">Waiting for core data</div>
+          </div>
+          <div id="hs-stage-badge" class="hs-stage-badge">--</div>
+        </div>
+        <div class="hs-health-track">
+          <div id="hs-health-fill" class="hs-health-fill" style="width:100%;"></div>
+        </div>
+        <div class="hs-metrics">
+          <div class="stat-row"><span>Health</span><span class="stat-val" id="hs-health-val">100%</span></div>
+          <div class="stat-row"><span>Confidence cap</span><span class="stat-val" id="hs-confidence-cap">70%</span></div>
+          <div class="stat-row"><span>Memory retention</span><span class="stat-val" id="hs-memory-retention">100%</span></div>
+          <div class="stat-row"><span>Remaining</span><span class="stat-val" id="hs-remaining-days">7 วัน</span></div>
+          <div class="stat-row"><span>Wearable quality</span><span class="stat-val" id="hs-quality">-</span></div>
+          <div class="stat-row"><span>Recovery cycles</span><span class="stat-val" id="hs-reincarnations">0</span></div>
+        </div>
+        <div id="hs-notice" class="hs-notice">Simulation fallback is available while the system transitions to wearable data.</div>
+        <div id="hs-policy" class="hs-policy">No lifecycle-driven personal-data reduction is active yet.</div>
+        <div class="hs-actions">
+          <button type="button" id="hs-extend-btn" class="primary"><i class="fas fa-hourglass-half"></i> Extend 1 day</button>
+          <button type="button" id="hs-retire-btn" class="warn-btn"><i class="fas fa-skull"></i> Retire now</button>
+          <button type="button" id="hs-disconnect-btn"><i class="fas fa-plug-circle-xmark"></i> Report wearable disconnect</button>
+        </div>
+      </div>
+
+      <!-- CONSUMER REGISTRY -->
+      <div class="panel panel-violet">
+        <h4>CONNECT - consumers</h4>
+        <div class="consumer-list" id="consumer-list">
+          <span style="color:var(--gray-muted);font-size:0.65rem;">ยังไม่มี consumer</span>
+        </div>
+        <div class="consumer-add">
+          <input type="text" id="consumer-name-input" placeholder="ชื่อ consumer">
+          <button class="primary" onclick="addConsumer()" style="font-size:0.68rem;padding:4px 10px;">+ Register</button>
+        </div>
+      </div>
+
+      <!-- DB STATUS -->
+      <div class="panel panel-cyan">
+        <h4>DB STATUS</h4>
+        <div class="stat-row"><span>Storage mode</span><span class="stat-val" id="db-storage-mode">checking...</span></div>
+        <div class="stat-row"><span>Encryption</span><span class="stat-val" id="db-encryption">-</span></div>
+        <div class="stat-row"><span>Auth status</span><span class="stat-val" id="db-auth-status">locked</span></div>
+        <div class="stat-row"><span>Crypto binding</span><span class="stat-val" id="db-crypto-binding">-</span></div>
+        <div class="stat-row"><span>Sessions</span><span class="stat-val" id="db-sessions">-</span></div>
+        <div class="stat-row"><span>Events</span><span class="stat-val" id="db-events">-</span></div>
+        <div class="stat-row"><span>Labels (GT)</span><span class="stat-val" id="db-labels">-</span></div>
+        <div class="stat-row"><span>localStorage</span><span class="stat-val" id="db-ls">-</span></div>
+        <div style="margin-top:8px;font-size:0.65rem;color:var(--text-secondary);">Security unlock:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+          <input type="password" id="security-passphrase" minlength="8" placeholder="Passphrase 8+ chars" style="flex:1 1 180px;font-size:0.65rem;padding:6px 8px;background:#111827;border:1px solid #2d3748;border-radius:6px;color:white;">
+          <button id="security-unlock-btn" style="font-size:0.65rem;padding:3px 8px;">Unlock</button>
+          <button id="security-lock-btn" style="font-size:0.65rem;padding:3px 8px;">Lock</button>
+          <button id="security-audit-btn" style="font-size:0.65rem;padding:3px 8px;">Audit Log</button>
+        </div>
+        <div id="security-hint" style="margin-top:6px;font-size:0.62rem;color:var(--text-secondary);">
+          Export และ audit log จะถูกกั้นจนกว่าจะปลดล็อกด้วย passphrase
+        </div>
+        <div style="margin-top:10px;font-size:0.65rem;color:var(--text-secondary);">Consent:</div>
+        <div id="consent-controls" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:4px;">
+          <label style="font-size:0.65rem;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="consent-physiological"> physiological</label>
+          <label style="font-size:0.65rem;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="consent-cognitive"> cognitive</label>
+          <label style="font-size:0.65rem;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="consent-emotional"> emotional</label>
+          <label style="font-size:0.65rem;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="consent-semantic"> semantic</label>
+          <label style="font-size:0.65rem;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="consent-export"> export</label>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <button id="consent-save-btn" style="font-size:0.65rem;padding:3px 8px;">Save Consent</button>
+          <button id="delete-user-data-btn" style="font-size:0.65rem;padding:3px 8px;color:#fca5a5;border-color:#fca5a5;">Delete User Data</button>
+        </div>
+        <div id="audit-log-preview" style="margin-top:8px;max-height:120px;overflow:auto;font-size:0.6rem;line-height:1.45;color:#cbd5e1;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:8px;">Audit log locked.</div>
+        <div style="margin-top:8px;font-size:0.65rem;color:var(--text-secondary);">Retention (days):</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+          <label style="font-size:0.65rem;display:flex;flex-direction:column;gap:2px;">
+            sessions<input type="number" id="ret-sessions" min="1" max="90" value="7" style="width:52px;font-size:0.65rem;padding:2px 6px;background:#111827;border:1px solid #2d3748;border-radius:6px;color:white;">
+          </label>
+          <label style="font-size:0.65rem;display:flex;flex-direction:column;gap:2px;">
+            events<input type="number" id="ret-events" min="1" max="90" value="7" style="width:52px;font-size:0.65rem;padding:2px 6px;background:#111827;border:1px solid #2d3748;border-radius:6px;color:white;">
+          </label>
+          <label style="font-size:0.65rem;display:flex;flex-direction:column;gap:2px;">
+            labels<input type="number" id="ret-labels" min="7" max="365" value="90" style="width:52px;font-size:0.65rem;padding:2px 6px;background:#111827;border:1px solid #2d3748;border-radius:6px;color:white;">
+          </label>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <button onclick="applyRetention()" style="font-size:0.65rem;padding:3px 8px;">Apply Retention</button>
+          <button onclick="exportData('csv')" style="font-size:0.65rem;padding:3px 8px;">CSV 7d</button>
+          <button onclick="exportData('json')" style="font-size:0.65rem;padding:3px 8px;">JSON 7d</button>
+          <button onclick="nukeDB()" style="font-size:0.65rem;padding:3px 8px;color:#f87171;border-color:#f87171;">Nuke DB</button>
+        </div>
+      </div>
+
+      <!-- CALIBRATION STATUS -->
+      <div class="panel panel-orange">
+        <h4>CALIBRATION - feedback loop</h4>
+        <div class="stat-row"><span>Labels collected</span><span class="stat-val" id="calib-labels">0</span></div>
+        <div class="stat-row"><span>Personal weight</span><span class="stat-val" id="calib-pw">60%</span></div>
+        <div class="stat-row"><span>Confirm streak</span><span class="stat-val" id="calib-streak">0</span></div>
+        <div class="stat-row"><span>EMA states</span><span class="stat-val" id="calib-ema">-</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button onclick="simulateFeedback()" style="font-size:0.65rem;padding:3px 8px;">
+            <i class="fas fa-vial"></i> ทดสอบ Feedback
+          </button>
+          <button onclick="resetCalibration()" style="font-size:0.65rem;padding:3px 8px;color:#f87171;border-color:#f87171;">
+            Reset Calib
+          </button>
+        </div>
+      </div>
+
+      <!-- CHANGELOG -->
+      <div class="panel panel-gold">
+        <h4>CHANGELOG</h4>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>AdaptiveTick</strong> - ACTIVE(1s)/STABLE(5s)/IDLE(30s) + Page Visibility API</span></div>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>SensorValidator</strong> - clamp + noise gate + confidence ต่อ signal</span></div>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>FeedbackTrigger</strong> - toast ถาม user ยืนยันอารมณ์ทุก 3 นาที</span></div>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>CalibrationEngine</strong> - EMA per state, personalWeight 0.6 -> 0.85</span></div>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>InsightEngine</strong> - peakWindow / patternAlert / wellbeingTrend</span></div>
+        <div class="cl-item"><span class="cl-tag new">NEW</span><span class="cl-text"><strong>Refactor</strong> - แยกเป็น 7 ไฟล์ตาม readme</span></div>
+        <div class="cl-item"><span class="cl-tag chg">CHG</span><span class="cl-text"><strong>Retention</strong> - configurable per store + daily prune interval</span></div>
+        <div class="cl-item"><span class="cl-tag fix">FIX</span><span class="cl-text">beforeunload flush - ไม่ drop data เมื่อปิด tab</span></div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROL PANEL -->
+  <div class="control-panel">
+    <div class="ctrl-group">
+      <span style="font-size:0.65rem;color:var(--text-secondary);">SOURCE</span>
+      <button id="btn-sim" class="primary" onclick="switchSource('simulator')"><i class="fas fa-flask"></i> Simulated Human</button>
+      <button id="btn-wear" class="warn-btn" onclick="switchSource('wearable')"><i class="fas fa-watch"></i> Wearable</button>
+    </div>
+    <div class="ctrl-divider"></div>
+    <div class="ctrl-group">
+      <i class="fas fa-flag-checkered" style="color:var(--text-secondary);font-size:0.8rem;"></i>
+      <select id="scenario-select">
+        <option value="">-- เลือกสถานการณ์ --</option>
+        <option value="wearable_monitoring_normal">การทำงานปกติ</option>
+        <option value="acute_stress_episode">เครียดเฉียบพลัน</option>
+        <option value="hypoarousal_recovery">ฟื้นตัวจากอ่อนล้า</option>
+        <option value="anxiety_escalation">ความกังวลเพิ่มขึ้น</option>
+        <option value="positive_arousal_flow">ภาวะลื่นไหล</option>
+        <option value="recovery">ฟื้นตัว</option>
+      </select>
+      <button id="reset-sim"><i class="fas fa-sync-alt"></i> รีเซ็ต</button>
+      <button id="export-csv"><i class="fas fa-download"></i> CSV</button>
+    </div>
+    <div class="ctrl-divider"></div>
+    <div class="personality-sliders">
+      <div class="slider-item">เปิดกว้าง<input type="range" id="openness" min="0" max="1" step="0.05" value="0.5"></div>
+      <div class="slider-item">มีวินัย<input type="range" id="conscientiousness" min="0" max="1" step="0.05" value="0.5"></div>
+      <div class="slider-item">สังคม<input type="range" id="extraversion" min="0" max="1" step="0.05" value="0.5"></div>
+      <div class="slider-item">เห็นใจ<input type="range" id="agreeableness" min="0" max="1" step="0.05" value="0.5"></div>
+      <div class="slider-item">อ่อนไหว<input type="range" id="neuroticism" min="0" max="1" step="0.05" value="0.5"></div>
+    </div>
+  </div>
+
+  <div class="wide-row modules-row" style="margin-top:14px;">
+    <div class="card modules-card">
+      <div class="card-header"><h3><i class="fas fa-rocket"></i> Product Modules</h3><i class="fas fa-diagram-project"></i></div>
+      <div class="rec-sections module-grid-six">
+        <div class="panel panel-silver">
+          <h4>ORIGINAL - BASE ARCHITECTURE</h4>
+          <div id="foundation-standard-status" class="hs-summary">Loading central standard...</div>
+          <div class="hs-summary" style="margin-top:8px;"><strong>What it is:</strong> The single AI foundation bound to <code>phasa-tawan-foundation.json</code>.</div>
+          <div class="hs-summary"><strong>What it's for:</strong> Shared core logic, safety, and data standards used by all product generations.</div>
+          <div class="hs-summary"><strong>Language standard:</strong> English for shared UI labels, architecture notes, and module descriptions.</div>
+        </div>
+        <div class="panel panel-cyan">
+          <h4>GEN 1 - BIOSIGNAL PRODUCT</h4>
+          <div class="hs-summary">Wearable biosignal runtime derived from the Original AI foundation.</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="../gen1/"><button type="button" class="primary"><i class="fas fa-book-open"></i> Open Gen1</button></a>
+          </div>
+        </div>
+        <div class="panel panel-violet">
+          <h4>GEN 2 - NEUROSIGNAL PRODUCT</h4>
+          <div class="hs-summary">EEG and biosignal product runtime extended from the same foundation.</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="../gen2/"><button type="button" class="primary"><i class="fas fa-brain"></i> Open Gen2</button></a>
+          </div>
+        </div>
+        <div class="panel panel-silver">
+          <h4>GEN 3 - WELLNESS PRODUCT</h4>
+          <div class="hs-summary">Wellness-focused psychophysiological dashboard for recovery, balance, and session health.</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="../gen3/"><button type="button" class="primary"><i class="fas fa-leaf"></i> Open Gen3</button></a>
+          </div>
+        </div>
+        <div class="panel panel-gold">
+          <h4>GEN 4 - LLM ORCHESTRATION</h4>
+          <div class="hs-summary">Connector hub for major AI chat providers with routing, safety, and multi-model strategy.</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="../gen4/"><button type="button" class="primary"><i class="fas fa-network-wired"></i> Open Gen4</button></a>
+          </div>
+        </div>
+        <div class="panel panel-aurora">
+          <h4>GEN 999 - IF I'M STILL AROUND</h4>
+          <div class="hs-summary">Product name reserved. Concept and architecture are intentionally left undefined for future direction.</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="../gen999/"><button type="button" class="primary"><i class="fas fa-hourglass-half"></i> Reserved Slot</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;text-align:center;font-size:0.66rem;color:var(--text-secondary);letter-spacing:0.04em;">
+    © 2026 TAWAN
+  </div>
+</div>
+
+<!-- Dashboard logic - load last after all dependencies + Chart.js -->
+<script
+  src="dashboard.js"
+  onload="window.__dashboardScriptTagLoaded=true"
+  onerror="(function(){var recommend=document.getElementById('recommend-message');if(recommend)recommend.textContent='Failed to load dashboard.js';})();"
+></script>
+<script>
+  (function () {
+    var recommend = document.getElementById('recommend-message');
+    var liveTime = document.getElementById('live-time');
+    var foundationStatus = document.getElementById('foundation-standard-status');
+    if (recommend && recommend.textContent.trim() === 'Loading...') {
+      recommend.textContent = 'Bootstrapping dashboard...';
+    }
+    if (liveTime && liveTime.textContent.trim() === '--:--:--') {
+      liveTime.textContent = new Date().toLocaleTimeString('en-GB');
+    }
+    if (window.NuengdeawFoundationStandardBridge && foundationStatus) {
+      window.NuengdeawFoundationStandardBridge.ready().then(function (foundation) {
+        var source = foundation && foundation.standard && foundation.standard.source ? foundation.standard.source.path : 'embedded fallback';
+        foundationStatus.textContent = 'Central standard bound to foundation: ' + source;
+      }).catch(function (error) {
+        foundationStatus.textContent = 'Foundation standard fallback active: ' + error.message;
+      });
+    }
+    if (window.bootDashboard) {
+      try {
+        window.bootDashboard();
+      } catch (error) {
+        if (recommend) recommend.textContent = 'Dashboard bootstrap failed: ' + error.message;
+      }
+    } else if (!window.__dashboardFileLoaded && recommend) {
+      recommend.textContent = 'dashboard.js failed before execution. Hard refresh to clear stale cached script.';
+    } else if (recommend) {
+      recommend.textContent = 'dashboard.js did not expose bootDashboard().';
+    }
+  })();
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 24px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 13px "Segoe UI", Arial, sans-serif; fill: #475569; }
+      .label { font: 700 13px "Segoe UI", Arial, sans-serif; fill: #0f172a; letter-spacing: .2px; }
+      .desc { font: 500 12px "Segoe UI", Arial, sans-serif; fill: #334155; }
+      .lane { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.2; rx: 14; }
+      .source { fill: #e0f2fe; stroke: #0284c7; stroke-width: 1.2; rx: 10; }
+      .core { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.2; rx: 10; }
+      .state { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.2; rx: 10; }
+      .gen { fill: #ecfeff; stroke: #0891b2; stroke-width: 1.2; rx: 10; }
+      .llm { fill: #fef2f2; stroke: #dc2626; stroke-width: 1.2; rx: 10; }
+      .out { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.2; rx: 10; }
+      .line { stroke: #475569; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .line-dash { stroke: #64748b; stroke-width: 1.6; fill: none; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .foot { font: 500 11px "Segoe UI", Arial, sans-serif; fill: #64748b; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="860"/>
+  <text class="title" x="40" y="42">Signal Flow Architecture (Standalone)</text>
+  <text class="subtitle" x="40" y="64">Core-first pipeline with modular products. LLM is separated as an independent product line.</text>
+  <text class="subtitle" x="40" y="82">Phasa-Tawan naming is embedded in each module label.</text>
+
+  <!-- Lanes -->
+  <rect class="lane" x="30" y="88" width="1140" height="130"/>
+  <rect class="lane" x="30" y="234" width="1140" height="190"/>
+  <rect class="lane" x="30" y="440" width="1140" height="150"/>
+  <rect class="lane" x="30" y="606" width="1140" height="170"/>
+
+  <text class="subtitle" x="50" y="112">Input Sources</text>
+  <text class="subtitle" x="50" y="258">Core Processing Layer (Shared)</text>
+  <text class="subtitle" x="50" y="464">Product Modules</text>
+  <text class="subtitle" x="50" y="630">Contracts and Output Channels</text>
+
+  <!-- Sources -->
+  <rect class="source" x="70" y="130" width="230" height="64"/>
+  <text class="label" x="86" y="154">Simulator Stream (ธารจำลอง)</text>
+  <text class="desc" x="86" y="175">Synthetic HR/HRV/GSR/EEG events</text>
+
+  <rect class="source" x="330" y="130" width="230" height="64"/>
+  <text class="label" x="346" y="154">Wearable Stream (ธารสวมใส่)</text>
+  <text class="desc" x="346" y="175">Device telemetry and raw biosignals</text>
+
+  <rect class="source" x="590" y="130" width="230" height="64"/>
+  <text class="label" x="606" y="154">Behavior Stream (ธารพฤติกรรม)</text>
+  <text class="desc" x="606" y="175">Dwell, scroll, return, interaction signals</text>
+
+  <rect class="source" x="850" y="130" width="280" height="64"/>
+  <text class="label" x="866" y="154">Optional External Sensors (ธารเสริม)</text>
+  <text class="desc" x="866" y="175">Future adapters without core rewrite</text>
+
+  <!-- Core pipeline -->
+  <rect class="core" x="70" y="282" width="210" height="66"/>
+  <text class="label" x="86" y="306">Signal Intake + Validation (ประตูสัญญาณ)</text>
+  <text class="desc" x="86" y="328">Schema check, missing-field guard</text>
+
+  <rect class="core" x="305" y="282" width="210" height="66"/>
+  <text class="label" x="321" y="306">Denoise + Normalization (ชำระสัญญาณ)</text>
+  <text class="desc" x="321" y="328">Kalman + baseline normalization</text>
+
+  <rect class="core" x="540" y="282" width="210" height="66"/>
+  <text class="label" x="556" y="306">Fusion + Rules Engine (หลอมสัญญาณ)</text>
+  <text class="desc" x="556" y="328">Fusion model and deterministic rules</text>
+
+  <rect class="core" x="775" y="282" width="210" height="66"/>
+  <text class="label" x="791" y="306">Safety + Ethics Gate (เกราะจริยธรรม)</text>
+  <text class="desc" x="791" y="328">Risk bounding, unsafe output filter</text>
+
+  <rect class="state" x="340" y="360" width="520" height="48"/>
+  <text class="label" x="356" y="388">Unified State Packet (พัสดุสถานะกลาง): state, confidence, risk, wellbeing, adaptation hints</text>
+
+  <!-- Products -->
+  <rect class="gen" x="90" y="484" width="230" height="74"/>
+  <text class="label" x="106" y="510">Gen 1: BioSignal Product (ชีพสัญญาณ)</text>
+  <text class="desc" x="106" y="532">Bio stream specialization only</text>
+  <text class="desc" x="106" y="548">No EEG dependency</text>
+
+  <rect class="gen" x="350" y="484" width="230" height="74"/>
+  <text class="label" x="366" y="510">Gen 2: NeuroSignal Product (ประสาทสัญญาณ)</text>
+  <text class="desc" x="366" y="532">Gen1 + EEG feature extension</text>
+  <text class="desc" x="366" y="548">Adds neuro-specific rules</text>
+
+  <rect class="gen" x="610" y="484" width="230" height="74"/>
+  <text class="label" x="626" y="510">Gen 3: Wellness Product (สุขภาวะ)</text>
+  <text class="desc" x="626" y="532">Session health and recovery scoring</text>
+  <text class="desc" x="626" y="548">Uses same core packet</text>
+
+  <rect class="llm" x="870" y="484" width="260" height="74"/>
+  <text class="label" x="886" y="510">Gen 4: LLM Product (ศูนย์พจน์กล)</text>
+  <text class="desc" x="886" y="532">Independent orchestration product line</text>
+  <text class="desc" x="886" y="548">Ready for tokenized API in future</text>
+
+  <!-- Contracts and outputs -->
+  <rect class="out" x="120" y="650" width="430" height="74"/>
+  <text class="label" x="136" y="676">Standard Contract (JSON) (สัญญากลาง)</text>
+  <text class="desc" x="136" y="698">Portable schema for all product outputs</text>
+  <text class="desc" x="136" y="714">Single source of integration truth</text>
+
+  <rect class="out" x="580" y="650" width="260" height="74"/>
+  <text class="label" x="596" y="676">UI / Runtime Channels (เวทีแสดงผล)</text>
+  <text class="desc" x="596" y="698">Dashboard, reader, wellness panels</text>
+  <text class="desc" x="596" y="714">Realtime render and controls</text>
+
+  <rect class="llm" x="870" y="650" width="260" height="74"/>
+  <text class="label" x="886" y="676">Future API Token Gateway (ประตูโทเคน)</text>
+  <text class="desc" x="886" y="698">Auth, rate-limit, provider routing</text>
+  <text class="desc" x="886" y="714">Public API surface for LLM product</text>
+
+  <!-- Flow lines -->
+  <line class="line" x1="185" y1="194" x2="175" y2="282"/>
+  <line class="line" x1="445" y1="194" x2="410" y2="282"/>
+  <line class="line" x1="705" y1="194" x2="645" y2="282"/>
+  <line class="line" x1="990" y1="194" x2="880" y2="282"/>
+
+  <line class="line" x1="280" y1="315" x2="305" y2="315"/>
+  <line class="line" x1="515" y1="315" x2="540" y2="315"/>
+  <line class="line" x1="750" y1="315" x2="775" y2="315"/>
+  <line class="line" x1="880" y1="348" x2="600" y2="360"/>
+
+  <line class="line" x1="600" y1="408" x2="205" y2="484"/>
+  <line class="line" x1="600" y1="408" x2="465" y2="484"/>
+  <line class="line" x1="600" y1="408" x2="725" y2="484"/>
+  <line class="line" x1="600" y1="408" x2="1000" y2="484"/>
+
+  <line class="line" x1="205" y1="558" x2="290" y2="650"/>
+  <line class="line" x1="465" y1="558" x2="335" y2="650"/>
+  <line class="line" x1="725" y1="558" x2="710" y2="650"/>
+  <line class="line-dash" x1="1000" y1="558" x2="1000" y2="650"/>
+
+  <text class="foot" x="40" y="820">Design note: Base/Core stays stable. New products can extend via JSON contract without changing core runtime behavior.</text>
+</svg>

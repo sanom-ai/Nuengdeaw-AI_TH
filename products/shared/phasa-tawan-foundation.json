@@ -1,0 +1,1332 @@
+﻿{
+    "document_name":  "Phasa Tawan Foundation for Nuengdeaw AI",
+    "document_type":  "language-standard-and-manifesto",
+    "version":  "1.0.0",
+    "source_files":  [
+                         "phasa-tawan-foundation.json"
+                     ],
+    "standard":  {
+                     "spec_name":  "Phasa Tawan - Nuengdeaw AI Core Language Standard",
+                     "version":  "1.0.0",
+                     "status":  "active-foundation",
+                     "source":  {
+                                    "type":  "original-base-foundation",
+                                    "path":  "phasa-tawan-foundation.json",
+                                    "generated_at":  "2026-03-26"
+                                },
+                     "identity":  {
+                                      "standardName":  "Phasa Tawan",
+                                      "runtimeName":  "Phasa Tawan for Nuengdeaw AI",
+                                      "lineage_name":  "Phasa Tawan",
+                                      "purpose":  "มาตรฐานภาษากลางสำหรับระบบประมวลผลสัญญาณชีวมาตรและสัญญาณประสาท",
+                                      "design_intent":  [
+                                                            "ใช้เป็นภาษากลางระหว่างเอกสารมาตรฐาน กฎตัดสินใจ และเอนจินของน้องหนึ่งเดียว",
+                                                            "แยก vocabulary มาตรฐานออกจาก logic ที่ hardcode อยู่ในไฟล์ JavaScript",
+                                                            "ทำให้ตรวจสอบความสอดคล้องระหว่างเอกสารและโค้ดได้ง่าย"
+                                                        ]
+                                  },
+                     "ethics":  {
+                                    "minimumConfidenceForAmbiguousZone":  0.7,
+                                    "hardConstraints":  [
+                                                            {
+                                                                "id":  "ETH-1",
+                                                                "title":  "Anti-Coercion \u0026 Interrogation",
+                                                                "rules":  [
+                                                                              "ข้อห้ามในการนำไปใช้เพื่อการบังคับและสอบสวน"
+                                                                          ]
+                                                            },
+                                                            {
+                                                                "id":  "ETH-2",
+                                                                "title":  "Anti-Behavioral Control",
+                                                                "rules":  [
+                                                                              "ข้อห้ามในการควบคุมพฤติกรรม"
+                                                                          ]
+                                                            },
+                                                            {
+                                                                "id":  "ETH-3",
+                                                                "title":  "Neuro-Privacy",
+                                                                "rules":  [
+                                                                              "การคุ้มครองความเป็นส่วนตัวทางระบบประสาท"
+                                                                          ]
+                                                            },
+                                                            {
+                                                                "id":  "ETH-4",
+                                                                "title":  "Accuracy Disclaimer",
+                                                                "rules":  [
+                                                                              "ข้อจำกัดความรับผิดชอบด้านความแม่นยำ"
+                                                                          ]
+                                                            },
+                                                            {
+                                                                "id":  "ETH-5",
+                                                                "title":  "Termination of License",
+                                                                "rules":  [
+                                                                              "บทลงโทษและการเพิกถอนสิทธิ์"
+                                                                          ]
+                                                            }
+                                                        ]
+                                },
+                     "namespace_system":  {
+                                              "known_namespaces":  [
+                                                                       {
+                                                                           "prefix":  "BS.",
+                                                                           "name":  "BS",
+                                                                           "meaning":  "BioSignal namespace",
+                                                                           "examples":  [
+                                                                                            "BS.ACC",
+                                                                                            "BS.GSR",
+                                                                                            "BS.HR",
+                                                                                            "BS.HRV",
+                                                                                            "BS.RESP",
+                                                                                            "BS.TEMP"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "NS.",
+                                                                           "name":  "NS",
+                                                                           "meaning":  "NeuroSignal namespace",
+                                                                           "examples":  [
+                                                                                            "NS.ALPHA",
+                                                                                            "NS.ALPHA_H",
+                                                                                            "NS.BETA_H",
+                                                                                            "NS.DELTA",
+                                                                                            "NS.ERP",
+                                                                                            "NS.GAMMA",
+                                                                                            "NS.THETA"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "PS.",
+                                                                           "name":  "PS",
+                                                                           "meaning":  "Psychological state namespace",
+                                                                           "examples":  [
+                                                                                            "PS.AMBIGUOUS",
+                                                                                            "PS.ANXIETY",
+                                                                                            "PS.BOREDOM",
+                                                                                            "PS.CALM",
+                                                                                            "PS.CONFUSION",
+                                                                                            "PS.CURIOSITY",
+                                                                                            "PS.DISGUST",
+                                                                                            "PS.DROWSY",
+                                                                                            "PS.ENCODING",
+                                                                                            "PS.EXCITEMENT",
+                                                                                            "PS.FLOW",
+                                                                                            "PS.FRUSTRATION",
+                                                                                            "PS.NEUTRAL",
+                                                                                            "PS.OVERLOAD",
+                                                                                            "PS.STRESS",
+                                                                                            "PS.SURPRISE"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "ACT.",
+                                                                           "name":  "ACT",
+                                                                           "meaning":  "Intervention/action namespace",
+                                                                           "examples":  [
+                                                                                            "ACT.ANCHOR",
+                                                                                            "ACT.BREAK",
+                                                                                            "ACT.CHALLENGE",
+                                                                                            "ACT.CLARIFY",
+                                                                                            "ACT.CONTINUE",
+                                                                                            "ACT.ENRICH",
+                                                                                            "ACT.EXPLORE",
+                                                                                            "ACT.FREEZE",
+                                                                                            "ACT.GROUND",
+                                                                                            "ACT.MAINTAIN",
+                                                                                            "ACT.REDIRECT",
+                                                                                            "ACT.REFRAME",
+                                                                                            "ACT.SIMPLIFY",
+                                                                                            "ACT.STABILIZE",
+                                                                                            "ACT.SUSTAIN"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "RT.",
+                                                                           "name":  "RT",
+                                                                           "meaning":  "Relative threshold namespace",
+                                                                           "examples":  [
+                                                                                            "RT.ALPHA",
+                                                                                            "RT.BETA_H",
+                                                                                            "RT.HRV",
+                                                                                            "RT.SIGNAL",
+                                                                                            "RT.THETA"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "AT.",
+                                                                           "name":  "AT",
+                                                                           "meaning":  "Absolute threshold namespace",
+                                                                           "examples":  [
+                                                                                            "AT.ART",
+                                                                                            "AT.CALIB",
+                                                                                            "AT.CONFIDENCE",
+                                                                                            "AT.GSR",
+                                                                                            "AT.HRV",
+                                                                                            "AT.IMPEDANCE",
+                                                                                            "AT.LATENCY",
+                                                                                            "AT.N400",
+                                                                                            "AT.RESP",
+                                                                                            "AT.SESSION"
+                                                                                        ]
+                                                                       },
+                                                                       {
+                                                                           "prefix":  "CS.",
+                                                                           "name":  "CS",
+                                                                           "meaning":  "Computed signal namespace",
+                                                                           "examples":  [
+                                                                                            "CS.COGNITIVE_LOAD",
+                                                                                            "CS.DROWSINESS",
+                                                                                            "CS.ENGAGEMENT",
+                                                                                            "CS.VALENCE_INDEX"
+                                                                                        ]
+                                                                       }
+                                                                   ]
+                                          },
+                     "runtime_profiles":  {
+                                              "sensor_fusion_states":  [
+                                                                           "FLOW",
+                                                                           "READY",
+                                                                           "STRESS",
+                                                                           "CONFUSION",
+                                                                           "BOREDOM",
+                                                                           "EXCITEMENT",
+                                                                           "FATIGUE",
+                                                                           "NEUTRAL",
+                                                                           "FRUSTRATION",
+                                                                           "ANXIETY",
+                                                                           "CURIOSITY",
+                                                                           "DISGUST",
+                                                                           "SURPRISE",
+                                                                           "CALM"
+                                                                       ],
+                                              "state_meta":  {
+                                                                 "FLOW":  {
+                                                                              "emoji":  "🎯",
+                                                                              "name":  "Flow State",
+                                                                              "ps":  "PS.FLOW",
+                                                                              "cls":  "active-flow",
+                                                                              "color":  "var(--accent-cyan)"
+                                                                          },
+                                                                 "READY":  {
+                                                                               "emoji":  "🧠",
+                                                                               "name":  "พร้อมจดจำ",
+                                                                               "ps":  "PS.ENCODING",
+                                                                               "cls":  "active-ready",
+                                                                               "color":  "var(--accent-green)"
+                                                                           },
+                                                                 "STRESS":  {
+                                                                                "emoji":  "😰",
+                                                                                "name":  "เครียด/Overload",
+                                                                                "ps":  "PS.OVERLOAD",
+                                                                                "cls":  "active-stress",
+                                                                                "color":  "var(--accent-red)"
+                                                                            },
+                                                                 "CONFUSION":  {
+                                                                                   "emoji":  "😵",
+                                                                                   "name":  "สับสน",
+                                                                                   "ps":  "PS.CONFUSION",
+                                                                                   "cls":  "active-confusion",
+                                                                                   "color":  "var(--accent-red)"
+                                                                               },
+                                                                 "BOREDOM":  {
+                                                                                 "emoji":  "😴",
+                                                                                 "name":  "เบื่อ",
+                                                                                 "ps":  "PS.BOREDOM",
+                                                                                 "cls":  "active-boredom",
+                                                                                 "color":  "var(--accent-amber)"
+                                                                             },
+                                                                 "EXCITEMENT":  {
+                                                                                    "emoji":  "⚡",
+                                                                                    "name":  "ตื่นเต้น",
+                                                                                    "ps":  "PS.EXCITEMENT",
+                                                                                    "cls":  "active-excitement",
+                                                                                    "color":  "var(--accent-purple)"
+                                                                                },
+                                                                 "FATIGUE":  {
+                                                                                 "emoji":  "😪",
+                                                                                 "name":  "ล้า/Fatigue",
+                                                                                 "ps":  "PS.DROWSY",
+                                                                                 "cls":  "active-fatigue",
+                                                                                 "color":  "var(--accent-slate)"
+                                                                             },
+                                                                 "NEUTRAL":  {
+                                                                                 "emoji":  "😐",
+                                                                                 "name":  "ปกติ",
+                                                                                 "ps":  "PS.NEUTRAL",
+                                                                                 "cls":  "",
+                                                                                 "color":  "var(--text)"
+                                                                             },
+                                                                 "IDLE":  {
+                                                                              "emoji":  "⏳",
+                                                                              "name":  "รอเริ่มต้น",
+                                                                              "ps":  "PS.IDLE",
+                                                                              "cls":  "",
+                                                                              "color":  "var(--text-dim)"
+                                                                          },
+                                                                 "FRUSTRATION":  {
+                                                                                     "emoji":  "😤",
+                                                                                     "name":  "หงุดหงิด",
+                                                                                     "ps":  "PS.FRUSTRATION",
+                                                                                     "cls":  "active-frustration",
+                                                                                     "color":  "var(--accent-orange)"
+                                                                                 },
+                                                                 "ANXIETY":  {
+                                                                                 "emoji":  "😟",
+                                                                                 "name":  "วิตกกังวล",
+                                                                                 "ps":  "PS.ANXIETY",
+                                                                                 "cls":  "active-anxiety",
+                                                                                 "color":  "var(--accent-red)"
+                                                                             },
+                                                                 "CURIOSITY":  {
+                                                                                   "emoji":  "🤔",
+                                                                                   "name":  "อยากรู้",
+                                                                                   "ps":  "PS.CURIOSITY",
+                                                                                   "cls":  "active-curiosity",
+                                                                                   "color":  "var(--accent-teal)"
+                                                                               },
+                                                                 "DISGUST":  {
+                                                                                 "emoji":  "😒",
+                                                                                 "name":  "รังเกียจ",
+                                                                                 "ps":  "PS.DISGUST",
+                                                                                 "cls":  "active-disgust",
+                                                                                 "color":  "var(--accent-slate)"
+                                                                             },
+                                                                 "SURPRISE":  {
+                                                                                  "emoji":  "😲",
+                                                                                  "name":  "ประหลาดใจ",
+                                                                                  "ps":  "PS.SURPRISE",
+                                                                                  "cls":  "active-surprise",
+                                                                                  "color":  "var(--accent-yellow)"
+                                                                              },
+                                                                 "CALM":  {
+                                                                              "emoji":  "😌",
+                                                                              "name":  "สงบ",
+                                                                              "ps":  "PS.CALM",
+                                                                              "cls":  "active-calm",
+                                                                              "color":  "var(--accent-green)"
+                                                                          }
+                                                             },
+                                              "gen1_rules":  [
+                                                                 {
+                                                                     "id":  "NL-001",
+                                                                     "priority":  1,
+                                                                     "state":  "FLOW",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "z.hrv \u003e 1.2 \u0026\u0026 z.hr \u003c -0.8 \u0026\u0026 z.gsr \u003c -0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-004",
+                                                                     "priority":  1,
+                                                                     "state":  "STRESS",
+                                                                     "action":  "ACT.BREAK",
+                                                                     "condition":  "z.hrv \u003c -1.5 \u0026\u0026 z.hr \u003e 1.8 \u0026\u0026 z.gsr \u003e 2.0"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-002",
+                                                                     "priority":  2,
+                                                                     "state":  "CONFUSION",
+                                                                     "action":  "ACT.SIMPLIFY",
+                                                                     "condition":  "v.eeg \u003e 2.0 \u0026\u0026 z.hrv \u003c -0.7 \u0026\u0026 z.hr \u003e 1.2"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-003",
+                                                                     "priority":  2,
+                                                                     "state":  "READY",
+                                                                     "action":  "ACT.ANCHOR",
+                                                                     "condition":  "z.hrv \u003e 1.8 \u0026\u0026 z.hr \u003c -1.2 \u0026\u0026 z.gsr \u003c -1.0 \u0026\u0026 v.eeg \u003c 0.7"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-005",
+                                                                     "priority":  3,
+                                                                     "state":  "BOREDOM",
+                                                                     "action":  "ACT.SUMMARIZE",
+                                                                     "condition":  "z.gsr \u003e 1.8 \u0026\u0026 z.hr \u003c -0.5 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-006",
+                                                                     "priority":  3,
+                                                                     "state":  "EXCITEMENT",
+                                                                     "action":  "ACT.ENRICH",
+                                                                     "condition":  "z.hr \u003e 1.2 \u0026\u0026 z.gsr \u003e 1.2 \u0026\u0026 z.hrv \u003e -1.0 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-007",
+                                                                     "priority":  2,
+                                                                     "state":  "FATIGUE",
+                                                                     "action":  "ACT.BREAK",
+                                                                     "condition":  "z.hrv \u003c -0.8 \u0026\u0026 Math.abs(z.hr) \u003c 0.5 \u0026\u0026 v.eeg \u003e 1.2 \u0026\u0026 v.eeg \u003c 2.0"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-008",
+                                                                     "priority":  4,
+                                                                     "state":  "NEUTRAL",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "Math.abs(z.hrv) \u003c 0.4 \u0026\u0026 Math.abs(z.hr) \u003c 0.4 \u0026\u0026 Math.abs(z.gsr) \u003c 0.4"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-009",
+                                                                     "priority":  5,
+                                                                     "state":  "NEUTRAL",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "Math.max(Math.abs(z.hrv), Math.abs(z.hr), Math.abs(z.gsr), Math.abs(z.rr)) \u003c 0.6"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-010",
+                                                                     "priority":  1,
+                                                                     "state":  "FRUSTRATION",
+                                                                     "action":  "ACT.REFRAME",
+                                                                     "condition":  "z.hrv \u003c -1.8 \u0026\u0026 z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-011",
+                                                                     "priority":  1,
+                                                                     "state":  "ANXIETY",
+                                                                     "action":  "ACT.GROUND",
+                                                                     "condition":  "z.hrv \u003c -2.0 \u0026\u0026 z.hr \u003e 2.2 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.rr \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-012",
+                                                                     "priority":  3,
+                                                                     "state":  "CURIOSITY",
+                                                                     "action":  "ACT.EXPLORE",
+                                                                     "condition":  "z.hr \u003e 0.5 \u0026\u0026 Math.abs(z.gsr) \u003c 0.8 \u0026\u0026 z.hrv \u003e 0.3"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-013",
+                                                                     "priority":  3,
+                                                                     "state":  "DISGUST",
+                                                                     "action":  "ACT.REDIRECT",
+                                                                     "condition":  "z.hrv \u003c -1.0 \u0026\u0026 z.gsr \u003e 1.5 \u0026\u0026 Math.abs(z.hr) \u003e 0.8"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-014",
+                                                                     "priority":  2,
+                                                                     "state":  "SURPRISE",
+                                                                     "action":  "ACT.STABILIZE",
+                                                                     "condition":  "z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.hrv \u003e -0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-015",
+                                                                     "priority":  4,
+                                                                     "state":  "CALM",
+                                                                     "action":  "ACT.SUSTAIN",
+                                                                     "condition":  "z.hrv \u003e 2.0 \u0026\u0026 z.hr \u003c -1.5 \u0026\u0026 z.gsr \u003c -1.5"
+                                                                 }
+                                                             ],
+                                              "gen2_rules":  [
+                                                                 {
+                                                                     "id":  "NL-001",
+                                                                     "priority":  1,
+                                                                     "state":  "FLOW",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "z.hrv \u003e 1.2 \u0026\u0026 z.hr \u003c -0.8 \u0026\u0026 z.gsr \u003c -0.5 \u0026\u0026 (b?.alpha ?? 0) \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-004",
+                                                                     "priority":  1,
+                                                                     "state":  "STRESS",
+                                                                     "action":  "ACT.BREAK",
+                                                                     "condition":  "z.hrv \u003c -1.5 \u0026\u0026 z.hr \u003e 1.8 \u0026\u0026 z.gsr \u003e 2.0"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-002",
+                                                                     "priority":  2,
+                                                                     "state":  "CONFUSION",
+                                                                     "action":  "ACT.SIMPLIFY",
+                                                                     "condition":  "v.eeg \u003e 2.0 \u0026\u0026 z.hrv \u003c -0.7 \u0026\u0026 z.hr \u003e 1.2 \u0026\u0026 (b?.thetaAlphaRatio ?? 1) \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-003",
+                                                                     "priority":  2,
+                                                                     "state":  "READY",
+                                                                     "action":  "ACT.ANCHOR",
+                                                                     "condition":  "z.hrv \u003e 1.8 \u0026\u0026 z.hr \u003c -1.2 \u0026\u0026 z.gsr \u003c -1.0 \u0026\u0026 v.eeg \u003c 0.7 \u0026\u0026 (b?.alpha ?? 0) \u003e 1.2"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-005",
+                                                                     "priority":  3,
+                                                                     "state":  "BOREDOM",
+                                                                     "action":  "ACT.SUMMARIZE",
+                                                                     "condition":  "z.gsr \u003e 1.8 \u0026\u0026 z.hr \u003c -0.5 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-006",
+                                                                     "priority":  3,
+                                                                     "state":  "EXCITEMENT",
+                                                                     "action":  "ACT.ENRICH",
+                                                                     "condition":  "z.hr \u003e 1.2 \u0026\u0026 z.gsr \u003e 1.2 \u0026\u0026 z.hrv \u003e -1.0 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-007",
+                                                                     "priority":  2,
+                                                                     "state":  "FATIGUE",
+                                                                     "action":  "ACT.BREAK",
+                                                                     "condition":  "z.hrv \u003c -0.8 \u0026\u0026 Math.abs(z.hr) \u003c 0.5 \u0026\u0026 v.eeg \u003e 1.2 \u0026\u0026 v.eeg \u003c 2.0 \u0026\u0026 (b?.theta ?? 0) \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-008",
+                                                                     "priority":  4,
+                                                                     "state":  "NEUTRAL",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "Math.abs(z.hrv) \u003c 0.4 \u0026\u0026 Math.abs(z.hr) \u003c 0.4 \u0026\u0026 Math.abs(z.gsr) \u003c 0.4"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-009",
+                                                                     "priority":  5,
+                                                                     "state":  "NEUTRAL",
+                                                                     "action":  "ACT.MAINTAIN",
+                                                                     "condition":  "Math.max(Math.abs(z.hrv), Math.abs(z.hr), Math.abs(z.gsr), Math.abs(z.rr)) \u003c 0.6"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-010",
+                                                                     "priority":  1,
+                                                                     "state":  "FRUSTRATION",
+                                                                     "action":  "ACT.REFRAME",
+                                                                     "condition":  "z.hrv \u003c -1.8 \u0026\u0026 z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.5 \u0026\u0026 (b?.thetaAlphaRatio ?? 1) \u003e 2.0"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-011",
+                                                                     "priority":  1,
+                                                                     "state":  "ANXIETY",
+                                                                     "action":  "ACT.GROUND",
+                                                                     "condition":  "z.hrv \u003c -2.0 \u0026\u0026 z.hr \u003e 2.2 \u0026\u0026 z.rr \u003e 1.5 \u0026\u0026 (b?.beta ?? 0) \u003e 2.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-012",
+                                                                     "priority":  3,
+                                                                     "state":  "CURIOSITY",
+                                                                     "action":  "ACT.EXPLORE",
+                                                                     "condition":  "z.hr \u003e 0.5 \u0026\u0026 Math.abs(z.gsr) \u003c 0.8 \u0026\u0026 z.hrv \u003e 0.3 \u0026\u0026 (b?.gamma ?? 0) \u003e 1.2 \u0026\u0026 (b?.theta ?? 0) \u003e 1.0"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-013",
+                                                                     "priority":  3,
+                                                                     "state":  "DISGUST",
+                                                                     "action":  "ACT.REDIRECT",
+                                                                     "condition":  "z.hrv \u003c -1.0 \u0026\u0026 z.gsr \u003e 1.5 \u0026\u0026 Math.abs(z.hr) \u003e 0.8 \u0026\u0026 (b?.beta ?? 0) \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-014",
+                                                                     "priority":  2,
+                                                                     "state":  "SURPRISE",
+                                                                     "action":  "ACT.STABILIZE",
+                                                                     "condition":  "z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 (b?.gamma ?? 0) \u003e 1.5"
+                                                                 },
+                                                                 {
+                                                                     "id":  "NL-015",
+                                                                     "priority":  4,
+                                                                     "state":  "CALM",
+                                                                     "action":  "ACT.SUSTAIN",
+                                                                     "condition":  "z.hrv \u003e 2.0 \u0026\u0026 z.hr \u003c -1.5 \u0026\u0026 z.gsr \u003c -1.5 \u0026\u0026 (b?.alpha ?? 0) \u003e 2.0 \u0026\u0026 (b?.beta ?? 0) \u003c 0.8"
+                                                                 }
+                                                             ]
+                                          }
+                 },
+    "central_standard":  {
+                             "schema_version":  "1.0.0",
+                             "generated_at":  "2026-03-26",
+                             "source":  {
+                                            "document":  "Phasa_Tawan_Signal_Language_Standard.docx",
+                                            "document_type":  "Word",
+                                            "extraction_scope":  {
+                                                                     "paragraphs":  282,
+                                                                     "tables":  42
+                                                                 }
+                                        },
+                             "standard_profile":  {
+                                                      "name_th":  "ภาษาตะวัน",
+                                                      "name_en":  "Phasa Tawan",
+                                                      "subtitle":  "Signal Language Standard",
+                                                      "purpose":  "มาตรฐานภาษากลางสำหรับระบบประมวลผลสัญญาณชีวมาตรและสัญญาณประสาท",
+                                                      "design_intent":  [
+                                                                            "ใช้เป็นภาษากลางระหว่างเอกสารมาตรฐาน กฎตัดสินใจ และเอนจินของน้องหนึ่งเดียว",
+                                                                            "แยก vocabulary มาตรฐานออกจาก logic ที่ hardcode อยู่ในไฟล์ JavaScript",
+                                                                            "ทำให้ตรวจสอบความสอดคล้องระหว่างเอกสารและโค้ดได้ง่าย"
+                                                                        ]
+                                                  },
+                             "governance":  {
+                                                "ethics_sections":  [
+                                                                        {
+                                                                            "id":  "ETH-1",
+                                                                            "title":  "ข้อห้ามในการนำไปใช้เพื่อการบังคับและสอบสวน",
+                                                                            "label_en":  "Anti-Coercion \u0026 Interrogation"
+                                                                        },
+                                                                        {
+                                                                            "id":  "ETH-2",
+                                                                            "title":  "ข้อห้ามในการควบคุมพฤติกรรม",
+                                                                            "label_en":  "Anti-Behavioral Control"
+                                                                        },
+                                                                        {
+                                                                            "id":  "ETH-3",
+                                                                            "title":  "การคุ้มครองความเป็นส่วนตัวทางระบบประสาท",
+                                                                            "label_en":  "Neuro-Privacy"
+                                                                        },
+                                                                        {
+                                                                            "id":  "ETH-4",
+                                                                            "title":  "ข้อจำกัดความรับผิดชอบด้านความแม่นยำ",
+                                                                            "label_en":  "Accuracy Disclaimer"
+                                                                        },
+                                                                        {
+                                                                            "id":  "ETH-5",
+                                                                            "title":  "บทลงโทษและการเพิกถอนสิทธิ์",
+                                                                            "label_en":  "Termination of License"
+                                                                        }
+                                                                    ]
+                                            },
+                             "chapters":  [
+                                              {
+                                                  "id":  "intro",
+                                                  "title":  "บทนำ - ที่มาและปรัชญาของภาษา"
+                                              },
+                                              {
+                                                  "id":  "ch01",
+                                                  "title":  "บทที่ 1 - Namespace และระบบประเภทข้อมูล"
+                                              },
+                                              {
+                                                  "id":  "ch02",
+                                                  "title":  "บทที่ 2 - มาตรฐานสัญญาณชีวมาตร"
+                                              },
+                                              {
+                                                  "id":  "ch03",
+                                                  "title":  "บทที่ 3 - มาตรฐานสภาวะทางจิตวิทยา"
+                                              },
+                                              {
+                                                  "id":  "ch04",
+                                                  "title":  "บทที่ 4 - สมการคณิตศาสตร์มาตรฐาน"
+                                              },
+                                              {
+                                                  "id":  "ch05",
+                                                  "title":  "บทที่ 5 - มาตรฐานสัญญาณ EEG"
+                                              },
+                                              {
+                                                  "id":  "ch06",
+                                                  "title":  "บทที่ 6 - ไวยากรณ์ของ Rule"
+                                              },
+                                              {
+                                                  "id":  "ch07",
+                                                  "title":  "บทที่ 7 - มาตรฐาน Action"
+                                              },
+                                              {
+                                                  "id":  "ch08",
+                                                  "title":  "บทที่ 8 - Decision Engine และ Priority Matrix"
+                                              },
+                                              {
+                                                  "id":  "ch09",
+                                                  "title":  "บทที่ 9 - Markov Transition Matrix"
+                                              },
+                                              {
+                                                  "id":  "ch10",
+                                                  "title":  "บทที่ 10 - Absolute Threshold (AT.*) Master Table"
+                                              },
+                                              {
+                                                  "id":  "ch11",
+                                                  "title":  "บทที่ 11 - การตรวจจับ Artifact"
+                                              },
+                                              {
+                                                  "id":  "ch12",
+                                                  "title":  "บทที่ 12 - Human Simulator - Phasa Tawan Standard"
+                                              },
+                                              {
+                                                  "id":  "ch13",
+                                                  "title":  "บทที่ 13 - Phasa Tawan Rule Examples"
+                                              },
+                                              {
+                                                  "id":  "ch14",
+                                                  "title":  "บทที่ 14 - สรุป Extension Namespace"
+                                              },
+                                              {
+                                                  "id":  "appendix",
+                                                  "title":  "ภาคผนวก - Quick Reference Card"
+                                              }
+                                          ],
+                             "namespaces":  {
+                                                "BS":  {
+                                                           "description":  "BioSignal namespace",
+                                                           "tokens":  [
+                                                                          "BS.ACC",
+                                                                          "BS.GSR",
+                                                                          "BS.HR",
+                                                                          "BS.HRV",
+                                                                          "BS.RESP",
+                                                                          "BS.TEMP"
+                                                                      ]
+                                                       },
+                                                "NS":  {
+                                                           "description":  "NeuroSignal namespace",
+                                                           "tokens":  [
+                                                                          "NS.ALPHA",
+                                                                          "NS.ALPHA_H",
+                                                                          "NS.BETA_H",
+                                                                          "NS.DELTA",
+                                                                          "NS.ERP",
+                                                                          "NS.GAMMA",
+                                                                          "NS.THETA"
+                                                                      ]
+                                                       },
+                                                "PS":  {
+                                                           "description":  "Psychological state namespace",
+                                                           "tokens":  [
+                                                                          "PS.AMBIGUOUS",
+                                                                          "PS.ANXIETY",
+                                                                          "PS.BOREDOM",
+                                                                          "PS.CALM",
+                                                                          "PS.CONFUSION",
+                                                                          "PS.CURIOSITY",
+                                                                          "PS.DISGUST",
+                                                                          "PS.DROWSY",
+                                                                          "PS.ENCODING",
+                                                                          "PS.EXCITEMENT",
+                                                                          "PS.FLOW",
+                                                                          "PS.FRUSTRATION",
+                                                                          "PS.NEUTRAL",
+                                                                          "PS.OVERLOAD",
+                                                                          "PS.STRESS",
+                                                                          "PS.SURPRISE"
+                                                                      ]
+                                                       },
+                                                "ACT":  {
+                                                            "description":  "Intervention/action namespace",
+                                                            "tokens":  [
+                                                                           "ACT.ANCHOR",
+                                                                           "ACT.BREAK",
+                                                                           "ACT.CHALLENGE",
+                                                                           "ACT.CLARIFY",
+                                                                           "ACT.CONTINUE",
+                                                                           "ACT.ENRICH",
+                                                                           "ACT.EXPLORE",
+                                                                           "ACT.FREEZE",
+                                                                           "ACT.GROUND",
+                                                                           "ACT.MAINTAIN",
+                                                                           "ACT.REDIRECT",
+                                                                           "ACT.REFRAME",
+                                                                           "ACT.SIMPLIFY",
+                                                                           "ACT.STABILIZE",
+                                                                           "ACT.SUSTAIN"
+                                                                       ]
+                                                        },
+                                                "RT":  {
+                                                           "description":  "Relative threshold namespace",
+                                                           "tokens":  [
+                                                                          "RT.ALPHA",
+                                                                          "RT.BETA_H",
+                                                                          "RT.HRV",
+                                                                          "RT.SIGNAL",
+                                                                          "RT.THETA"
+                                                                      ]
+                                                       },
+                                                "AT":  {
+                                                           "description":  "Absolute threshold namespace",
+                                                           "tokens":  [
+                                                                          "AT.ART",
+                                                                          "AT.CALIB",
+                                                                          "AT.CONFIDENCE",
+                                                                          "AT.GSR",
+                                                                          "AT.HRV",
+                                                                          "AT.IMPEDANCE",
+                                                                          "AT.LATENCY",
+                                                                          "AT.N400",
+                                                                          "AT.RESP",
+                                                                          "AT.SESSION"
+                                                                      ]
+                                                       },
+                                                "CS":  {
+                                                           "description":  "Computed signal namespace",
+                                                           "tokens":  [
+                                                                          "CS.COGNITIVE_LOAD",
+                                                                          "CS.DROWSINESS",
+                                                                          "CS.ENGAGEMENT",
+                                                                          "CS.VALENCE_INDEX"
+                                                                      ]
+                                                       }
+                                            },
+                             "canonical_vocab":  {
+                                                     "actions_for_runtime":  [
+                                                                                 "ACT.ANCHOR",
+                                                                                 "ACT.BREAK",
+                                                                                 "ACT.CHALLENGE",
+                                                                                 "ACT.CLARIFY",
+                                                                                 "ACT.CONTINUE",
+                                                                                 "ACT.ENRICH",
+                                                                                 "ACT.EXPLORE",
+                                                                                 "ACT.FREEZE",
+                                                                                 "ACT.GROUND",
+                                                                                 "ACT.MAINTAIN",
+                                                                                 "ACT.REDIRECT",
+                                                                                 "ACT.REFRAME",
+                                                                                 "ACT.SIMPLIFY",
+                                                                                 "ACT.STABILIZE",
+                                                                                 "ACT.SUSTAIN"
+                                                                             ],
+                                                     "psychological_states_for_runtime":  [
+                                                                                              "PS.AMBIGUOUS",
+                                                                                              "PS.ANXIETY",
+                                                                                              "PS.BOREDOM",
+                                                                                              "PS.CALM",
+                                                                                              "PS.CONFUSION",
+                                                                                              "PS.CURIOSITY",
+                                                                                              "PS.DISGUST",
+                                                                                              "PS.DROWSY",
+                                                                                              "PS.ENCODING",
+                                                                                              "PS.EXCITEMENT",
+                                                                                              "PS.FLOW",
+                                                                                              "PS.FRUSTRATION",
+                                                                                              "PS.NEUTRAL",
+                                                                                              "PS.OVERLOAD",
+                                                                                              "PS.STRESS",
+                                                                                              "PS.SURPRISE"
+                                                                                          ],
+                                                     "signal_primitives_for_runtime":  [
+                                                                                           "BS.ACC",
+                                                                                           "BS.GSR",
+                                                                                           "BS.HR",
+                                                                                           "BS.HRV",
+                                                                                           "BS.RESP",
+                                                                                           "BS.TEMP",
+                                                                                           "NS.ALPHA",
+                                                                                           "NS.ALPHA_H",
+                                                                                           "NS.BETA_H",
+                                                                                           "NS.DELTA",
+                                                                                           "NS.ERP",
+                                                                                           "NS.GAMMA",
+                                                                                           "NS.THETA"
+                                                                                       ]
+                                                 },
+                             "runtime_profiles":  {
+                                                      "sensor_fusion_states":  [
+                                                                                   "FLOW",
+                                                                                   "READY",
+                                                                                   "STRESS",
+                                                                                   "CONFUSION",
+                                                                                   "BOREDOM",
+                                                                                   "EXCITEMENT",
+                                                                                   "FATIGUE",
+                                                                                   "NEUTRAL",
+                                                                                   "FRUSTRATION",
+                                                                                   "ANXIETY",
+                                                                                   "CURIOSITY",
+                                                                                   "DISGUST",
+                                                                                   "SURPRISE",
+                                                                                   "CALM"
+                                                                               ],
+                                                      "state_meta":  {
+                                                                         "FLOW":  {
+                                                                                      "emoji":  "🎯",
+                                                                                      "name":  "Flow State",
+                                                                                      "ps":  "PS.FLOW",
+                                                                                      "cls":  "active-flow",
+                                                                                      "color":  "var(--accent-cyan)"
+                                                                                  },
+                                                                         "READY":  {
+                                                                                       "emoji":  "🧠",
+                                                                                       "name":  "พร้อมจดจำ",
+                                                                                       "ps":  "PS.ENCODING",
+                                                                                       "cls":  "active-ready",
+                                                                                       "color":  "var(--accent-green)"
+                                                                                   },
+                                                                         "STRESS":  {
+                                                                                        "emoji":  "😰",
+                                                                                        "name":  "เครียด/Overload",
+                                                                                        "ps":  "PS.OVERLOAD",
+                                                                                        "cls":  "active-stress",
+                                                                                        "color":  "var(--accent-red)"
+                                                                                    },
+                                                                         "CONFUSION":  {
+                                                                                           "emoji":  "😵",
+                                                                                           "name":  "สับสน",
+                                                                                           "ps":  "PS.CONFUSION",
+                                                                                           "cls":  "active-confusion",
+                                                                                           "color":  "var(--accent-red)"
+                                                                                       },
+                                                                         "BOREDOM":  {
+                                                                                         "emoji":  "😴",
+                                                                                         "name":  "เบื่อ",
+                                                                                         "ps":  "PS.BOREDOM",
+                                                                                         "cls":  "active-boredom",
+                                                                                         "color":  "var(--accent-amber)"
+                                                                                     },
+                                                                         "EXCITEMENT":  {
+                                                                                            "emoji":  "⚡",
+                                                                                            "name":  "ตื่นเต้น",
+                                                                                            "ps":  "PS.EXCITEMENT",
+                                                                                            "cls":  "active-excitement",
+                                                                                            "color":  "var(--accent-purple)"
+                                                                                        },
+                                                                         "FATIGUE":  {
+                                                                                         "emoji":  "😪",
+                                                                                         "name":  "ล้า/Fatigue",
+                                                                                         "ps":  "PS.DROWSY",
+                                                                                         "cls":  "active-fatigue",
+                                                                                         "color":  "var(--accent-slate)"
+                                                                                     },
+                                                                         "NEUTRAL":  {
+                                                                                         "emoji":  "😐",
+                                                                                         "name":  "ปกติ",
+                                                                                         "ps":  "PS.NEUTRAL",
+                                                                                         "cls":  "",
+                                                                                         "color":  "var(--text)"
+                                                                                     },
+                                                                         "IDLE":  {
+                                                                                      "emoji":  "⏳",
+                                                                                      "name":  "รอเริ่มต้น",
+                                                                                      "ps":  "PS.IDLE",
+                                                                                      "cls":  "",
+                                                                                      "color":  "var(--text-dim)"
+                                                                                  },
+                                                                         "FRUSTRATION":  {
+                                                                                             "emoji":  "😤",
+                                                                                             "name":  "หงุดหงิด",
+                                                                                             "ps":  "PS.FRUSTRATION",
+                                                                                             "cls":  "active-frustration",
+                                                                                             "color":  "var(--accent-orange)"
+                                                                                         },
+                                                                         "ANXIETY":  {
+                                                                                         "emoji":  "😟",
+                                                                                         "name":  "วิตกกังวล",
+                                                                                         "ps":  "PS.ANXIETY",
+                                                                                         "cls":  "active-anxiety",
+                                                                                         "color":  "var(--accent-red)"
+                                                                                     },
+                                                                         "CURIOSITY":  {
+                                                                                           "emoji":  "🤔",
+                                                                                           "name":  "อยากรู้",
+                                                                                           "ps":  "PS.CURIOSITY",
+                                                                                           "cls":  "active-curiosity",
+                                                                                           "color":  "var(--accent-teal)"
+                                                                                       },
+                                                                         "DISGUST":  {
+                                                                                         "emoji":  "😒",
+                                                                                         "name":  "รังเกียจ",
+                                                                                         "ps":  "PS.DISGUST",
+                                                                                         "cls":  "active-disgust",
+                                                                                         "color":  "var(--accent-slate)"
+                                                                                     },
+                                                                         "SURPRISE":  {
+                                                                                          "emoji":  "😲",
+                                                                                          "name":  "ประหลาดใจ",
+                                                                                          "ps":  "PS.SURPRISE",
+                                                                                          "cls":  "active-surprise",
+                                                                                          "color":  "var(--accent-yellow)"
+                                                                                      },
+                                                                         "CALM":  {
+                                                                                      "emoji":  "😌",
+                                                                                      "name":  "สงบ",
+                                                                                      "ps":  "PS.CALM",
+                                                                                      "cls":  "active-calm",
+                                                                                      "color":  "var(--accent-green)"
+                                                                                  }
+                                                                     },
+                                                      "gen1_rules":  [
+                                                                         {
+                                                                             "id":  "NL-001",
+                                                                             "priority":  1,
+                                                                             "state":  "FLOW",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "z.hrv \u003e 1.2 \u0026\u0026 z.hr \u003c -0.8 \u0026\u0026 z.gsr \u003c -0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-004",
+                                                                             "priority":  1,
+                                                                             "state":  "STRESS",
+                                                                             "action":  "ACT.BREAK",
+                                                                             "condition":  "z.hrv \u003c -1.5 \u0026\u0026 z.hr \u003e 1.8 \u0026\u0026 z.gsr \u003e 2.0"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-002",
+                                                                             "priority":  2,
+                                                                             "state":  "CONFUSION",
+                                                                             "action":  "ACT.SIMPLIFY",
+                                                                             "condition":  "v.eeg \u003e 2.0 \u0026\u0026 z.hrv \u003c -0.7 \u0026\u0026 z.hr \u003e 1.2"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-003",
+                                                                             "priority":  2,
+                                                                             "state":  "READY",
+                                                                             "action":  "ACT.ANCHOR",
+                                                                             "condition":  "z.hrv \u003e 1.8 \u0026\u0026 z.hr \u003c -1.2 \u0026\u0026 z.gsr \u003c -1.0 \u0026\u0026 v.eeg \u003c 0.7"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-005",
+                                                                             "priority":  3,
+                                                                             "state":  "BOREDOM",
+                                                                             "action":  "ACT.SUMMARIZE",
+                                                                             "condition":  "z.gsr \u003e 1.8 \u0026\u0026 z.hr \u003c -0.5 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-006",
+                                                                             "priority":  3,
+                                                                             "state":  "EXCITEMENT",
+                                                                             "action":  "ACT.ENRICH",
+                                                                             "condition":  "z.hr \u003e 1.2 \u0026\u0026 z.gsr \u003e 1.2 \u0026\u0026 z.hrv \u003e -1.0 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-007",
+                                                                             "priority":  2,
+                                                                             "state":  "FATIGUE",
+                                                                             "action":  "ACT.BREAK",
+                                                                             "condition":  "z.hrv \u003c -0.8 \u0026\u0026 Math.abs(z.hr) \u003c 0.5 \u0026\u0026 v.eeg \u003e 1.2 \u0026\u0026 v.eeg \u003c 2.0"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-008",
+                                                                             "priority":  4,
+                                                                             "state":  "NEUTRAL",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "Math.abs(z.hrv) \u003c 0.4 \u0026\u0026 Math.abs(z.hr) \u003c 0.4 \u0026\u0026 Math.abs(z.gsr) \u003c 0.4"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-009",
+                                                                             "priority":  5,
+                                                                             "state":  "NEUTRAL",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "Math.max(Math.abs(z.hrv), Math.abs(z.hr), Math.abs(z.gsr), Math.abs(z.rr)) \u003c 0.6"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-010",
+                                                                             "priority":  1,
+                                                                             "state":  "FRUSTRATION",
+                                                                             "action":  "ACT.REFRAME",
+                                                                             "condition":  "z.hrv \u003c -1.8 \u0026\u0026 z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-011",
+                                                                             "priority":  1,
+                                                                             "state":  "ANXIETY",
+                                                                             "action":  "ACT.GROUND",
+                                                                             "condition":  "z.hrv \u003c -2.0 \u0026\u0026 z.hr \u003e 2.2 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.rr \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-012",
+                                                                             "priority":  3,
+                                                                             "state":  "CURIOSITY",
+                                                                             "action":  "ACT.EXPLORE",
+                                                                             "condition":  "z.hr \u003e 0.5 \u0026\u0026 Math.abs(z.gsr) \u003c 0.8 \u0026\u0026 z.hrv \u003e 0.3"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-013",
+                                                                             "priority":  3,
+                                                                             "state":  "DISGUST",
+                                                                             "action":  "ACT.REDIRECT",
+                                                                             "condition":  "z.hrv \u003c -1.0 \u0026\u0026 z.gsr \u003e 1.5 \u0026\u0026 Math.abs(z.hr) \u003e 0.8"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-014",
+                                                                             "priority":  2,
+                                                                             "state":  "SURPRISE",
+                                                                             "action":  "ACT.STABILIZE",
+                                                                             "condition":  "z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.hrv \u003e -0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-015",
+                                                                             "priority":  4,
+                                                                             "state":  "CALM",
+                                                                             "action":  "ACT.SUSTAIN",
+                                                                             "condition":  "z.hrv \u003e 2.0 \u0026\u0026 z.hr \u003c -1.5 \u0026\u0026 z.gsr \u003c -1.5"
+                                                                         }
+                                                                     ],
+                                                      "gen2_rules":  [
+                                                                         {
+                                                                             "id":  "NL-001",
+                                                                             "priority":  1,
+                                                                             "state":  "FLOW",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "z.hrv \u003e 1.2 \u0026\u0026 z.hr \u003c -0.8 \u0026\u0026 z.gsr \u003c -0.5 \u0026\u0026 (b?.alpha ?? 0) \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-004",
+                                                                             "priority":  1,
+                                                                             "state":  "STRESS",
+                                                                             "action":  "ACT.BREAK",
+                                                                             "condition":  "z.hrv \u003c -1.5 \u0026\u0026 z.hr \u003e 1.8 \u0026\u0026 z.gsr \u003e 2.0"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-002",
+                                                                             "priority":  2,
+                                                                             "state":  "CONFUSION",
+                                                                             "action":  "ACT.SIMPLIFY",
+                                                                             "condition":  "v.eeg \u003e 2.0 \u0026\u0026 z.hrv \u003c -0.7 \u0026\u0026 z.hr \u003e 1.2 \u0026\u0026 (b?.thetaAlphaRatio ?? 1) \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-003",
+                                                                             "priority":  2,
+                                                                             "state":  "READY",
+                                                                             "action":  "ACT.ANCHOR",
+                                                                             "condition":  "z.hrv \u003e 1.8 \u0026\u0026 z.hr \u003c -1.2 \u0026\u0026 z.gsr \u003c -1.0 \u0026\u0026 v.eeg \u003c 0.7 \u0026\u0026 (b?.alpha ?? 0) \u003e 1.2"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-005",
+                                                                             "priority":  3,
+                                                                             "state":  "BOREDOM",
+                                                                             "action":  "ACT.SUMMARIZE",
+                                                                             "condition":  "z.gsr \u003e 1.8 \u0026\u0026 z.hr \u003c -0.5 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-006",
+                                                                             "priority":  3,
+                                                                             "state":  "EXCITEMENT",
+                                                                             "action":  "ACT.ENRICH",
+                                                                             "condition":  "z.hr \u003e 1.2 \u0026\u0026 z.gsr \u003e 1.2 \u0026\u0026 z.hrv \u003e -1.0 \u0026\u0026 z.hrv \u003c 0.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-007",
+                                                                             "priority":  2,
+                                                                             "state":  "FATIGUE",
+                                                                             "action":  "ACT.BREAK",
+                                                                             "condition":  "z.hrv \u003c -0.8 \u0026\u0026 Math.abs(z.hr) \u003c 0.5 \u0026\u0026 v.eeg \u003e 1.2 \u0026\u0026 v.eeg \u003c 2.0 \u0026\u0026 (b?.theta ?? 0) \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-008",
+                                                                             "priority":  4,
+                                                                             "state":  "NEUTRAL",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "Math.abs(z.hrv) \u003c 0.4 \u0026\u0026 Math.abs(z.hr) \u003c 0.4 \u0026\u0026 Math.abs(z.gsr) \u003c 0.4"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-009",
+                                                                             "priority":  5,
+                                                                             "state":  "NEUTRAL",
+                                                                             "action":  "ACT.MAINTAIN",
+                                                                             "condition":  "Math.max(Math.abs(z.hrv), Math.abs(z.hr), Math.abs(z.gsr), Math.abs(z.rr)) \u003c 0.6"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-010",
+                                                                             "priority":  1,
+                                                                             "state":  "FRUSTRATION",
+                                                                             "action":  "ACT.REFRAME",
+                                                                             "condition":  "z.hrv \u003c -1.8 \u0026\u0026 z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.5 \u0026\u0026 (b?.thetaAlphaRatio ?? 1) \u003e 2.0"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-011",
+                                                                             "priority":  1,
+                                                                             "state":  "ANXIETY",
+                                                                             "action":  "ACT.GROUND",
+                                                                             "condition":  "z.hrv \u003c -2.0 \u0026\u0026 z.hr \u003e 2.2 \u0026\u0026 z.rr \u003e 1.5 \u0026\u0026 (b?.beta ?? 0) \u003e 2.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-012",
+                                                                             "priority":  3,
+                                                                             "state":  "CURIOSITY",
+                                                                             "action":  "ACT.EXPLORE",
+                                                                             "condition":  "z.hr \u003e 0.5 \u0026\u0026 Math.abs(z.gsr) \u003c 0.8 \u0026\u0026 z.hrv \u003e 0.3 \u0026\u0026 (b?.gamma ?? 0) \u003e 1.2 \u0026\u0026 (b?.theta ?? 0) \u003e 1.0"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-013",
+                                                                             "priority":  3,
+                                                                             "state":  "DISGUST",
+                                                                             "action":  "ACT.REDIRECT",
+                                                                             "condition":  "z.hrv \u003c -1.0 \u0026\u0026 z.gsr \u003e 1.5 \u0026\u0026 Math.abs(z.hr) \u003e 0.8 \u0026\u0026 (b?.beta ?? 0) \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-014",
+                                                                             "priority":  2,
+                                                                             "state":  "SURPRISE",
+                                                                             "action":  "ACT.STABILIZE",
+                                                                             "condition":  "z.hr \u003e 2.0 \u0026\u0026 z.gsr \u003e 2.0 \u0026\u0026 z.hrv \u003e -0.5 \u0026\u0026 (b?.gamma ?? 0) \u003e 1.5"
+                                                                         },
+                                                                         {
+                                                                             "id":  "NL-015",
+                                                                             "priority":  4,
+                                                                             "state":  "CALM",
+                                                                             "action":  "ACT.SUSTAIN",
+                                                                             "condition":  "z.hrv \u003e 2.0 \u0026\u0026 z.hr \u003c -1.5 \u0026\u0026 z.gsr \u003c -1.5 \u0026\u0026 (b?.alpha ?? 0) \u003e 2.0 \u0026\u0026 (b?.beta ?? 0) \u003c 0.8"
+                                                                         }
+                                                                     ]
+                                                  },
+                             "integration_audit":  {
+                                                       "document_token_count":  64,
+                                                       "code_token_count":  27,
+                                                       "document_only_tokens":  [
+                                                                                    "ACT.CHALLENGE",
+                                                                                    "ACT.CLARIFY",
+                                                                                    "ACT.CONTINUE",
+                                                                                    "ACT.FREEZE",
+                                                                                    "ACT.XXX",
+                                                                                    "AT.ART",
+                                                                                    "AT.CALIB",
+                                                                                    "AT.CONFIDENCE",
+                                                                                    "AT.GSR",
+                                                                                    "AT.HRV",
+                                                                                    "AT.IMPEDANCE",
+                                                                                    "AT.LATENCY",
+                                                                                    "AT.N400",
+                                                                                    "AT.RESP",
+                                                                                    "AT.SESSION",
+                                                                                    "BS.ACC",
+                                                                                    "BS.GSR",
+                                                                                    "BS.HR",
+                                                                                    "BS.HRV",
+                                                                                    "BS.RESP",
+                                                                                    "BS.TEMP",
+                                                                                    "CS.COGNITIVE_LOAD",
+                                                                                    "CS.DROWSINESS",
+                                                                                    "CS.ENGAGEMENT",
+                                                                                    "CS.VALENCE_INDEX",
+                                                                                    "NS.ALPHA",
+                                                                                    "NS.ALPHA_H",
+                                                                                    "NS.BETA_H",
+                                                                                    "NS.DELTA",
+                                                                                    "NS.ERP",
+                                                                                    "NS.GAMMA",
+                                                                                    "NS.THETA",
+                                                                                    "PS.AMBIGUOUS",
+                                                                                    "PS.STRESS",
+                                                                                    "RT.ALPHA",
+                                                                                    "RT.BETA_H",
+                                                                                    "RT.HRV",
+                                                                                    "RT.SIGNAL",
+                                                                                    "RT.THETA"
+                                                                                ],
+                                                       "code_only_tokens":  [
+                                                                                "ACT.SUMMARIZE",
+                                                                                "PS.IDLE"
+                                                                            ],
+                                                       "runtime_files_scanned":  [
+                                                                                     "Nuengdeaw_Core.js",
+                                                                                     "Nuengdeaw_AI_Gen_1_for_BioSignal.js",
+                                                                                     "Nuengdeaw_AI_Gen_2_for_NeuroSignal.js",
+                                                                                     "Nuengdeaw_Boot_Chain.js",
+                                                                                     "Nuengdeaw_Sim_Human1.js",
+                                                                                     "Nuengdeaw_Sim_Human2.js"
+                                                                                 ],
+                                                       "findings":  [
+                                                                        {
+                                                                            "id":  "F-001",
+                                                                            "severity":  "high",
+                                                                            "summary":  "โค้ดใช้ ACT.SUMMARIZE แต่ไม่พบในมาตรฐานจากเอกสาร Word",
+                                                                            "impact":  "action นี้ไม่มี canonical definition กลาง ทำให้ตีความและขยายผลต่อไม่แน่นอน"
+                                                                        },
+                                                                        {
+                                                                            "id":  "F-002",
+                                                                            "severity":  "high",
+                                                                            "summary":  "โค้ดใช้ PS.IDLE แต่ไม่พบในมาตรฐาน state ของเอกสาร Word",
+                                                                            "impact":  "state machine ใน runtime ไม่ตรงกับสเปกกลาง"
+                                                                        },
+                                                                        {
+                                                                            "id":  "F-003",
+                                                                            "severity":  "medium",
+                                                                            "summary":  "มาตรฐานมี namespace ครบระดับ BS/NS/PS/ACT/RT/AT/CS แต่ runtime ใช้จริงเพียงบางส่วน",
+                                                                            "impact":  "เอกสารนำหน้าโค้ดมาก ทำให้ระบบยังใช้ประโยชน์จากสเปกได้ไม่เต็มที่"
+                                                                        },
+                                                                        {
+                                                                            "id":  "F-004",
+                                                                            "severity":  "medium",
+                                                                            "summary":  "logic rules ถูก hardcode ซ้ำใน Gen1 และ Gen2",
+                                                                            "impact":  "แก้สเปกครั้งเดียวไม่จบ ต้องไล่แก้หลายไฟล์และเสี่ยง divergence"
+                                                                        },
+                                                                        {
+                                                                            "id":  "F-005",
+                                                                            "severity":  "medium",
+                                                                            "summary":  "พบอาการ encoding เพี้ยนในคอมเมนต์และข้อความของไฟล์ JavaScript บางไฟล์",
+                                                                            "impact":  "ลดความอ่านง่ายของเอกสารประกอบในโค้ดและเสี่ยงต่อการบำรุงรักษา"
+                                                                        }
+                                                                    ],
+                                                       "recommendations":  [
+                                                                               "ย้าย rule definitions และ action/state mappings ออกจาก JavaScript ไปอยู่ใน JSON กลาง",
+                                                                               "กำหนดว่า ACT.SUMMARIZE และ PS.IDLE จะเพิ่มเข้าสู่ standard หรือจะถอดออกจาก runtime",
+                                                                               "เพิ่ม loader/validator ที่อ่าน JSON กลางแล้วตรวจ namespace ก่อน bootstrap ระบบ",
+                                                                               "แยก vocab, thresholds, rules, simulator profiles ออกเป็นคนละไฟล์ข้อมูล",
+                                                                               "แก้ encoding ของไฟล์ JavaScript ให้เป็น UTF-8 แบบสม่ำเสมอ"
+                                                                           ]
+                                                   },
+                             "workspace_audit":  {
+                                                     "root_layout":  {
+                                                                         "total_files":  18,
+                                                                         "extensions":  {
+                                                                                            ".html":  11,
+                                                                                            ".js":  6,
+                                                                                            ".docx":  1
+                                                                                        }
+                                                                     },
+                                                     "notable_files":  [
+                                                                           {
+                                                                               "name":  "tawanbook_3d_demo_BioSignal.html",
+                                                                               "role":  "หน้าเดโมขนาดใหญ่"
+                                                                           },
+                                                                           {
+                                                                               "name":  "neurobook_3d_demo_NeuroSignal.html",
+                                                                               "role":  "หน้าเดโมขนาดใหญ่"
+                                                                           },
+                                                                           {
+                                                                               "name":  "REAL-TIME_SIMULATION_ENGINE.html",
+                                                                               "role":  "หน้าจำลองการทำงานแบบเรียลไทม์"
+                                                                           },
+                                                                           {
+                                                                               "name":  "Nuengdeaw_Core.js",
+                                                                               "role":  "แกนกลางของระบบ"
+                                                                           },
+                                                                           {
+                                                                               "name":  "Nuengdeaw_AI_Gen_1_for_BioSignal.js",
+                                                                               "role":  "เอนจิน Gen1"
+                                                                           },
+                                                                           {
+                                                                               "name":  "Nuengdeaw_AI_Gen_2_for_NeuroSignal.js",
+                                                                               "role":  "เอนจิน Gen2"
+                                                                           },
+                                                                           {
+                                                                               "name":  "Phasa_Tawan_Signal_Language_Standard.docx",
+                                                                               "role":  "เอกสารมาตรฐานต้นทาง"
+                                                                           }
+                                                                       ],
+                                                     "structure_status":  "โครงสร้างระดับ root ยังรกพอสมควร เพราะหน้าเดโม เอนจิน เอกสารมาตรฐาน และไฟล์ utility ถูกวางรวมกันทั้งหมด",
+                                                     "organization_gaps":  [
+                                                                               "ยังไม่มีโฟลเดอร์ docs สำหรับเอกสารต้นฉบับ",
+                                                                               "ยังไม่มีโฟลเดอร์ data/standards สำหรับ source-of-truth เดิม",
+                                                                               "ยังไม่มีโฟลเดอร์ app/pages หรือ demos สำหรับแยกหน้า HTML",
+                                                                               "ยังไม่มี schema validator หรือ manifest กลางของระบบ"
+                                                                           ],
+                                                     "suggested_target_layout":  [
+                                                                                     "docs/Phasa_Tawan_Signal_Language_Standard.docx",
+                                                                                     "data/standards/phasa_tawan_standard.json",
+                                                                                     "src/core/Nuengdeaw_Core.js",
+                                                                                     "src/engines/Nuengdeaw_AI_Gen_1_for_BioSignal.js",
+                                                                                     "src/engines/Nuengdeaw_AI_Gen_2_for_NeuroSignal.js",
+                                                                                     "src/bootstrap/Nuengdeaw_Boot_Chain.js",
+                                                                                     "demos/*.html"
+                                                                                 ]
+                                                 },
+                             "current_runtime_snapshot":  {
+                                                              "core_states_in_code":  [
+                                                                                          "PS.ANXIETY",
+                                                                                          "PS.BOREDOM",
+                                                                                          "PS.CALM",
+                                                                                          "PS.CONFUSION",
+                                                                                          "PS.CURIOSITY",
+                                                                                          "PS.DISGUST",
+                                                                                          "PS.DROWSY",
+                                                                                          "PS.ENCODING",
+                                                                                          "PS.EXCITEMENT",
+                                                                                          "PS.FLOW",
+                                                                                          "PS.FRUSTRATION",
+                                                                                          "PS.IDLE",
+                                                                                          "PS.NEUTRAL",
+                                                                                          "PS.OVERLOAD",
+                                                                                          "PS.SURPRISE"
+                                                                                      ],
+                                                              "gen1_actions_in_code":  [
+                                                                                           "ACT.ANCHOR",
+                                                                                           "ACT.BREAK",
+                                                                                           "ACT.ENRICH",
+                                                                                           "ACT.EXPLORE",
+                                                                                           "ACT.GROUND",
+                                                                                           "ACT.MAINTAIN",
+                                                                                           "ACT.REDIRECT",
+                                                                                           "ACT.REFRAME",
+                                                                                           "ACT.SIMPLIFY",
+                                                                                           "ACT.STABILIZE",
+                                                                                           "ACT.SUMMARIZE",
+                                                                                           "ACT.SUSTAIN"
+                                                                                       ],
+                                                              "gen2_actions_in_code":  [
+                                                                                           "ACT.ANCHOR",
+                                                                                           "ACT.BREAK",
+                                                                                           "ACT.ENRICH",
+                                                                                           "ACT.EXPLORE",
+                                                                                           "ACT.GROUND",
+                                                                                           "ACT.MAINTAIN",
+                                                                                           "ACT.REDIRECT",
+                                                                                           "ACT.REFRAME",
+                                                                                           "ACT.SIMPLIFY",
+                                                                                           "ACT.STABILIZE",
+                                                                                           "ACT.SUMMARIZE",
+                                                                                           "ACT.SUSTAIN"
+                                                                                       ]
+                                                          }
+                         }
+}
